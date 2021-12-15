@@ -1,0 +1,21 @@
+.editable-cells-table .p-editable-column {
+  &:hover {
+    cursor: text;
+    background-color: var(--surface-50);
+  }
+  &.p-cell-editing {
+    padding: 0 !important;
+    input {
+      padding: 1rem 1.5rem;
+      width: 100%;
+    }
+  }
+}
+
+.p-field + .p-field {
+  margin-top: 1rem;
+}
+
+.p-dialog .p-dialog-content {
+  padding-top: 3px; // leave space for first input outline shadow
+}

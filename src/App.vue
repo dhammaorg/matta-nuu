@@ -35,6 +35,17 @@ export default {
       this.sessions = result.data
     })
   },
+  computed: {
+    products() {
+      const result = []
+      this.recipies.forEach((recipie) => {
+        recipie.products.forEach((product) => {
+          if (!result.includes(product.name)) result.push(product.name)
+        })
+      })
+      return result.sort()
+    },
+  },
 }
 </script>
 
