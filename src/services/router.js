@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import SessionsIndex from '@/views/sessions/SessionsIndex.vue'
+import Session from '@/views/sessions/Session.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
 
 const routes = [
@@ -7,6 +8,11 @@ const routes = [
     path: '/',
     name: 'sessions',
     component: SessionsIndex,
+  },
+  {
+    path: '/sessions/:id',
+    name: 'edit_session',
+    component: Session,
   },
   {
     path: '/recipes',
