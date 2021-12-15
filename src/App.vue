@@ -1,4 +1,6 @@
 <template>
+  <Toast position="top-center" />
+
   <Menubar :model="navItems">
     <template #start>
       <span class="mx-3 fw-bold">Matta Nuu</span>
@@ -11,9 +13,10 @@
 
 <script>
 import Menubar from 'primevue/menubar'
+import Toast from 'primevue/toast'
 
 export default {
-  components: { Menubar },
+  components: { Menubar, Toast },
   data() {
     return {
       navItems: [

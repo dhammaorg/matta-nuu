@@ -14,19 +14,19 @@ export default {
           }
         },
         async dbUpdate(dbName, object) {
-          const { data, error } = await this.$db.from('recipies')
+          const { data, error } = await this.$db.from(dbName)
             .update(object)
             .match({ id: object.id })
 
           if (error) this.toastError(error)
           else {
             const index = this.$root[dbName].findIndex((o) => o.id === object.id)
-            this.$root[dbName][index] = object
+            this.$root[dbName][index] = data[0]
           }
         },
         async dbDestroy(dbName, object) {
           // Delete
-          const { error } = await this.$db.from('recipies').delete().match({ id: object.id })
+          const { error } = await this.$db.from(dbName).delete().match({ id: object.id })
 
           if (error) this.toastError(error)
           else {
@@ -35,7 +35,7 @@ export default {
         },
         toastError(error) {
           this.$toast.add({
-            severity: 'danger', summary: error.message, detail: error.details, life: 3000,
+            severity: 'error', summary: error.message, detail: error.details, life: 3000,
           })
         },
       },
