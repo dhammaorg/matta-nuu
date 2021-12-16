@@ -27,12 +27,9 @@ export default {
       recipies: [],
     }
   },
-  mounted() {
+  created() {
     this.$db.from('recipies').select().then((result) => {
-      this.recipies = result.data
-    })
-    this.$db.from('sessions').select().then((result) => {
-      this.sessions = result.data
+      this.$root.recipies = result.data
     })
   },
   computed: {

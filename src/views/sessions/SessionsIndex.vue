@@ -40,6 +40,9 @@ export default {
     }
   },
   created() {
+    this.$db.from('sessions').select('id, name').then((result) => {
+      this.$root.sessions = result.data
+    })
     this.initFilters()
   },
   methods: {
