@@ -14,12 +14,15 @@ import ToastService from 'primevue/toastservice'
 import App from './App.vue'
 import router from '@/services/router'
 import db from '@/services/db-plugin'
+import { utils } from '@/services/utils'
 
 import 'bootstrap/dist/css/bootstrap-utilities.css'
 import 'primeicons/primeicons.css'
 import 'primevue/resources/themes/lara-light-indigo/theme.css'
 import 'primevue/resources/primevue.min.css'
 import './main.scss'
+
+utils()
 
 createApp(App)
   .use(router)
