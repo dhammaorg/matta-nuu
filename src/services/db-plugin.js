@@ -5,11 +5,6 @@ export default {
     app.config.globalProperties.$db = supabase
 
     app.mixin({
-      data() {
-        return {
-          loading: false,
-        }
-      },
       methods: {
         async dbCreate(dbName, object, onSuccess) {
           this.loading = true
