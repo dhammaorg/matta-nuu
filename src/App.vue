@@ -6,9 +6,8 @@
       <span class="mx-3 fw-bold">Matta Nuu</span>
     </template>
   </Menubar>
-  <div class="main-content p-component mx-auto p-3">
-    <router-view/>
-  </div>
+
+  <router-view/>
 </template>
 
 <script>
@@ -47,9 +46,11 @@ export default {
 </script>
 
 <style lang="scss">
-  body, html {
+  #app, body, html {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
   }
   .matta-nuu .p-menubar {
     border-radius: 0;
@@ -57,7 +58,10 @@ export default {
     border-left: none;
     border-right: none;
   }
-  .main-content {
+  .page-content {
+    width: 100%;
     max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
   }
 </style>

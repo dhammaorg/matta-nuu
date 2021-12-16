@@ -1,29 +1,30 @@
 <template>
+  <div class="page-content">
+    <div class="mb-3">
+      <Button label="New Recipie" icon="pi pi-plus" class="p-button-success me-2" @click="$refs.form.show()" />
+      <span class="p-input-icon-left float-end">
+        <i class="pi pi-search" />
+        <InputText v-model="filters['global'].value" placeholder="Search..." />
+      </span>
+    </div>
 
-  <div class="mb-3">
-    <Button label="New Recipie" icon="pi pi-plus" class="p-button-success me-2" @click="$refs.form.show()" />
-    <span class="p-input-icon-left float-end">
-      <i class="pi pi-search" />
-      <InputText v-model="filters['global'].value" placeholder="Search..." />
-    </span>
+    <DataTable :value="$root.recipies" dataKey="id"
+      :paginator="true" :rows="20" :filters="filters">
+
+      <Column field="name" header="Name" :sortable="true"></Column>
+      <Column class="text-end">
+        <template #body="{data}">
+          <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
+                  @click="$refs.form.show(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
+                  @click="deleteRecipie(data)" />
+        </template>
+      </Column>
+    </DataTable>
+    <ConfirmDialog></ConfirmDialog>
+
+    <RecipieForm ref="form"></RecipieForm>
   </div>
-
-  <DataTable :value="$root.recipies" dataKey="id"
-    :paginator="true" :rows="20" :filters="filters">
-
-    <Column field="name" header="Name" :sortable="true"></Column>
-    <Column class="text-end">
-      <template #body="slotProps">
-        <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                @click="$refs.form.show(slotProps.data)" />
-        <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                @click="deleteRecipie(slotProps.data)" />
-      </template>
-    </Column>
-  </DataTable>
-  <ConfirmDialog></ConfirmDialog>
-
-  <RecipieForm ref="form"></RecipieForm>
 </template>
 
 <script>
