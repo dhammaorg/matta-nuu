@@ -7,6 +7,7 @@ import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
+import Dropdown from 'primevue/dropdown'
 import ConfirmationService from 'primevue/confirmationservice'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ToastService from 'primevue/toastservice'
@@ -36,4 +37,5 @@ createApp(App)
   .component('Column', Column)
   .component('InputText', InputText)
   .component('ConfirmDialog', ConfirmDialog)
+  .component('Dropdown', Dropdown)
   .mount('#app')

@@ -1,4 +1,5 @@
 <template>
+
   <Toast position="top-center" />
 
   <Menubar :model="navItems">
@@ -8,6 +9,7 @@
   </Menubar>
 
   <router-view/>
+
 </template>
 
 <script>

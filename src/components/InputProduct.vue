@@ -1,5 +1,5 @@
 <template>
-  <AutoComplete v-bind="$attrs"
+  <AutoComplete v-bind="$attrs" placeholder="Product"
                 :suggestions="suggestions" :dropdown="true"
                 @complete="searchProduct($event)"/>
 </template>

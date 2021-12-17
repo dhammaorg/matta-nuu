@@ -17,7 +17,7 @@
         <InputProduct v-model="product.name" class="me-2 w-50" placeholder="Name"/>
         <InputNumber v-model="product.amount" mode="decimal" :maxFractionDigits="5"
                     class="me-2 w-25" placeholder="Amount"/>
-        <Dropdown v-model="product.unit" :options="units" placeholder="Unit" class="w-25" />
+        <InputUnit v-model="product.unit" class="w-25" />
         <Button icon="pi pi-times" class="p-button-text p-button-danger"
                 @click="removeProduct(product)"/>
       </div>
@@ -36,21 +36,16 @@
 <script>
 
 import InputNumber from 'primevue/inputnumber'
-import Dropdown from 'primevue/dropdown'
 import InputProduct from '@/components/InputProduct.vue'
-
-import { UNITS } from '@/services/units'
+import InputUnit from '@/components/InputUnit.vue'
 
 export default {
-  components: { InputNumber, Dropdown, InputProduct },
+  components: { InputNumber, InputUnit, InputProduct },
   data() {
     return {
       visible: false,
       recipie: {},
     }
-  },
-  computed: {
-    units() { return UNITS },
   },
   methods: {
     show(object = {}) {
