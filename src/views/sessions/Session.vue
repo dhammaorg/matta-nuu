@@ -9,8 +9,8 @@
         <Row>
           <Column class="first-column" frozen :rowspan="3">
             <template #header>
-              <Button icon="pi pi-plus" label="Row" class="p-button-sm"
-                      @click="rows.push({ id: 9, type: 'custom', label: 'Desserts', values: {} })" />
+              <Button type="button" icon="pi pi-plus" label="Row" @click="$refs.addRowMenu.toggle($event)" />
+              <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
             </template>
           </Column>
           <Column v-for="event in events" :colspan="event.days.length" :key="event.id"
@@ -47,7 +47,7 @@
             {{ data.product }}
             <span v-if="data.unit">({{ data.unit }})</span>
           </span>
-          <span v-else-if="data.type == 'recipie'">{{ data.recipie.name }}</span>
+          <span v-else-if="data.type == 'recipie'">{{ data.recipie ? data.recipie.name : '' }}</span>
           <span v-else>{{ data.label }}</span>
         </template>
         <template #editor="{ data }">
@@ -56,7 +56,7 @@
             <InputUnit v-model="data.unit" />
           </template>
           <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie" />
-          <InputText    v-else v-model="data.label" />
+          <InputText    v-else v-model="data.label" placeholder="Row Name" />
         </template>
       </Column>
 
@@ -94,13 +94,15 @@
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
+import SplitButton from 'primevue/splitbutton'
+import TieredMenu from 'primevue/tieredmenu'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import InputUnit from '@/components/InputUnit.vue'
 
 export default {
   components: {
-    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber,
+    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, SplitButton, TieredMenu,
   },
   data() {
     return {
@@ -129,6 +131,20 @@ export default {
           id: 4, type: 'products', label: 'Desserts', values: {},
         },
       ],
+      rowTypes: [
+        {
+          id: 'product', label: 'Single Product Row', command: () => { this.addRow('product') },
+        },
+        {
+          id: 'products', label: 'Variable Products Row', command: () => { this.addRow('products') },
+        },
+        {
+          id: 'recipie', label: 'Single Recipie Row', command: () => { this.addRow('recipie') },
+        },
+        {
+          id: 'recipies', label: 'Variable Recipies Row', command: () => { this.addRow('recipies') },
+        },
+      ],
     }
   },
   computed: {
@@ -153,7 +169,6 @@ export default {
     //   this.events = result.data[0].events || []
     //   this.rows = result.data[0].rows || []
     // })
-
     this.initDaysValuesForEachRow()
   },
   watch: {
@@ -176,6 +191,16 @@ export default {
       data.product = newData.product
       data.unit = newData.unit
       data.recipie = newData.recipie
+    },
+    addRow(type) {
+      const row = {
+        id: Math.max(...this.rows.map((r) => r.id)) + 1, type, label: '', values: {},
+      }
+      this.allDays.forEach((day) => { row.values[day.id] = {} })
+      this.rows.push(row)
+      this.$nextTick(() => {
+        setTimeout(() => document.querySelector('.p-datatable-tbody tr:last-child td.first-column').click(), 0)
+      })
     },
   },
 }
