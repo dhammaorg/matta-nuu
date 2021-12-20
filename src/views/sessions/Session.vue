@@ -202,7 +202,11 @@ export default {
       this.allDays.forEach((day) => { row.values[day.id] = {} })
       this.rows.push(row)
       this.$nextTick(() => {
-        setTimeout(() => document.querySelector('.p-datatable-tbody tr:last-child td.first-column').click(), 0)
+        setTimeout(() => {
+          const datatableDom = document.querySelector('.p-datatable-wrapper')
+          datatableDom.scrollTo(0, datatableDom.scrollHeight)
+          document.querySelector('.p-datatable-tbody tr:last-child td.first-column').click()
+        }, 0)
       })
     },
   },
