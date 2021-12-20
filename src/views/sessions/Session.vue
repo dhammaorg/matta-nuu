@@ -4,10 +4,11 @@
   <div style="height: calc(100vh - 9rem)">
     <DataTable :value="rows" dataKey="id" showGridlines
               :scrollable="true" scrollHeight="flex"
+              @rowReorder="rows = $event.value"
               editMode="cell" class="editable-cells-table" @cell-edit-complete="onCellEditComplete">
       <ColumnGroup type="header">
         <Row>
-          <Column class="first-column" frozen :rowspan="3">
+          <Column class="top-left-cell" frozen :rowspan="3" :colspan="2">
             <template #header>
               <Button type="button" icon="pi pi-plus" label="Row" @click="$refs.addRowMenu.toggle($event)" />
               <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
@@ -39,6 +40,8 @@
           </Column>
         </Row>
       </ColumnGroup>
+
+      <Column :rowReorder="true" class="reorder-column" frozen />
 
       <!-- First Column : Row Type -->
       <Column frozen class="first-column">
@@ -220,8 +223,21 @@ export default {
     color: white;
     font-weight: bold;
   }
-  th.first-column {
+  td.reorder-column {
+    width: 50px;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    padding: 0 !important;
+    .p-datatable-reorderablerow-handle {
+      padding: 1rem;
+      cursor: move;
+    }
+  }
+  th.top-left-cell {
     background-color: var(--surface-0) !important;
+    width: 249px;
+    min-width: 249px !important;
+    max-width: 249px !important;
   }
   td.p-editable-column {
     flex-wrap: wrap;
