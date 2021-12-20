@@ -20,15 +20,21 @@
               <div class="d-flex align-items-center justify-content-between w-100">
                 {{ event.name }}
                 <Button icon="pi pi-plus" label="Day" class="float-end p-button-sm"
-                        @click="event.days.push('New Day')" />
+                        @click="event.days.push('New Day')"
+                        :disabled="disableAddDayFor(event)" />
               </div>
             </template>
           </Column>
         </Row>
         <Row>
-          <Column v-for="day in allDays" :key="`header-date-${day.id}`" :class="day.class">
+          <Column v-for="day in allDays" :key="`header-date-${day.id}`" :class="[day.class, {'p-0': dayHover == day.id}]">
             <template #header>
-              {{ day.date.toLocaleDateString([], { weekday: 'short', month: "2-digit", day: 'numeric' }) }}
+              <div @mouseover="dayHover = day.id" @mouseleave="dayHover = null" >
+                  <Button icon="pi pi-trash" v-if="dayHover == day.id && day.class.includes('event-end')"
+                          class="p-button-small p-button-danger p-button-text"
+                          @click="day.event.days.pop()" />
+                  <span v-else>{{ day.date.toLocaleDateString([], { weekday: 'short', month: "numeric", day: 'numeric' }) }}</span>
+              </div>
             </template>
           </Column>
         </Row>
@@ -97,7 +103,6 @@
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
-import SplitButton from 'primevue/splitbutton'
 import TieredMenu from 'primevue/tieredmenu'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
@@ -105,7 +110,7 @@ import InputUnit from '@/components/InputUnit.vue'
 
 export default {
   components: {
-    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, SplitButton, TieredMenu,
+    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, TieredMenu,
   },
   data() {
     return {
@@ -148,6 +153,7 @@ export default {
           id: 'recipies', label: 'Variable Recipies Row', command: () => { this.addRow('recipies') },
         },
       ],
+      dayHover: null,
     }
   },
   computed: {
@@ -181,6 +187,10 @@ export default {
     },
   },
   methods: {
+    disableAddDayFor(event) {
+      const newDate = event.start_date.addDays(event.days.length)
+      return this.allDays.find((day) => day.date.toDateString() === newDate.toDateString())
+    },
     initDaysValuesForEachRow() {
       this.allDays.forEach((day) => {
         this.rows.forEach((row) => {
@@ -220,6 +230,7 @@ export default {
   .first-column {
     width: 200px;
     min-width: 200px !important;
+    max-width: 200px !important;
     justify-content: flex-start !important;
   }
   td.first-column {
