@@ -14,10 +14,19 @@ a {
       width: 100%;
     }
   }
+  .p-inputnumber {
+    width: 100%;
+  }
 }
 
 .p-field + .p-field {
   margin-top: 1rem;
+}
+
+.p-field label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .p-dialog .p-dialog-content {
@@ -26,3 +35,4 @@ a {
 .p-tieredmenu {
   width: auto;
 }
+

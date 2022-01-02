@@ -10,16 +10,24 @@
         <Row>
           <Column class="top-left-cell" frozen :rowspan="3" :colspan="2">
             <template #header>
-              <Button type="button" icon="pi pi-plus" label="Row" @click="$refs.addRowMenu.toggle($event)" />
-              <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
+              <div class="d-flex flex-column">
+                <Button type="button" icon="pi pi-plus" class="mb-2" label="Row" @click="$refs.addRowMenu.toggle($event)" />
+                <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
+
+                <Button type="button" icon="pi pi-plus" label="Event" @click="$refs.eventForm.show()" />
+              </div>
             </template>
           </Column>
-          <Column v-for="event in events" :colspan="event.days.length" :key="event.id"
+          <Column v-for="(event, index) in events" :colspan="event.days.length" :key="event.id"
                   class="event-start event-end">
             <template #header>
-              <div class="d-flex align-items-center justify-content-between w-100">
-                {{ event.name }}
-                <Button icon="pi pi-plus" label="Day" class="float-end p-button-sm"
+              <div class="d-flex align-items-center w-100">
+                <span style="flex: 1 auto">{{ event.name }}</span>
+                <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
+                        class="p-button-small p-button-primary p-button-text" />
+                <Button icon="pi pi-trash" @click="events.splice(index, 1)"
+                        class="p-button-small p-button-danger p-button-text" />
+                <Button icon="pi pi-plus" label="Day" class="p-button-sm"
                         @click="event.days.push('New Day')"
                         :disabled="disableAddDayFor(event)" />
               </div>
@@ -97,6 +105,8 @@
 
     </DataTable>
   </div>
+
+  <EventForm ref="eventForm" @save="createOrUpdateEvent($event)"/>
 </template>
 
 <script>
@@ -107,10 +117,11 @@ import TieredMenu from 'primevue/tieredmenu'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import InputUnit from '@/components/InputUnit.vue'
+import EventForm from './EventForm.vue'
 
 export default {
   components: {
-    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, TieredMenu,
+    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, TieredMenu, EventForm,
   },
   data() {
     return {
@@ -218,6 +229,18 @@ export default {
           document.querySelector('.p-datatable-tbody tr:last-child td.first-column').click()
         }, 0)
       })
+    },
+    createOrUpdateEvent(event) {
+      const index = this.events.findIndex((e) => e.id === event.id)
+      if (index > -1) {
+        // update existing
+        this.events[index] = event
+      } else {
+        // createNew
+        const newId = Math.max(...this.events.map((e) => e.id)) + 1
+        this.events.push({ ...event, ...{ id: newId, days: ['New day'] } })
+      }
+      this.events.sort((a, b) => (a.start_date > b.start_date ? 1 : -1))
     },
   },
 }
