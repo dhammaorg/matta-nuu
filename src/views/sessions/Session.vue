@@ -44,8 +44,8 @@
           <Column v-for="day in allDays" :key="`header-date-${day.id}`" :class="[day.class, {'p-0': dayHover == day.id}]">
             <template #header>
               <div @mouseover="dayHover = day.id" @mouseleave="dayHover = null" >
-                  <Button icon="pi pi-trash" v-if="dayHover == day.id && day.class.includes('event-end')"
-                          class="p-button-small p-button-danger p-button-text"
+                  <Button icon="pi pi-trash" class="p-button-small p-button-danger p-button-text"
+                          v-if="dayHover == day.id && day.class.includes('event-end') && day.event.days.length > 1"
                           @click="day.event.days.pop()" />
                   <span v-else>{{ day.date.toLocaleDateString([], { weekday: 'short', month: "numeric", day: 'numeric' }) }}</span>
               </div>
