@@ -15,6 +15,7 @@ export default {
             if (onSuccess) onSuccess(data[0])
           }
           this.loading = false
+          return data[0]
         },
         async dbUpdate(dbName, object) {
           this.loading = true

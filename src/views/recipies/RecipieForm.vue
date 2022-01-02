@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" :style="{width: '600px'}" header="Recipie Details"
-          :modal="true" class="p-fluid">
+          :modal="true" class="p-fluid recipie-dialog">
     <div class="p-field">
       <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus/>
     </div>
@@ -17,7 +17,7 @@
         <InputProduct v-model="product.name" class="me-2 w-50" placeholder="Name"/>
         <InputNumber v-model="product.amount" mode="decimal" :maxFractionDigits="5"
                     class="me-2 w-25" placeholder="Amount"/>
-        <InputUnit v-model="product.unit" class="w-25" />
+        <InputUnit v-model="product.unit" class="w-25"/>
         <Button icon="pi pi-times" class="p-button-text p-button-danger"
                 @click="removeProduct(product)"/>
       </div>
@@ -55,11 +55,12 @@ export default {
       this.visible = true
     },
     async saveRecipie() {
-      if (this.recipie.name.trim()) {
+      if (this.recipie.name) {
         if (this.recipie.id) {
           this.dbUpdate('recipies', this.recipie)
         } else {
-          this.dbCreate('recipies', this.recipie)
+          const newRecipie = await this.dbCreate('recipies', this.recipie)
+          this.$emit('created', newRecipie)
         }
         this.visible = false
         this.recipie = {}

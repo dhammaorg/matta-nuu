@@ -234,6 +234,12 @@ export default {
       })
     },
     onCellEditComplete(event) {
+      // When creating a recipie from the InputRecipie any click on a dropdown inside the dialog was
+      // interpreted as a click to close the cell edit, so preventing it
+      if (document.querySelector('.recipie-dialog')) {
+        event.preventDefault()
+        return
+      }
       const { data, newData } = event
       data.label = newData.label
       data.product = newData.product

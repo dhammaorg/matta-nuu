@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     searchProduct(event) {
-      this.suggestions = this.allProducts.filter((p) => p.toLowerCase().includes(event.query.toLowerCase()))
+      this.suggestions = this.allProducts.filter((p) => p && p.toLowerCase().includes(event.query.toLowerCase()))
     },
   },
 }
