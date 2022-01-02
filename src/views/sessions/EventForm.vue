@@ -8,7 +8,8 @@
 
     <div class="p-field">
       <label>Start Date</label>
-      <Calendar v-model="event.start_date" required="true" dateFormat="d MM yy" :disabledDates="[]" />
+      <Calendar v-model="event.start_date" required="true" dateFormat="d MM yy" icon="pi pi-calendar"
+                :disabledDates="disabledDates" />
     </div>
 
     <template #footer>
@@ -23,6 +24,7 @@ import Calendar from 'primevue/calendar'
 
 export default {
   components: { Calendar },
+  props: ['disabledDates', 'defaultDate'],
   data() {
     return {
       visible: false,
@@ -37,11 +39,12 @@ export default {
   methods: {
     show(object = {}) {
       this.event = { ...object }
+      if (!this.event.start_date) this.event.start_date = this.defaultDate
       this.visible = true
     },
     save() {
       if (this.event.name && this.event.start_date) {
-        if (!this.event.days) this.event.days = ['0', '1']
+        if (!this.event.days) this.event.days = ['New Day']
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}

@@ -112,7 +112,9 @@
     </DataTable>
   </div>
 
-  <EventForm ref="eventForm" @save="createOrUpdateEvent($event)"/>
+  <EventForm ref="eventForm" @save="createOrUpdateEvent($event)"
+             :disabled-dates="allDays.map(d => d.date)"
+             :default-date="allDays.length > 1 ? allDays.at(-1).date.addDays(1) : null"/>
 </template>
 
 <script>
