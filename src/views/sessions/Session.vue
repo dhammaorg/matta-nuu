@@ -1,7 +1,12 @@
 <template>
-  <h1 class="px-3">{{ session.name }}</h1>
+  <div class="px-3 d-flex align-items-center">
+    <h1 class="me-3 flex-grow-1">{{ session.name }}</h1>
+    <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm me-3"
+            @click="$refs.eventForm.show()" />
+    <Button icon="pi pi-save" :loading="saving" label="Save" class="p-button-success" @click="save" />
+  </div>
 
-  <div style="height: calc(100vh - 9rem)">
+  <div style="height: calc(100vh - 9rem)" v-if="events.length > 0">
     <DataTable :value="rows" dataKey="id" showGridlines
               :scrollable="true" scrollHeight="flex"
               @rowReorder="rows = $event.value"
@@ -11,10 +16,9 @@
           <Column class="top-left-cell" frozen :rowspan="3" :colspan="2">
             <template #header>
               <div class="d-flex flex-column">
-                <Button type="button" icon="pi pi-plus" class="mb-2" label="Row" @click="$refs.addRowMenu.toggle($event)" />
+                <Button type="button" icon="pi pi-plus" class="mb-2 p-button-sm" label="Row"
+                        @click="$refs.addRowMenu.toggle($event)" />
                 <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
-
-                <Button type="button" icon="pi pi-plus" label="Event" @click="$refs.eventForm.show()" />
               </div>
             </template>
           </Column>
@@ -125,31 +129,10 @@ export default {
   },
   data() {
     return {
-      session: {
-        name: 'Session de test',
-      },
-      events: [
-        {
-          id: 0, name: 'Install', start_date: new Date(2022, 2, 12), days: ['Prepa', 'J0'],
-        },
-        {
-          id: 1, name: '3d course', start_date: new Date(2022, 2, 14), days: ['J1', 'J2 - VipDay', 'J3'],
-        },
-      ],
-      rows: [
-        {
-          id: 1, type: 'product', product: 'Bread', unit: 'kg', values: {},
-        },
-        {
-          id: 2, type: 'recipie', recipie: { name: 'Crumble' }, values: {},
-        },
-        {
-          id: 3, type: 'recipies', label: 'Desserts', values: {},
-        },
-        {
-          id: 4, type: 'products', label: 'Desserts', values: {},
-        },
-      ],
+      saving: false,
+      session: {},
+      events: [],
+      rows: [],
       rowTypes: [
         {
           id: 'product', label: 'Single Product Row', command: () => { this.addRow('product') },
@@ -185,10 +168,12 @@ export default {
     },
   },
   async mounted() {
-    // this.$db.from('sessions').select().match({ id: this.$route.params.id }).then((result) => {
-    //   this.events = result.data[0].events || []
-    //   this.rows = result.data[0].rows || []
-    // })
+    const { data } = await this.$db.from('sessions').select().match({ id: this.$route.params.id }).single()
+    this.session = data
+    const events = this.session.events || []
+    events.forEach((e) => { e.start_date = new Date(e.start_date) })
+    this.events = events
+    this.rows = this.session.rows || []
     this.initDaysValuesForEachRow()
   },
   watch: {
@@ -198,6 +183,15 @@ export default {
     },
   },
   methods: {
+    async save() {
+      this.saving = true
+      const { error } = await this.$db.from('sessions')
+        .update({ events: this.events, rows: this.rows })
+        .match({ id: this.$route.params.id })
+
+      if (error) this.toastError(error)
+      this.saving = false
+    },
     disableAddDayFor(event) {
       const newDate = event.start_date.addDays(event.days.length)
       return this.allDays.find((day) => day.date.toDateString() === newDate.toDateString())
@@ -238,7 +232,7 @@ export default {
       } else {
         // createNew
         const newId = Math.max(...this.events.map((e) => e.id)) + 1
-        this.events.push({ ...event, ...{ id: newId, days: ['New day'] } })
+        this.events.push({ ...event, ...{ id: newId, days: ['0', '1'] } })
       }
       this.events.sort((a, b) => (a.start_date > b.start_date ? 1 : -1))
     },
