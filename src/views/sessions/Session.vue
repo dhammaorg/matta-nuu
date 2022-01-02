@@ -72,6 +72,8 @@
           </span>
           <span v-else-if="data.type == 'recipie'">{{ data.recipie ? data.recipie.name : '' }}</span>
           <span v-else>{{ data.label }}</span>
+          <Button icon="pi pi-trash" @click.prevent="deleteRow(data)"
+                  class="btn-on-hover p-button-small p-button-danger p-button-text" />
         </template>
         <template #editor="{ data }">
           <template v-if="data.type == 'product'">
@@ -252,6 +254,9 @@ export default {
         }, 0)
       })
     },
+    deleteRow(row) {
+      this.session.rows = this.session.rows.filter((r) => r.id !== row.id)
+    },
     newId(values) {
       if (values.length === 0) return 1
       return Math.max(...values.map((r) => r.id)) + 1
@@ -315,6 +320,8 @@ export default {
   td, th {
     min-width: 130px !important;
     justify-content: center;
+    position: relative;
+
     label {
       width: 100%;
       text-align: center;
@@ -324,6 +331,13 @@ export default {
     }
     .amount {
       font-size: 1.2rem;
+    }
+
+    .btn-on-hover { display: none; }
+    &:hover .btn-on-hover {
+      display: block;
+      position: absolute;
+      right: 0;
     }
   }
   .p-datatable .p-column-header-content {
