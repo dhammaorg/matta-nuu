@@ -6,7 +6,10 @@
     <Button icon="pi pi-save" :loading="saving" label="Save" class="p-button-success" @click="save" />
   </div>
 
-  <div style="height: calc(100vh - 9rem)" v-if="events.length > 0">
+  <p v-if="events.length == 0" class="px-3">
+    Please create an Event for this Session
+  </p>
+  <div style="height: calc(100vh - 9rem)" v-else>
     <DataTable :value="rows" dataKey="id" showGridlines
               :scrollable="true" scrollHeight="flex"
               @rowReorder="rows = $event.value"
@@ -175,6 +178,7 @@ export default {
     this.events = events
     this.rows = this.session.rows || []
     this.initDaysValuesForEachRow()
+    if (events.length === 0) this.$refs.eventForm.show()
   },
   watch: {
     allDays: {
@@ -212,7 +216,7 @@ export default {
     },
     addRow(type) {
       const row = {
-        id: Math.max(...this.rows.map((r) => r.id)) + 1, type, label: '', values: {},
+        id: this.newId(this.rows), type, label: '', values: {},
       }
       this.allDays.forEach((day) => { row.values[day.id] = {} })
       this.rows.push(row)
@@ -224,6 +228,10 @@ export default {
         }, 0)
       })
     },
+    newId(values) {
+      if (values.length === 0) return 1
+      return Math.max(...values.map((r) => r.id)) + 1
+    },
     createOrUpdateEvent(event) {
       const index = this.events.findIndex((e) => e.id === event.id)
       if (index > -1) {
@@ -231,8 +239,7 @@ export default {
         this.events[index] = event
       } else {
         // createNew
-        const newId = Math.max(...this.events.map((e) => e.id)) + 1
-        this.events.push({ ...event, ...{ id: newId, days: ['0', '1'] } })
+        this.events.push({ ...event, ...{ id: this.newId(this.events) } })
       }
       this.events.sort((a, b) => (a.start_date > b.start_date ? 1 : -1))
     },

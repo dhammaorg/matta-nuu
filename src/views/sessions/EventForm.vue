@@ -1,5 +1,6 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" header="Event"
+  <Dialog v-model:visible="visible" :style="{width: '600px'}"
+          :header="isNew ? 'Add an Event to the Session' : 'Edit Event'"
           :modal="true" class="p-fluid">
     <div class="p-field">
       <InputText v-model.trim="event.name" required="true" placeholder="Name" autofocus/>
@@ -28,13 +29,19 @@ export default {
       event: {},
     }
   },
+  computed: {
+    isNew() {
+      return this.event.id === undefined
+    },
+  },
   methods: {
     show(object = {}) {
       this.event = { ...object }
       this.visible = true
     },
     save() {
-      if (this.event.name.trim()) {
+      if (this.event.name && this.event.start_date) {
+        if (!this.event.days) this.event.days = ['0', '1']
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}
