@@ -3,13 +3,15 @@
     <h1 class="me-3 flex-grow-1">{{ session.name }}</h1>
     <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm me-3"
             @click="$refs.eventForm.show()" />
-    <Button icon="pi pi-save" :loading="saving" label="Save" class="p-button-success" @click="save" />
+    <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
+            @click="undo()" :disabled="history.length <= 1" />
+    <Button icon="pi pi-save" :loading="saving" label="Save" class="p-button-success" @click="save()" />
   </div>
 
   <div style="height: calc(100vh - 9rem)" v-if="events.length > 0">
     <DataTable :value="rows" dataKey="id" showGridlines
               :scrollable="true" scrollHeight="flex"
-              @rowReorder="rows = $event.value"
+              @rowReorder="session.rows = $event.value"
               editMode="cell" class="editable-cells-table" @cell-edit-complete="onCellEditComplete">
       <ColumnGroup type="header">
         <Row>
@@ -130,6 +132,7 @@ export default {
   data() {
     return {
       saving: false,
+      history: [],
       session: {},
       rowTypes: [
         {
@@ -181,6 +184,18 @@ export default {
     if (this.events.length === 0) this.$refs.eventForm.show()
   },
   watch: {
+    session: {
+      deep: true,
+      handler() {
+        const sessionJson = JSON.stringify(this.session)
+        // Check for fake change
+        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1])) {
+          // Parse + stringify makes object deep copy
+          const newValue = JSON.parse(sessionJson)
+          this.history.push(newValue)
+        }
+      },
+    },
     allDays: {
       deep: true,
       handler() { this.initDaysValuesForEachRow() },
@@ -195,6 +210,13 @@ export default {
 
       if (error) this.toastError(error)
       this.saving = false
+    },
+    undo() {
+      // poping twice the history, cause last history value is the same as current value
+      let lastSession = this.history.pop()
+      lastSession = this.history.pop()
+      lastSession.events.forEach((e) => { e.start_date = new Date(e.start_date) })
+      this.session = lastSession
     },
     disableAddDayFor(event) {
       const newDate = event.start_date.addDays(event.days.length)
@@ -219,7 +241,7 @@ export default {
         id: this.newId(this.rows), type, label: '', values: {},
       }
       this.allDays.forEach((day) => { row.values[day.id] = {} })
-      this.rows.push(row)
+      this.session.rows.push(row)
       this.$nextTick(() => {
         setTimeout(() => {
           const datatableDom = document.querySelector('.p-datatable-wrapper')
