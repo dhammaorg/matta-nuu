@@ -6,10 +6,7 @@
     <Button icon="pi pi-save" :loading="saving" label="Save" class="p-button-success" @click="save" />
   </div>
 
-  <p v-if="events.length == 0" class="px-3">
-    Please create an Event for this Session
-  </p>
-  <div style="height: calc(100vh - 9rem)" v-else>
+  <div style="height: calc(100vh - 9rem)" v-if="events.length > 0">
     <DataTable :value="rows" dataKey="id" showGridlines
               :scrollable="true" scrollHeight="flex"
               @rowReorder="rows = $event.value"
@@ -134,8 +131,6 @@ export default {
     return {
       saving: false,
       session: {},
-      events: [],
-      rows: [],
       rowTypes: [
         {
           id: 'product', label: 'Single Product Row', command: () => { this.addRow('product') },
@@ -154,6 +149,12 @@ export default {
     }
   },
   computed: {
+    events() {
+      return this.session.events || []
+    },
+    rows() {
+      return this.session.rows || []
+    },
     allDays() {
       const days = []
       this.events.forEach((event) => {
@@ -172,13 +173,12 @@ export default {
   },
   async mounted() {
     const { data } = await this.$db.from('sessions').select().match({ id: this.$route.params.id }).single()
+    data.events ||= []
+    data.events.forEach((e) => { e.start_date = new Date(e.start_date) })
+    data.rows ||= []
     this.session = data
-    const events = this.session.events || []
-    events.forEach((e) => { e.start_date = new Date(e.start_date) })
-    this.events = events
-    this.rows = this.session.rows || []
     this.initDaysValuesForEachRow()
-    if (events.length === 0) this.$refs.eventForm.show()
+    if (this.events.length === 0) this.$refs.eventForm.show()
   },
   watch: {
     allDays: {
@@ -190,7 +190,7 @@ export default {
     async save() {
       this.saving = true
       const { error } = await this.$db.from('sessions')
-        .update({ events: this.events, rows: this.rows })
+        .update(this.session)
         .match({ id: this.$route.params.id })
 
       if (error) this.toastError(error)
