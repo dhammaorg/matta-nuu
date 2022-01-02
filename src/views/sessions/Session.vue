@@ -288,7 +288,7 @@ export default {
     }
   }
   td, th {
-    min-width: 100px !important;
+    min-width: 130px !important;
     justify-content: center;
     label {
       width: 100%;
