@@ -24,24 +24,42 @@ export default {
         { label: 'Sessions', to: { name: 'sessions' } },
         { label: 'Recipies', to: { name: 'recipies' } },
       ],
-      sessions: [],
-      recipies: [],
+      sessions: {},
+      recipies: {},
     }
   },
   created() {
     this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
-      this.recipies = result.data
+      result.data.forEach((recipie) => {
+        this.recipies[recipie.id] = recipie
+      })
+    })
+    this.$db.from('sessions').select('id, name').then((result) => {
+      result.data.forEach((session) => {
+        this.sessions[session.id] = { ...session, ...{ rows: [], events: [], fullyLoaded: false } }
+      })
     })
   },
   computed: {
+    session: {
+      get() {
+        return this.sessions[this.$route.params.id] || { rows: [], events: [] }
+      },
+      set(value) {
+        this.sessions[this.$route.params.id] = value
+      },
+    },
     products() {
       const result = []
-      this.recipies.forEach((recipie) => {
+      this.recipiesArray.forEach((recipie) => {
         recipie.products.forEach((product) => {
           if (!result.includes(product.name)) result.push(product.name)
         })
       })
       return result.sort()
+    },
+    recipiesArray() {
+      return Object.values(this.$root.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
     },
   },
 }

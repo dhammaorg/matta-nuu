@@ -12,9 +12,9 @@
       <TabMenu :model="items"/>
     </div>
     <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
-            @click="$emit('undo')" :disabled="history.length <= 1" v-if="history" />
+            @click="undo" :disabled="history.length <= 1" v-if="history" />
     <Button icon="pi pi-save" label="Save" class="p-button-success"
-            @click="$emit('save')" :loading="saving" />
+            @click="save" :loading="saving" />
   </div>
 </template>
 
@@ -23,7 +23,6 @@ import TabMenu from 'primevue/tabmenu'
 import Inplace from 'primevue/inplace'
 
 export default {
-  props: ['session', 'saving', 'history'],
   components: { TabMenu, Inplace },
   data() {
     return {
@@ -31,7 +30,48 @@ export default {
         { label: 'Consumption', icon: 'pi pi-calendar', to: { name: 'session_consumption', params: { id: this.$route.params.id } } },
         { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id: this.$route.params.id } } },
       ],
+      saving: false,
+      history: [],
     }
+  },
+  computed: {
+    session() {
+      return this.$root.session
+    },
+  },
+  watch: {
+    session: {
+      deep: true,
+      handler() {
+        const sessionJson = JSON.stringify(this.session)
+        // Check for fake change
+        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1])) {
+          // Parse + stringify makes object deep copy
+          const newValue = JSON.parse(sessionJson)
+          this.history.push(newValue)
+        }
+      },
+    },
+  },
+  methods: {
+    async save() {
+      this.saving = true
+      const sessionToSave = { ...this.session }
+      delete sessionToSave.fullyLoaded
+      const { error } = await this.$db.from('sessions')
+        .update(sessionToSave)
+        .match({ id: this.$route.params.id })
+
+      if (error) this.toastError(error)
+      this.saving = false
+    },
+    undo() {
+      // poping twice the history, cause last history value is the same as current value
+      let lastSession = this.history.pop()
+      lastSession = this.history.pop()
+      lastSession.events.forEach((e) => { e.start_date = new Date(e.start_date) })
+      this.$root.session = lastSession
+    },
   },
 }
 </script>

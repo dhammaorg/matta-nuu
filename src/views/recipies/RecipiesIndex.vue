@@ -8,7 +8,7 @@
       </span>
     </div>
 
-    <DataTable :value="$root.recipies" dataKey="id"
+    <DataTable :value="$root.recipiesArray" dataKey="id"
       :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>

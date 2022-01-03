@@ -1,5 +1,5 @@
 <template>
-  <DataTable :value="session.rows" dataKey="id" showGridlines
+  <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
              @rowReorder="session.rows = $event.value"
              editMode="cell" class="editable-cells-table" @cell-edit-complete="onCellEditComplete">
@@ -115,7 +115,6 @@ import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
 import TieredMenu from 'primevue/tieredmenu'
-import store from './SessionStore'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import InputUnit from '@/components/InputUnit.vue'
@@ -135,7 +134,6 @@ export default {
   },
   data() {
     return {
-      session: store.session,
       rowTypes: [
         {
           id: 'product', label: 'Single Product Row', command: () => { this.addRow('product') },
@@ -154,7 +152,13 @@ export default {
     }
   },
   mounted() {
+    console.log('mounted', this.session.events.length)
     if (this.session.events.length === 0) this.$refs.eventForm.show()
+  },
+  computed: {
+    session() {
+      return this.$root.session
+    },
   },
   methods: {
     disableAddDayFor(event) {

@@ -9,7 +9,7 @@
       </span>
     </div>
 
-    <DataTable :value="$root.sessions" dataKey="id"
+    <DataTable :value="Object.values($root.sessions)" dataKey="id"
       :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>
@@ -41,9 +41,6 @@ export default {
     }
   },
   created() {
-    this.$db.from('sessions').select('id, name').then((result) => {
-      this.$root.sessions = result.data
-    })
     this.initFilters()
   },
   methods: {

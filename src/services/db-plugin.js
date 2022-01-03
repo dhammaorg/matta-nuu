@@ -8,35 +8,36 @@ export default {
       methods: {
         async dbCreate(dbName, object, onSuccess) {
           this.loading = true
-          const { data, error } = await this.$db.from(dbName).insert([object])
+          const { data, error } = await this.$db.from(dbName).insert([object]).single()
           if (error) this.toastError(error)
           else {
-            this.$root[dbName].push(data[0])
-            if (onSuccess) onSuccess(data[0])
+            this.$root[dbName][data.id] = data
+
+            if (onSuccess) onSuccess(data)
           }
           this.loading = false
-          return data[0]
+          return data
         },
         async dbUpdate(dbName, object) {
           this.loading = true
           const { data, error } = await this.$db.from(dbName)
             .update(object)
             .match({ id: object.id })
+            .single()
 
           if (error) this.toastError(error)
           else {
-            const index = this.$root[dbName].findIndex((o) => o.id === object.id)
-            this.$root[dbName][index] = data[0]
+            this.$root[dbName][object.id] = data
           }
           this.loading = false
         },
         async dbDestroy(dbName, object) {
           this.loading = true
-          const { error } = await this.$db.from(dbName).delete().match({ id: object.id })
+          const { error } = await this.$db.from(dbName).delete().match({ id: object.id }).single()
 
           if (error) this.toastError(error)
           else {
-            this.$root[dbName] = this.$root[dbName].filter((val) => val.id !== object.id)
+            delete this.$root[dbName][object.id]
           }
           this.loading = false
         },
