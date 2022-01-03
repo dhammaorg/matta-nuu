@@ -32,7 +32,7 @@ export default {
       if (this.session.name) {
         this.dbCreate('sessions', this.session, (session) => {
           this.visible = false
-          this.$router.push({ name: 'edit_session', params: { id: session.id } })
+          this.$router.push({ name: 'session_consumption', params: { id: session.id } })
           this.session = {}
         })
       }

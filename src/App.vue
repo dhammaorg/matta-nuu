@@ -30,7 +30,7 @@ export default {
   },
   created() {
     this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
-      this.$root.recipies = result.data
+      this.recipies = result.data
     })
   },
   computed: {

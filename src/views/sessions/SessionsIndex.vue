@@ -15,7 +15,7 @@
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
         <template #body="{data}">
-          <router-link :to="{ name: 'edit_session', params: { id: data.id }}">
+          <router-link :to="{ name: 'session_consumption', params: { id: data.id }}">
             <Button icon="pi pi-pencil" class="p-button-text p-button-primary" />
           </router-link>
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
