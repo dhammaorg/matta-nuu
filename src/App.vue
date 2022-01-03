@@ -26,6 +26,7 @@ export default {
       ],
       sessions: {},
       recipies: {},
+      fullyLoadedSessions: [],
     }
   },
   created() {
@@ -36,7 +37,9 @@ export default {
     })
     this.$db.from('sessions').select('id, name').then((result) => {
       result.data.forEach((session) => {
-        this.sessions[session.id] = { ...session, ...{ rows: [], events: [], fullyLoaded: false } }
+        if (!this.sessions[session.id]) {
+          this.sessions[session.id] = { ...session, ...{ rows: [], events: [] } }
+        }
       })
     })
   },
@@ -48,6 +51,9 @@ export default {
       set(value) {
         this.sessions[this.$route.params.id] = value
       },
+    },
+    isSessionFullyLoaded() {
+      return this.fullyLoadedSessions.includes(parseInt(this.$route.params.id))
     },
     products() {
       const result = []

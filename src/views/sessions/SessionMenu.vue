@@ -56,10 +56,8 @@ export default {
   methods: {
     async save() {
       this.saving = true
-      const sessionToSave = { ...this.session }
-      delete sessionToSave.fullyLoaded
       const { error } = await this.$db.from('sessions')
-        .update(sessionToSave)
+        .update(this.session)
         .match({ id: this.$route.params.id })
 
       if (error) this.toastError(error)

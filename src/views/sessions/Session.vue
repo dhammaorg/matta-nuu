@@ -1,7 +1,7 @@
 <template>
   <SessionMenu />
 
-  <div style="height: calc(100vh - 9rem)" v-if="session.fullyLoaded">
+  <div style="height: calc(100vh - 9rem)" v-if="$root.isSessionFullyLoaded">
     <router-view :all-days="allDays"></router-view>
   </div>
 
@@ -33,14 +33,14 @@ export default {
     },
   },
   async mounted() {
-    if (this.session.fullyLoaded) return // if already loaded do nothing
+    if (this.$root.isSessionFullyLoaded) return // if already loaded do nothing
 
     const { data } = await this.$db.from('sessions').select().match({ id: this.$route.params.id }).single()
     data.events ||= []
     data.events.forEach((e) => { e.start_date = new Date(e.start_date) })
     data.rows ||= []
-    data.fullyLoaded = true
     this.$root.session = data
+    this.$root.fullyLoadedSessions.push(data.id)
     this.initDaysValuesForEachRow()
   },
   methods: {
