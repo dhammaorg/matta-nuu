@@ -152,7 +152,6 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted', this.session.events.length)
     if (this.session.events.length === 0) this.$refs.eventForm.show()
   },
   computed: {

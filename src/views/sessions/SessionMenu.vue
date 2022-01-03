@@ -14,7 +14,7 @@
     <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
             @click="undo" :disabled="history.length <= 1" v-if="history" />
     <Button icon="pi pi-save" label="Save" class="p-button-success"
-            @click="save" :loading="saving" />
+            @click="save" :loading="saving" :disabled="!unsavedChanges" />
   </div>
 </template>
 
@@ -32,25 +32,17 @@ export default {
       ],
       saving: false,
       history: [],
+      unsavedChanges: false,
+    }
+  },
+  mounted() {
+    window.onbeforeunload = () => {
+      if (this.unsavedChanges) return 'You have unsaved changes, are you sure to quit?'
     }
   },
   computed: {
     session() {
       return this.$root.session
-    },
-  },
-  watch: {
-    session: {
-      deep: true,
-      handler() {
-        const sessionJson = JSON.stringify(this.session)
-        // Check for fake change
-        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1])) {
-          // Parse + stringify makes object deep copy
-          const newValue = JSON.parse(sessionJson)
-          this.history.push(newValue)
-        }
-      },
     },
   },
   methods: {
@@ -62,6 +54,7 @@ export default {
 
       if (error) this.toastError(error)
       this.saving = false
+      this.unsavedChanges = false
     },
     undo() {
       // poping twice the history, cause last history value is the same as current value
@@ -69,6 +62,21 @@ export default {
       lastSession = this.history.pop()
       lastSession.events.forEach((e) => { e.start_date = new Date(e.start_date) })
       this.$root.session = lastSession
+    },
+  },
+  watch: {
+    session: {
+      deep: true,
+      handler() {
+        const sessionJson = JSON.stringify(this.session)
+        // Check for fake change
+        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1]) && this.$root.isSessionFullyLoaded) {
+          // Parse + stringify makes object deep copy
+          const newValue = JSON.parse(sessionJson)
+          if (this.history.length !== 0) this.unsavedChanges = true
+          this.history.push(newValue)
+        }
+      },
     },
   },
 }

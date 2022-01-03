@@ -1,9 +1,11 @@
 <template>
-  <SessionMenu />
+  <SessionMenu ref="menu"/>
 
   <div style="height: calc(100vh - 9rem)" v-if="$root.isSessionFullyLoaded">
     <router-view :all-days="allDays"></router-view>
   </div>
+
+  <ConfirmDialog></ConfirmDialog>
 
 </template>
 
@@ -57,6 +59,23 @@ export default {
       deep: true,
       handler() { this.initDaysValuesForEachRow() },
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.$refs.menu.unsavedChanges) {
+      this.$confirm.require({
+        message: 'You have unsaved changes, are you sure you want to quit?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          // Cancel changes (next time it will be reloaded)
+          this.$root.fullyLoadedSessions = this.$root.fullyLoadedSessions.filter((id) => id != this.session.id)
+          next()
+        },
+        reject: () => {
+          next(false)
+        },
+      })
+    } else next()
   },
 }
 </script>
