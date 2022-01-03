@@ -1,12 +1,5 @@
 <template>
-  <div class="px-3 d-flex align-items-center">
-    <h1 class="me-3 flex-grow-1">{{ session.name }}</h1>
-    <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm me-3"
-            @click="$refs.eventForm.show()" />
-    <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
-            @click="undo()" :disabled="history.length <= 1" />
-    <Button icon="pi pi-save" :loading="saving" label="Save" class="p-button-success" @click="save()" />
-  </div>
+  <SessionMenu :session="session" :saving="saving" :history="history" @save="save" @undo="undo" />
 
   <div style="height: calc(100vh - 9rem)" v-if="events.length > 0">
     <DataTable :value="rows" dataKey="id" showGridlines
@@ -21,6 +14,8 @@
                 <Button type="button" icon="pi pi-plus" class="mb-2 p-button-sm" label="Row"
                         @click="$refs.addRowMenu.toggle($event)" />
                 <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
+                <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm"
+                        @click="$refs.eventForm.show()" />
               </div>
             </template>
           </Column>
@@ -128,10 +123,19 @@ import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import EventForm from './EventForm.vue'
+import SessionMenu from './SessionMenu.vue'
 
 export default {
   components: {
-    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, TieredMenu, EventForm,
+    ColumnGroup,
+    Row,
+    InputProduct,
+    InputRecipie,
+    InputUnit,
+    InputNumber,
+    TieredMenu,
+    EventForm,
+    SessionMenu,
   },
   data() {
     return {
