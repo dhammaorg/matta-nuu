@@ -5,6 +5,7 @@
              editMode="cell" class="editable-cells-table" @cell-edit-complete="onCellEditComplete">
     <ColumnGroup type="header">
       <Row>
+        <!-- Top Left Cell -->
         <Column class="top-left-cell" frozen :rowspan="3" :colspan="2">
           <template #header>
             <div class="d-flex flex-column">
@@ -14,6 +15,7 @@
             </div>
           </template>
         </Column>
+        <!-- Event Header -->
         <Column v-for="(event, index) in session.events" :colspan="event.days.length" :key="event.id"
                 class="event-start event-end">
           <template #header>
@@ -31,6 +33,7 @@
         </Column>
       </Row>
       <Row>
+        <!-- Day Date Header -->
         <Column v-for="day in allDays" :key="`header-date-${day.id}`" :class="[day.class, {'p-0': dayHover == day.id}]">
           <template #header>
             <div @mouseover="dayHover = day.id" @mouseleave="dayHover = null" >
@@ -43,6 +46,7 @@
         </Column>
       </Row>
       <Row>
+        <!-- Day Name Header -->
         <Column v-for="day in allDays" :key="`header-${day.id}`" :class="day.class">
           <template #header>
             <InputText v-model="day.label" class="day-input" />
@@ -121,14 +125,7 @@ import NewRowButton from './SessionNewRowButton.vue'
 export default {
   props: ['allDays'],
   components: {
-    ColumnGroup,
-    Row,
-    InputProduct,
-    InputRecipie,
-    InputUnit,
-    InputNumber,
-    NewRowButton,
-    EventForm,
+    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, NewRowButton, EventForm,
   },
   data() {
     return {
