@@ -8,9 +8,7 @@
         <Column class="top-left-cell" frozen :rowspan="3" :colspan="2">
           <template #header>
             <div class="d-flex flex-column">
-              <Button type="button" icon="pi pi-plus" class="mb-2 p-button-sm" label="Row"
-                      @click="$refs.addRowMenu.toggle($event)" />
-              <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
+              <NewRowButton @add-row="addRow"/>
               <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm"
                       @click="$refs.eventForm.show()" />
             </div>
@@ -114,11 +112,11 @@
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
-import TieredMenu from 'primevue/tieredmenu'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import EventForm from './EventForm.vue'
+import NewRowButton from './SessionNewRowButton.vue'
 
 export default {
   props: ['allDays'],
@@ -129,25 +127,11 @@ export default {
     InputRecipie,
     InputUnit,
     InputNumber,
-    TieredMenu,
+    NewRowButton,
     EventForm,
   },
   data() {
     return {
-      rowTypes: [
-        {
-          id: 'product', label: 'Single Product Row', command: () => { this.addRow('product') },
-        },
-        {
-          id: 'products', label: 'Variable Products Row', command: () => { this.addRow('products') },
-        },
-        {
-          id: 'recipie', label: 'Single Recipie Row', command: () => { this.addRow('recipie') },
-        },
-        {
-          id: 'recipies', label: 'Variable Recipies Row', command: () => { this.addRow('recipies') },
-        },
-      ],
       dayHover: null,
     }
   },
