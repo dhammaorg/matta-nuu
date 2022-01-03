@@ -37,12 +37,15 @@ export default {
   },
   mounted() {
     window.onbeforeunload = () => {
-      if (this.unsavedChanges) return 'You have unsaved changes, are you sure to quit?'
+      if (this.unsavedChangesWarning) return 'You have unsaved changes, are you sure to quit?'
     }
   },
   computed: {
     session() {
       return this.$root.session
+    },
+    unsavedChangesWarning() {
+      return this.unsavedChanges && window.location.hostname !== 'localhost'
     },
   },
   methods: {

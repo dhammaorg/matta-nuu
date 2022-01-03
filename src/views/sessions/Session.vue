@@ -61,7 +61,7 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
-    if (this.$refs.menu.unsavedChanges) {
+    if (this.$refs.menu.unsavedChangesWarning) {
       this.$confirm.require({
         message: 'You have unsaved changes, are you sure you want to quit?',
         header: 'Confirmation',
