@@ -40,7 +40,7 @@
     <Column v-for="day in allDays" :key="`cell-${day.id}`" :field="day.id"
             :class="day.class">
       <template #body="{ data, field }">
-        0
+        {{ data.stocks[field] }}
       </template>
       <template #editor="{ data, field }">
         Edit Stock
@@ -65,7 +65,15 @@ export default {
       return this.$root.session
     },
     stocks() {
-      return this.$root.products.map((p) => ({ label: p, supplier: '' }))
+      return this.$root.products.map((product) => {
+        const stocks = {}
+        let previousStock = 0
+        this.allDays.forEach((day) => {
+          stocks[day.id] = previousStock - this.consumption(product, day)
+          previousStock = stocks[day.id]
+        })
+        return { label: product, stocks }
+      })
     },
   },
   methods: {
@@ -75,6 +83,26 @@ export default {
       // data.product = newData.product
       // data.unit = newData.unit
       // data.recipie = newData.recipie
+    },
+    consumption(product, day) {
+      let result = 0
+      this.session.rows.forEach((row) => {
+        const dayValue = row.values[day.id]
+        const dayAmount = dayValue.amount || 0
+        const dayProduct = row.product || dayValue.product
+        if (dayProduct && dayProduct === product) {
+          result += dayAmount
+          return
+        }
+        const dayRecipie = row.recipie || dayValue.recipie
+        if (!dayRecipie) return
+        dayRecipie.products.forEach((recipieProduct) => {
+          if (recipieProduct.name === product) {
+            result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
+          }
+        })
+      })
+      return result
     },
   },
 }
