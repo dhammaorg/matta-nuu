@@ -2,6 +2,10 @@ a {
   text-decoration: none;
 }
 
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
 .editable-cells-table .p-editable-column {
   &:hover {
     cursor: text;
@@ -34,5 +38,8 @@ a {
 }
 .p-tieredmenu {
   width: auto;
+}
+.p-datatable-scrollable .p-frozen-column {
+  z-index: 50;
 }
 
