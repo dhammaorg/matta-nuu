@@ -1,7 +1,7 @@
 <template>
   <SessionMenu ref="menu"/>
 
-  <div style="height: calc(100vh - 7rem)" v-if="$root.isSessionFullyLoaded">
+  <div style="height: calc(100vh - 7.5rem)" v-if="$root.isSessionFullyLoaded">
     <router-view :all-days="allDays"></router-view>
   </div>
 

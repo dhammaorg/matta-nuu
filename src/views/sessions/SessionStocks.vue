@@ -5,7 +5,9 @@
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell" frozen :rowspan="3" :colspan="2"/>
+        <Column class="top-left-cell" frozen :rowspan="3"/>
+        <!-- Initial Stocks -->
+        <Column class="event-start event-end text-center" :rowspan="3" header="Initial Stocks"/>
         <!-- Event Header -->
         <Column v-for="event in session.events" :colspan="event.days.length" :key="event.id"
                 class="event-start event-end">
@@ -16,12 +18,12 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in allDays" :key="`header-date-${day.id}`" :class="day.class"
+        <Column v-for="day in days" :key="`header-date-${day.id}`" :class="day.class"
                 :header="day.dateHeader" />
       </Row>
       <Row>
         <!-- Day Name Header -->
-        <Column v-for="day in allDays" :header="day.label" :key="`header-${day.id}`"
+        <Column v-for="day in days" :header="day.label" :key="`header-${day.id}`"
                 :class="day.class" class="fw-normal" />
       </Row>
     </ColumnGroup>
@@ -38,7 +40,7 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in allDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock">
+    <Column v-for="day in days" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock">
       <template #body="{ data, field }">
         <span class="stock-value">
           <span class="consumption" v-if="data.values[field].consumption > 0">-{{ round(data.values[field].consumption) }}</span>
@@ -81,11 +83,21 @@ export default {
     session() {
       return this.$root.session
     },
+    days() {
+      if (this.allDays.length === 0) return []
+      const firstDay = this.allDays[0]
+      const days = [...this.allDays]
+      const date = firstDay.date.removeDays(1)
+      days.unshift({
+        id: date.toDateString(), class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,
+      })
+      return days
+    },
     stocks() {
       return this.$root.products.map((product) => {
         const values = {}
         let previousStock = 0
-        this.allDays.forEach((day) => {
+        this.days.forEach((day) => {
           const bought = (this.session.buys[product] || {})[day.id] || 0
           const consumption = this.consumption(product, day)
           const real = (this.session.realStocks[product] || {})[day.id]
@@ -103,6 +115,7 @@ export default {
   methods: {
     consumption(product, day) {
       let result = 0
+      if (day.initial) return 0
       this.session.rows.forEach((row) => {
         const dayValue = row.values[day.id]
         const dayAmount = dayValue.amount || 0
