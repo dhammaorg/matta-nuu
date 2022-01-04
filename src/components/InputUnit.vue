@@ -9,7 +9,7 @@ import { UNITS } from '@/services/units'
 export default {
   components: { Dropdown },
   computed: {
-    units() { return UNITS },
+    units() { return Object.keys(UNITS) },
   },
 }
 </script>

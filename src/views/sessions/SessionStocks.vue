@@ -29,7 +29,8 @@
     <!-- First Column : Product -->
     <Column frozen class="first-column">
       <template #body="{ data }">
-        {{ data.label }}
+        {{ data.id }}
+        <span v-show="productsUnits[data.id]" class="ms-1 fw-normal">({{ productsUnits[data.id] }})</span>
       </template>
       <template #editor="{ data }">
         Edit
@@ -54,9 +55,15 @@
 <script>
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
+import { unitFactor, unitParent } from '@/services/units'
 
 export default {
   props: ['allDays'],
+  data() {
+    return {
+      productsUnits: {},
+    }
+  },
   components: {
     ColumnGroup, Row,
   },
@@ -72,7 +79,7 @@ export default {
           stocks[day.id] = previousStock - this.consumption(product, day)
           previousStock = stocks[day.id]
         })
-        return { label: product, stocks }
+        return { id: product, stocks }
       })
     },
   },
@@ -90,15 +97,18 @@ export default {
         const dayValue = row.values[day.id]
         const dayAmount = dayValue.amount || 0
         const dayProduct = row.product || dayValue.product
+        const dayUnit = row.unit || dayValue.unit
         if (dayProduct && dayProduct === product) {
-          result += dayAmount
+          this.productsUnits[product] = unitParent(dayUnit)
+          result += dayAmount * unitFactor(dayUnit)
           return
         }
         const dayRecipie = row.recipie || dayValue.recipie
         if (!dayRecipie) return
         dayRecipie.products.forEach((recipieProduct) => {
           if (recipieProduct.name === product) {
-            result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
+            this.productsUnits[product] = unitParent(recipieProduct.unit)
+            result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount * unitFactor(recipieProduct.unit)
           }
         })
       })
