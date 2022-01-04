@@ -2,7 +2,7 @@
   <SessionMenu ref="menu"/>
 
   <div style="height: calc(100vh - 7.5rem)" v-if="$root.isSessionFullyLoaded">
-    <router-view :all-days="allDays"></router-view>
+    <router-view :session-days="sessionDays"></router-view>
   </div>
 
   <ConfirmDialog></ConfirmDialog>
@@ -18,7 +18,7 @@ export default {
     session() {
       return this.$root.session
     },
-    allDays() {
+    sessionDays() {
       const days = []
       this.session.events.forEach((event) => {
         event.days.forEach((day, index) => {
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     initDaysValuesForEachRow() {
-      this.allDays.forEach((day) => {
+      this.sessionDays.forEach((day) => {
         this.session.rows.forEach((row) => {
           if (!row.values[day.id]) row.values[day.id] = {}
         })
@@ -56,7 +56,7 @@ export default {
     },
   },
   watch: {
-    allDays: {
+    sessionDays: {
       deep: true,
       handler() { this.initDaysValuesForEachRow() },
     },

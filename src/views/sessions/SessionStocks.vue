@@ -18,12 +18,12 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in days" :key="`header-date-${day.id}`" :class="day.class"
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="day.class"
                 :header="day.dateHeader" />
       </Row>
       <Row>
         <!-- Day Name Header -->
-        <Column v-for="day in days" :header="day.label" :key="`header-${day.id}`"
+        <Column v-for="day in sessionDays" :header="day.label" :key="`header-${day.id}`"
                 :class="day.class" class="fw-normal" />
       </Row>
     </ColumnGroup>
@@ -70,7 +70,7 @@ import InputNumber from 'primevue/inputnumber'
 import { unitFactor, unitParent } from '@/services/units'
 
 export default {
-  props: ['allDays'],
+  props: ['sessionDays'],
   components: {
     ColumnGroup, Row, InputNumber,
   },
@@ -84,9 +84,10 @@ export default {
       return this.$root.session
     },
     days() {
-      if (this.allDays.length === 0) return []
-      const firstDay = this.allDays[0]
-      const days = [...this.allDays]
+      if (this.sessionDays.length === 0) return []
+      // Adds a fake day for initial stocks
+      const firstDay = this.sessionDays[0]
+      const days = [...this.sessionDays]
       const date = firstDay.date.removeDays(1)
       days.unshift({
         id: date.toDateString(), class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,

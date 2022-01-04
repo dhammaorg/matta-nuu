@@ -34,7 +34,7 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in allDays" :key="`header-date-${day.id}`" :class="[day.class, {'p-0': dayHover == day.id}]">
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, {'p-0': dayHover == day.id}]">
           <template #header>
             <div @mouseover="dayHover = day.id" @mouseleave="dayHover = null" >
                 <Button icon="pi pi-trash" class="p-button-small p-button-danger p-button-text"
@@ -47,7 +47,7 @@
       </Row>
       <Row>
         <!-- Day Name Header -->
-        <Column v-for="day in allDays" :key="`header-${day.id}`" :class="day.class">
+        <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class">
           <template #header>
             <InputText v-model="day.label" class="day-input" />
           </template>
@@ -80,7 +80,7 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in allDays" :key="`cell-${day.id}`" :field="day.id"
+    <Column v-for="day in sessionDays" :key="`cell-${day.id}`" :field="day.id"
             :class="day.class">
       <template #body="{ data, field }">
         <template v-if="data.values[field]" >
@@ -108,8 +108,8 @@
   </DataTable>
 
   <EventForm ref="eventForm" @save="createOrUpdateEvent($event)"
-             :disabled-dates="allDays.map(d => d.date)"
-             :default-date="allDays.length > 1 ? allDays.at(-1).date.addDays(1) : null"/>
+             :disabled-dates="sessionDays.map(d => d.date)"
+             :default-date="sessionDays.length > 1 ? sessionDays.at(-1).date.addDays(1) : null"/>
 </template>
 
 <script>
@@ -123,7 +123,7 @@ import EventForm from './EventForm.vue'
 import NewRowButton from './SessionNewRowButton.vue'
 
 export default {
-  props: ['allDays'],
+  props: ['sessionDays'],
   components: {
     ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, NewRowButton, EventForm,
   },
@@ -143,7 +143,7 @@ export default {
   methods: {
     disableAddDayFor(event) {
       const newDate = event.start_date.addDays(event.days.length)
-      return this.allDays.find((day) => day.date.toDateString() === newDate.toDateString())
+      return this.sessionDays.find((day) => day.date.toDateString() === newDate.toDateString())
     },
     onCellEditComplete(event) {
       // When creating a recipie from the InputRecipie any click on a dropdown inside the dialog was
@@ -162,7 +162,7 @@ export default {
       const row = {
         id: this.newId(this.session.rows), type, label: '', values: {},
       }
-      this.allDays.forEach((day) => { row.values[day.id] = {} })
+      this.sessionDays.forEach((day) => { row.values[day.id] = {} })
       this.session.rows.push(row)
       this.$nextTick(() => {
         setTimeout(() => {
