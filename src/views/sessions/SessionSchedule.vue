@@ -40,7 +40,7 @@
                 <Button icon="pi pi-trash" class="p-button-small p-button-danger p-button-text"
                         v-if="dayHover == day.id && day.class.includes('event-end') && day.event.days.length > 1"
                         @click="day.event.days.pop()" />
-                <span v-else>{{ day.date.toLocaleDateString([], { weekday: 'short', month: "numeric", day: 'numeric' }) }}</span>
+                <span v-else>{{ day.dateHeader }}</span>
             </div>
           </template>
         </Column>
@@ -194,81 +194,10 @@ export default {
 }
 </script>
 
-<style lang="scss">
-  .event-end:not(:last-child) {
-    border-right-color: var(--text-color-secondary) !important;
-  }
-  .first-column {
-    width: 200px;
-    min-width: 200px !important;
-    max-width: 200px !important;
-    justify-content: flex-start !important;
-  }
-  td.first-column {
-    background-color: var(--text-color-secondary) !important;
-    color: white;
-    font-weight: bold;
-  }
-  td.reorder-column {
-    width: 50px;
-    min-width: 50px !important;
-    max-width: 50px !important;
-    padding: 0 !important;
-    .p-datatable-reorderablerow-handle {
-      padding: 1rem;
-      cursor: move;
-    }
-  }
-  th.top-left-cell {
-    background-color: var(--surface-0) !important;
+<style lang="scss" scoped>
+  ::v-deep th.top-left-cell {
     width: 249px;
     min-width: 249px !important;
     max-width: 249px !important;
-  }
-  td.p-editable-column {
-    flex-wrap: wrap;
-    &:not(.first-column) {
-      flex-basis: 100px !important;
-      flex-grow: 1 !important;
-    }
-    input, select, .p-dropdown {
-      border-radius: 0 !important;
-    }
-  }
-  td, th {
-    min-width: 130px !important;
-    justify-content: center;
-    position: relative;
-
-    label {
-      width: 100%;
-      text-align: center;
-      font-weight: bold;
-      font-size: .8rem;
-      margin-bottom: 5px;
-    }
-    .amount {
-      font-size: 1.2rem;
-    }
-
-    .btn-on-hover { display: none; }
-    &:hover .btn-on-hover {
-      display: block;
-      position: absolute;
-      right: 0;
-    }
-  }
-  .p-datatable .p-column-header-content {
-    justify-content: center;
-  }
-  .day-input {
-    width: auto;
-    min-width: 0;
-    background-color: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    outline: none !important;
-    box-shadow: none !important;
-    text-align: center;
   }
 </style>

@@ -88,6 +88,7 @@ export default {
 <style lang='scss' scoped>
   ::v-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
     border: none;
+    box-shadow: none !important;
   }
   ::v-deep .p-inplace-display {
     display: flex;

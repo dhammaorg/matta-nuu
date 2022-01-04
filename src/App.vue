@@ -38,7 +38,7 @@ export default {
     this.$db.from('sessions').select('id, name').then((result) => {
       result.data.forEach((session) => {
         if (!this.sessions[session.id]) {
-          this.sessions[session.id] = { ...session, ...{ rows: [], events: [] } }
+          this.sessions[session.id] = { ...session, ...{ rows: [], events: [], stocks: {} } }
         }
       })
     })
@@ -46,23 +46,34 @@ export default {
   computed: {
     session: {
       get() {
-        return this.sessions[this.$route.params.id] || { rows: [], events: [] }
+        return this.sessions[this.$route.params.id] || { rows: [], events: [], stocks: {} }
       },
       set(value) {
         this.sessions[this.$route.params.id] = value
       },
     },
     isSessionFullyLoaded() {
-      return this.fullyLoadedSessions.includes(parseInt(this.$route.params.id))
+      return this.fullyLoadedSessions.includes(parseInt(this.$route.params.id, 10))
     },
     products() {
-      const result = []
+      const result = new Set()
       this.recipiesArray.forEach((recipie) => {
         recipie.products.forEach((product) => {
-          if (!result.includes(product.name)) result.push(product.name)
+          result.add(product.name)
         })
       })
-      return result.sort()
+      Object.values(this.sessions).forEach((session) => {
+        session.rows.forEach((row) => {
+          if (row.type === 'product') {
+            result.add(row.product)
+          } else if (row.type === 'products') {
+            Object.values(row.values).forEach((value) => {
+              result.add(value.product)
+            })
+          }
+        })
+      })
+      return Array.from(result).filter((r) => !!r).sort()
     },
     recipiesArray() {
       return Object.values(this.$root.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
