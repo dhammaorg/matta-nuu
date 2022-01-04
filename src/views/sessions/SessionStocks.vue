@@ -39,9 +39,17 @@
 
     <!-- Cells -->
     <Column v-for="day in allDays" :key="`cell-${day.id}`" :field="day.id"
-            :class="day.class">
+            :class="day.class" class="cell-stock">
       <template #body="{ data, field }">
-        {{ data.stocks[field] }}
+        <span>
+          <span class="consumption" v-if="data.values[field].consumption > 0">-{{ round(data.values[field].consumption) }}</span>
+        </span>
+        <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real }">
+          {{ round(data.values[field].real || data.values[field].theoric) }}
+        </span>
+        <span>
+          <span class="bought" v-if="data.values[field].bought > 0">+{{ data.values[field].bought }}</span>
+        </span>
       </template>
       <template #editor="{ data, field }">
         Edit Stock
@@ -59,13 +67,23 @@ import { unitFactor, unitParent } from '@/services/units'
 
 export default {
   props: ['allDays'],
+  components: {
+    ColumnGroup, Row,
+  },
   data() {
     return {
       productsUnits: {},
+      realStock: {
+        Pain: {
+          'Sat Mar 12 2022': 20,
+        },
+      },
+      buys: {
+        Pain: {
+          'Mon Mar 14 2022': 5,
+        },
+      },
     }
-  },
-  components: {
-    ColumnGroup, Row,
   },
   computed: {
     session() {
@@ -73,13 +91,20 @@ export default {
     },
     stocks() {
       return this.$root.products.map((product) => {
-        const stocks = {}
+        const values = {}
         let previousStock = 0
         this.allDays.forEach((day) => {
-          stocks[day.id] = previousStock - this.consumption(product, day)
-          previousStock = stocks[day.id]
+          const bought = (this.buys[product] || {})[day.id] || 0
+          const consumption = this.consumption(product, day)
+          values[day.id] = {
+            real: (this.realStock[product] || {})[day.id],
+            bought,
+            consumption,
+            theoric: previousStock - consumption + bought,
+          }
+          previousStock = values[day.id].real || values[day.id].theoric
         })
-        return { id: product, stocks }
+        return { id: product, values }
       })
     },
   },
@@ -114,14 +139,35 @@ export default {
       })
       return result
     },
+    round(n, decimals = 2) {
+      return Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`)
+    },
   },
 }
 </script>
 
-<style lang="scss" scoped>
-  ::v-deep th.top-left-cell {
+<style lang="scss">
+  th.top-left-cell {
     width: 200px;
     min-width: 200px !important;
     max-width: 200px !important;
+  }
+  .cell-stock {
+    padding: 0 !important;
+    span {
+      display: flex;
+      width: 33%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      &.bought {
+        color: #22C55E;
+        font-size: .8rem;
+      }
+      &.consumption {
+        opacity: .6;
+        font-size: .7rem;
+      }
+    }
   }
 </style>
