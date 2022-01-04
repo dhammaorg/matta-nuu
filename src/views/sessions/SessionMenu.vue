@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       items: [
-        { label: 'Consumption', icon: 'pi pi-calendar', to: { name: 'session_consumption', params: { id: this.$route.params.id } } },
+        { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id: this.$route.params.id } } },
         { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id: this.$route.params.id } } },
       ],
       saving: false,
