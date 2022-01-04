@@ -16,6 +16,9 @@
 import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
 
+const emptySession = {
+  rows: [], events: [], stocks: {}, realStocks: {}, buys: {},
+}
 export default {
   components: { Menubar, Toast },
   data() {
@@ -38,7 +41,7 @@ export default {
     this.$db.from('sessions').select('id, name').then((result) => {
       result.data.forEach((session) => {
         if (!this.sessions[session.id]) {
-          this.sessions[session.id] = { ...session, ...{ rows: [], events: [], stocks: {} } }
+          this.sessions[session.id] = { ...session, ...emptySession }
         }
       })
     })
@@ -46,7 +49,7 @@ export default {
   computed: {
     session: {
       get() {
-        return this.sessions[this.$route.params.id] || { rows: [], events: [], stocks: {} }
+        return this.sessions[this.$route.params.id] || emptySession
       },
       set(value) {
         this.sessions[this.$route.params.id] = value
@@ -77,6 +80,17 @@ export default {
     },
     recipiesArray() {
       return Object.values(this.$root.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
+    },
+  },
+  watch: {
+    products: {
+      deep: true,
+      handler() {
+        this.products.forEach((p) => {
+          this.session.realStocks[p] ||= {}
+          this.session.buys[p] ||= {}
+        })
+      },
     },
   },
 }

@@ -1,7 +1,7 @@
 <template>
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
-             editMode="cell" class="editable-cells-table" @cell-edit-complete="onCellEditComplete">
+             editMode="cell" class="editable-cells-table">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
@@ -29,8 +29,8 @@
     <!-- First Column : Product -->
     <Column frozen class="first-column">
       <template #body="{ data }">
-        {{ data.id }}
-        <span v-show="productsUnits[data.id]" class="ms-1 fw-normal">({{ productsUnits[data.id] }})</span>
+        {{ data.product }}
+        <span v-show="productsUnits[data.product]" class="ms-1 fw-normal">({{ productsUnits[data.product] }})</span>
       </template>
       <template #editor="{ data }">
         Edit
@@ -38,21 +38,22 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in allDays" :key="`cell-${day.id}`" :field="day.id"
-            :class="day.class" class="cell-stock">
+    <Column v-for="day in allDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock">
       <template #body="{ data, field }">
-        <span>
+        <span class="stock-value">
           <span class="consumption" v-if="data.values[field].consumption > 0">-{{ round(data.values[field].consumption) }}</span>
         </span>
-        <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real }">
-          {{ round(data.values[field].real || data.values[field].theoric) }}
+        <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
+          {{ round(data.values[field].value) }}
         </span>
-        <span>
+        <span class="stock-value">
           <span class="bought" v-if="data.values[field].bought > 0">+{{ data.values[field].bought }}</span>
         </span>
       </template>
       <template #editor="{ data, field }">
-        Edit Stock
+        <InputNumber v-model="session.realStocks[data.product][field]" inputClass="text-center"
+                     placeholder="Real Stock" autofocus />
+        <InputNumber v-model="session.buys[data.product][field]" inputClass="text-center" placeholder="Bought" />
       </template>
     </Column>
 
@@ -63,26 +64,17 @@
 <script>
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
+import InputNumber from 'primevue/inputnumber'
 import { unitFactor, unitParent } from '@/services/units'
 
 export default {
   props: ['allDays'],
   components: {
-    ColumnGroup, Row,
+    ColumnGroup, Row, InputNumber,
   },
   data() {
     return {
       productsUnits: {},
-      realStock: {
-        Pain: {
-          'Sat Mar 12 2022': 20,
-        },
-      },
-      buys: {
-        Pain: {
-          'Mon Mar 14 2022': 5,
-        },
-      },
     }
   },
   computed: {
@@ -94,28 +86,21 @@ export default {
         const values = {}
         let previousStock = 0
         this.allDays.forEach((day) => {
-          const bought = (this.buys[product] || {})[day.id] || 0
+          const bought = (this.session.buys[product] || {})[day.id] || 0
           const consumption = this.consumption(product, day)
+          const real = (this.session.realStocks[product] || {})[day.id]
+          const theoric = previousStock - consumption + bought
+          const value = real != null ? real : theoric
           values[day.id] = {
-            real: (this.realStock[product] || {})[day.id],
-            bought,
-            consumption,
-            theoric: previousStock - consumption + bought,
+            real, bought, consumption, theoric, value,
           }
-          previousStock = values[day.id].real || values[day.id].theoric
+          previousStock = value
         })
-        return { id: product, values }
+        return { product, values }
       })
     },
   },
   methods: {
-    onCellEditComplete(event) {
-      // const { data, newData } = event
-      // data.label = newData.label
-      // data.product = newData.product
-      // data.unit = newData.unit
-      // data.recipie = newData.recipie
-    },
     consumption(product, day) {
       let result = 0
       this.session.rows.forEach((row) => {
@@ -154,17 +139,17 @@ export default {
   }
   .cell-stock {
     padding: 0 !important;
-    span {
+    .stock-value {
       display: flex;
       width: 33%;
       height: 100%;
       align-items: center;
       justify-content: center;
-      &.bought {
+      .bought {
         color: #22C55E;
         font-size: .8rem;
       }
-      &.consumption {
+      .consumption {
         opacity: .6;
         font-size: .7rem;
       }
