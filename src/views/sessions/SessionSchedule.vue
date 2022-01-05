@@ -49,7 +49,7 @@
         <!-- Day Name Header -->
         <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class">
           <template #header>
-            <InputText v-model="day.label" class="day-input" />
+            <InputText :value="day.label" @change="day.event.days[day.index] = $event.target.value" class="day-input" />
           </template>
         </Column>
       </Row>

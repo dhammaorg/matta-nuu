@@ -28,7 +28,7 @@ export default {
           const date = event.start_date.addDays(index)
           const dateHeader = date.toLocaleDateString([], { weekday: 'short', month: 'numeric', day: 'numeric' })
           days.push({
-            id: date.toDateString(), label: day, event, date, class: classes.join(' '), dateHeader,
+            id: date.toDateString(), label: day, event, index, date, class: classes.join(' '), dateHeader,
           })
         })
       })
