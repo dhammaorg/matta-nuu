@@ -1,7 +1,7 @@
 <template>
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
-             editMode="cell" class="editable-cells-table">
+             editMode="cell" class="editable-cells-table stocks-table">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
@@ -10,7 +10,7 @@
         <Column class="event-start event-end text-center" :rowspan="3" header="Initial Stocks"/>
         <!-- Event Header -->
         <Column v-for="event in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end">
+                class="event-start event-end event-cell">
           <template #header>
             {{ event.name }}
           </template>
@@ -34,27 +34,26 @@
         {{ data.product }}
         <span v-show="productsUnits[data.product]" class="ms-1 fw-normal">({{ productsUnits[data.product] }})</span>
       </template>
-      <template #editor="{ data }">
-        Edit
-      </template>
     </Column>
 
     <!-- Cells -->
     <Column v-for="day in days" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock">
       <template #body="{ data, field }">
-        <span class="stock-value">
-          <span class="consumption" v-if="data.values[field].consumption > 0">-{{ round(data.values[field].consumption) }}</span>
-        </span>
-        <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
-          {{ round(data.values[field].value) }}
-        </span>
-        <span class="stock-value">
-          <span class="bought" v-if="data.values[field].bought > 0">+{{ data.values[field].bought }}</span>
-        </span>
+        <div class="cell-content" :class="{'negative-value': round(data.values[field].value) < 0 }">
+          <span class="stock-value">
+            <span class="consumption" v-if="data.values[field].consumption > 0">-{{ round(data.values[field].consumption) }}</span>
+          </span>
+          <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
+            {{ round(data.values[field].value) }}
+          </span>
+          <span class="stock-value">
+            <span class="bought" v-if="data.values[field].bought > 0">+{{ data.values[field].bought }}</span>
+          </span>
+        </div>
       </template>
       <template #editor="{ data, field }">
         <InputNumber v-model="session.realStocks[data.product][field]" inputClass="text-center"
-                     placeholder="Real Stock" autofocus />
+                     placeholder="Stock" autofocus />
         <InputNumber v-model="session.buys[data.product][field]" inputClass="text-center" placeholder="Bought" />
       </template>
     </Column>
@@ -146,6 +145,7 @@ export default {
 </script>
 
 <style lang="scss">
+
   th.top-left-cell {
     width: 200px;
     min-width: 200px !important;
@@ -153,20 +153,46 @@ export default {
   }
   .cell-stock {
     padding: 0 !important;
-    .stock-value {
-      display: flex;
-      width: 33%;
+    .cell-content {
+      width: 100%;
       height: 100%;
-      align-items: center;
-      justify-content: center;
-      .bought {
-        color: #22C55E;
-        font-size: .8rem;
-      }
-      .consumption {
-        opacity: .6;
-        font-size: .7rem;
+      display: flex;
+      &.negative-value { background-color: #f4433614; }
+
+      .stock-value {
+        display: flex;
+        width: 33%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        .bought {
+          color: #22C55E;
+          font-size: .8rem;
+        }
+        .consumption {
+          opacity: .6;
+          font-size: .7rem;
+        }
       }
     }
   }
+
+  .stocks-table.p-datatable .p-datatable-thead > tr > th:not(.event-cell) {
+    padding: .5rem;
+    text-align: center;
+  }
+  .stocks-table.p-datatable .p-datatable-tbody > tr > td {
+    padding: .5rem;
+  }
+  .stocks-table td.cell-stock, .stocks-table th:not(.event-cell) {
+    font-size: .9rem;
+  }
+  .stocks-table td:not(.first-column), .stocks-table th {
+    min-width: 60px !important;
+  }
+  .stocks-table.editable-cells-table .p-editable-column.p-cell-editing input {
+    padding: .5rem;
+    font-size: .9rem;
+  }
+
 </style>
