@@ -109,14 +109,20 @@ export default {
   th.top-left-cell {
     background-color: var(--surface-0) !important;
   }
-  td.p-editable-column {
+  td {
     flex-wrap: wrap;
     &:not(.first-column) {
       flex-basis: 100px !important;
       flex-grow: 1 !important;
     }
-    input, select, .p-dropdown {
+    input, select, .p-dropdown, .p-autocomplete-dropdown {
       border-radius: 0 !important;
+    }
+    .p-autocomplete:not(.p-inputwrapper-focus) .p-autocomplete-input {
+      border: none !important;
+    }
+    input {
+      text-align: center;
     }
   }
   td, th {

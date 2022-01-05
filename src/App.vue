@@ -17,7 +17,7 @@ import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
 
 const emptySession = {
-  rows: [], events: [], stocks: {}, realStocks: {}, buys: {},
+  rows: [], events: [], stocks: {}, realStocks: {}, buys: {}, products: {},
 }
 export default {
   components: { Menubar, Toast },
@@ -89,6 +89,7 @@ export default {
         this.products.forEach((p) => {
           this.session.realStocks[p] ||= {}
           this.session.buys[p] ||= {}
+          this.session.products[p] ||= {}
         })
       },
     },

@@ -52,9 +52,8 @@
         </div>
       </template>
       <template #editor="{ data, field }">
-        <InputNumber v-model="session.realStocks[data.product][field]" inputClass="text-center"
-                     placeholder="Stock" autofocus />
-        <InputNumber v-model="session.buys[data.product][field]" inputClass="text-center" placeholder="Bought" />
+        <InputNumber v-model="session.realStocks[data.product][field]" placeholder="Stock" />
+        <InputNumber v-model="session.buys[data.product][field]" placeholder="Bought" />
       </template>
     </Column>
 

@@ -3,6 +3,7 @@ import SessionsIndex from '@/views/sessions/SessionsIndex.vue'
 import Session from '@/views/sessions/Session.vue'
 import SessionSchedule from '@/views/sessions/SessionSchedule.vue'
 import SessionStocks from '@/views/sessions/SessionStocks.vue'
+import SessionSuppliers from '@/views/sessions/SessionSuppliers.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
 
 const routes = [
@@ -25,6 +26,11 @@ const routes = [
         path: 'stocks',
         name: 'session_stocks',
         component: SessionStocks,
+      },
+      {
+        path: 'suppliers',
+        name: 'session_suppliers',
+        component: SessionSuppliers,
       },
     ],
   },

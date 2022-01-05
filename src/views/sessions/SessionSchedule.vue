@@ -100,8 +100,7 @@
           <InputUnit v-model="data.values[field].unit" />
         </template>
         <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie" />
-        <InputNumber v-model="data.values[field].amount" inputClass="text-center"
-                      placeholder="Amount" autofocus />
+        <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus />
       </template>
     </Column>
 

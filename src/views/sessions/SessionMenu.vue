@@ -29,6 +29,7 @@ export default {
       items: [
         { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id: this.$route.params.id } } },
         { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id: this.$route.params.id } } },
+        { label: 'Suppliers', icon: 'pi pi-shopping-cart', to: { name: 'session_suppliers', params: { id: this.$route.params.id } } },
       ],
       saving: false,
       history: [],
