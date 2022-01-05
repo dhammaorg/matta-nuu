@@ -5,7 +5,12 @@
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell" frozen :rowspan="3"/>
+        <Column class="top-left-cell" frozen :rowspan="3">
+          <template #header>
+            <Button type="button" icon="pi pi-plus" label="Order" class="p-button-sm"
+                      @click="$refs.orderForm.show()" />
+          </template>
+        </Column>
         <!-- Initial Stocks -->
         <Column class="event-start event-end text-center" :rowspan="3" header="Initial Stocks"/>
         <!-- Event Header -->
@@ -59,18 +64,21 @@
 
   </DataTable>
 
+  <OrderForm ref="orderForm" :days="days" />
+
 </template>
 
 <script>
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
+import OrderForm from './OrderForm.vue'
 import { unitFactor, unitParent } from '@/services/units'
 
 export default {
   props: ['sessionDays'],
   components: {
-    ColumnGroup, Row, InputNumber,
+    ColumnGroup, Row, InputNumber, OrderForm,
   },
   data() {
     return {

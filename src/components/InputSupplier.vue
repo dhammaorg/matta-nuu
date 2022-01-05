@@ -14,16 +14,9 @@ export default {
       suggestions: [],
     }
   },
-  computed: {
-    allSuppliers() {
-      console.log('compute suppliers')
-      const result = Object.values(this.$root.session.products).map((p) => p.supplier).filter((p) => !!p)
-      return [...new Set(result)] // uniqueness
-    },
-  },
   methods: {
     search(event) {
-      this.suggestions = this.allSuppliers.filter((p) => p.toLowerCase().includes(event.query.toLowerCase()))
+      this.suggestions = this.$root.suppliers.filter((p) => p.toLowerCase().includes(event.query.toLowerCase()))
     },
   },
 }

@@ -78,6 +78,10 @@ export default {
       })
       return Array.from(result).filter((r) => !!r).sort()
     },
+    suppliers() {
+      const result = Object.values(this.session.products).map((p) => p.supplier).filter((p) => !!p)
+      return [...new Set(result)] // uniqueness
+    },
     recipiesArray() {
       return Object.values(this.$root.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
     },
