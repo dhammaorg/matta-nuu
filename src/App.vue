@@ -5,8 +5,7 @@
   <Menubar :model="navItems">
     <template #start>
       <div class="d-flex align-items-center">
-        <span class="pi pi-box ms-3 fs-3"></span>
-        <h1 class="d-inline ms-2 me-5 fs-5 fw-bold">Matta Nuu</h1>
+        <img src="./assets/logo.png" class="ms-2 me-4" height="50" style="margin-top: -5px"/>
       </div>
     </template>
   </Menubar>
