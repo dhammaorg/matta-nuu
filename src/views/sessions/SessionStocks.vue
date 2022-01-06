@@ -15,7 +15,7 @@
         <Column class="event-start event-end text-center" :rowspan="3" header="Initial Stocks"/>
         <!-- Event Header -->
         <Column v-for="event in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end event-cell">
+                class="event-start event-end header-group">
           <template #header>
             {{ event.name }}
           </template>
@@ -23,18 +23,18 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="day.class"
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="day.class" class="day-date"
                 :header="day.dateHeader" />
       </Row>
       <Row>
         <!-- Day Name Header -->
         <Column v-for="day in sessionDays" :header="day.label" :key="`header-${day.id}`"
-                :class="day.class" class="fw-normal" />
+                :class="day.class" class="fw-normal day-label" />
       </Row>
     </ColumnGroup>
 
     <!-- First Column : Product -->
-    <Column frozen class="first-column">
+    <Column frozen class="product-column">
       <template #body="{ data }">
         {{ data.product }}
         <span v-show="productsUnits[data.product]" class="ms-1 fw-normal">({{ productsUnits[data.product] }})</span>
@@ -42,7 +42,7 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in days" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock">
+    <Column v-for="day in days" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock editor-sm">
       <template #body="{ data, field }">
         <div class="cell-content" :class="{'negative-value': round(data.values[field].value) < 0 }">
           <span class="stock-value">
@@ -152,7 +152,9 @@ export default {
 </script>
 
 <style lang="scss">
-
+  .stocks-table td:not(.product-column), .stocks-table th {
+    min-width: 70px !important;
+  }
   th.top-left-cell {
     width: 200px;
     min-width: 200px !important;
@@ -164,7 +166,7 @@ export default {
       width: 100%;
       height: 100%;
       display: flex;
-      &.negative-value { background-color: #f4433614; }
+      &.negative-value { background-color: var(--pink-50); }
 
       .stock-value {
         display: flex;
@@ -183,23 +185,4 @@ export default {
       }
     }
   }
-
-  .stocks-table.p-datatable .p-datatable-thead > tr > th:not(.event-cell) {
-    padding: .5rem;
-    text-align: center;
-  }
-  .stocks-table.p-datatable .p-datatable-tbody > tr > td {
-    padding: .5rem;
-  }
-  .stocks-table td.cell-stock, .stocks-table th:not(.event-cell) {
-    font-size: .9rem;
-  }
-  .stocks-table td:not(.first-column), .stocks-table th {
-    min-width: 60px !important;
-  }
-  .stocks-table.editable-cells-table .p-editable-column.p-cell-editing input {
-    padding: .5rem;
-    font-size: .9rem;
-  }
-
 </style>

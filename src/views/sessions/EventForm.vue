@@ -44,7 +44,7 @@ export default {
     },
     save() {
       if (this.event.name && this.event.start_date) {
-        if (!this.event.days) this.event.days = ['New Day']
+        if (!this.event.days) this.event.days = ['0']
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}

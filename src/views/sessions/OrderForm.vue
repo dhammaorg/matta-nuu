@@ -7,7 +7,7 @@
     </div>
     <!-- Date -->
     <div class="p-field">
-      <label>Calculate quantities needed for</label>
+      <label>Calculate quantities needed unil</label>
       <Dropdown v-model="order.targetDate" :options="daysOptions" class="w-100" optionLabel="fullLabel"/>
     </div>
 
@@ -38,7 +38,7 @@ export default {
   computed: {
     daysOptions() {
       return this.days.map((day) => {
-        day.fullLabel = day.event ? `${day.event.name} - ` : ''
+        day.fullLabel = this.$root.session.events.length > 1 && day.event ? `${day.event.name} - ` : ''
         day.fullLabel += `${day.label} - ${day.id}`
         return day
       })
@@ -50,7 +50,7 @@ export default {
         targetDate: this.days.at(-1),
         delivery: this.days.at(0),
       }
-      if (this.$root.suppliers.length === 1) { this.order.supplier = this.$root.supplier[0] }
+      if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.supplier
       this.visible = true
     },
     createOrder() {

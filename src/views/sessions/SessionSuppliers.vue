@@ -14,7 +14,7 @@
       </Row>
     </ColumnGroup>
 
-    <Column field="product" class="product-column" />
+    <Column field="product" class="product-column w-auto" />
     <Column field="supplier" class="p-0">
       <template #body="{ data, field }">
         <InputSupplier v-model="session.products[data.product][field]" />
@@ -59,17 +59,6 @@ export default {
 </script>
 
 <style lang="scss">
-  th.blank {
-    background-color: var(--surface-0) !important;
-  }
-  th.header-group {
-    background-color: #6d757d12 !important
-  }
-  .product-column {
-    background-color: var(--text-color-secondary) !important;
-    color: var(--surface-0) !important;
-    font-weight: bold;
-  }
   .suppliers-table.p-datatable .p-datatable-tbody > tr > td, th.header-group,
   .suppliers-table.editable-cells-table .p-editable-column.p-cell-editing input {
     padding: .7rem;

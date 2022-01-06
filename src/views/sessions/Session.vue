@@ -85,16 +85,16 @@ export default {
   .event-end:not(:last-child) {
     border-right-color: var(--text-color-secondary) !important;
   }
-  .first-column {
+  .product-column:not(.w-auto) {
     width: 200px;
     min-width: 200px !important;
     max-width: 200px !important;
     justify-content: flex-start !important;
   }
-  td.first-column {
-    background-color: var(--text-color-secondary) !important;
-    color: white;
-    font-weight: bold;
+  td.product-column {
+    background-color: var(--bluegray-600) !important;
+    color: var(--bluegray-50);
+    font-weight: 600;
   }
   td.reorder-column {
     width: 50px;
@@ -109,9 +109,22 @@ export default {
   th.top-left-cell {
     background-color: var(--surface-0) !important;
   }
+  th.day-date {
+    font-size: .8rem;
+    color: var(--bluegray-700) !important;
+    font-weight: 600 !important;
+  }
+  th.day-date:not(.p-0), th.day-label {
+    padding: .7rem !important;
+  }
+  th.blank {
+    background-color: var(--surface-section) !important;
+  }
   td {
+    padding: .7rem !important;
+
     flex-wrap: wrap;
-    &:not(.first-column) {
+    &:not(.product-column:not(.w-auto)) {
       flex-basis: 100px !important;
       flex-grow: 1 !important;
     }
@@ -126,7 +139,7 @@ export default {
     }
   }
   td, th {
-    min-width: 130px !important;
+    min-width: 120px !important;
     justify-content: center;
     position: relative;
 
@@ -136,6 +149,7 @@ export default {
       font-weight: bold;
       font-size: .8rem;
       margin-bottom: 5px;
+      color: var(--indigo-400);
     }
     .amount {
       font-size: 1.2rem;

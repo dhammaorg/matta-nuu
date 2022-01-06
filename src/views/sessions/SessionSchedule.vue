@@ -10,23 +10,23 @@
           <template #header>
             <div class="d-flex flex-column">
               <NewRowButton @add-row="addRow"/>
-              <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm"
+              <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm p-button-outlined"
                       @click="$refs.eventForm.show()" />
             </div>
           </template>
         </Column>
         <!-- Event Header -->
         <Column v-for="(event, index) in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end">
+                class="event-start event-end header-group event-editor">
           <template #header>
             <div class="d-flex align-items-center w-100">
               <span style="flex: 1 auto">{{ event.name }}</span>
               <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
-                      class="p-button-small p-button-primary p-button-text" />
+                      class="p-button-sm p-button-secondary p-button-text pe-0" />
               <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
-                      class="p-button-small p-button-danger p-button-text" />
-              <Button icon="pi pi-plus" label="Day" class="p-button-sm"
-                      @click="event.days.push('New Day')"
+                      class="p-button-sm p-button-danger p-button-text" />
+              <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary"
+                      @click="event.days.push(event.days.length)"
                       :disabled="disableAddDayFor(event)" />
             </div>
           </template>
@@ -34,10 +34,10 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, {'p-0': dayHover == day.id}]">
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, 'day-date', {'p-0': dayHover == day.id}]">
           <template #header>
             <div @mouseover="dayHover = day.id" @mouseleave="dayHover = null" >
-                <Button icon="pi pi-trash" class="p-button-small p-button-danger p-button-text"
+                <Button icon="pi pi-trash" class="p-button-danger p-button-text p-0"
                         v-if="dayHover == day.id && day.class.includes('event-end') && day.event.days.length > 1"
                         @click="day.event.days.pop()" />
                 <span v-else>{{ day.dateHeader }}</span>
@@ -47,7 +47,7 @@
       </Row>
       <Row>
         <!-- Day Name Header -->
-        <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class">
+        <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class" class="day-label">
           <template #header>
             <InputText :value="day.label" @change="day.event.days[day.index] = $event.target.value" class="day-input" />
           </template>
@@ -58,7 +58,7 @@
     <Column :rowReorder="true" class="reorder-column" frozen />
 
     <!-- First Column : Row Type -->
-    <Column frozen class="first-column">
+    <Column frozen class="product-column">
       <template #body="{ data }">
         <span v-if="data.type == 'product'">
           {{ data.product }}
@@ -70,10 +70,10 @@
                 class="btn-on-hover p-button-small p-button-danger p-button-text" />
       </template>
       <template #editor="{ data }">
-        <template v-if="data.type == 'product'">
+        <div v-if="data.type == 'product'" class="editor-sm">
           <InputProduct v-model="data.product" />
           <InputUnit v-model="data.unit" />
-        </template>
+        </div>
         <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie" />
         <InputText    v-else v-model="data.label" placeholder="Row Name" />
       </template>
@@ -95,12 +95,14 @@
         </template>
       </template>
       <template #editor="{ data, field }">
-        <template v-if="data.type == 'products'">
-          <InputProduct v-model="data.values[field].product" />
-          <InputUnit v-model="data.values[field].unit" />
-        </template>
-        <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie" />
-        <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus />
+        <div :class="{'editor-sm': ['products', 'recipies'].includes(data.type)}">
+          <template v-if="data.type == 'products'">
+            <InputProduct v-model="data.values[field].product" />
+            <InputUnit v-model="data.values[field].unit" />
+          </template>
+          <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie" />
+          <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus />
+        </div>
       </template>
     </Column>
 
@@ -167,7 +169,7 @@ export default {
         setTimeout(() => {
           const datatableDom = document.querySelector('.p-datatable-wrapper')
           datatableDom.scrollTo(0, datatableDom.scrollHeight)
-          document.querySelector('.p-datatable-tbody tr:last-child td.first-column').click()
+          document.querySelector('.p-datatable-tbody tr:last-child td.product-column').click()
         }, 0)
       })
     },
@@ -198,5 +200,16 @@ export default {
     width: 249px;
     min-width: 249px !important;
     max-width: 249px !important;
+  }
+  ::v-deep th.event-editor {
+    padding: .5rem 1rem !important;
+    // --event-color: var(--bluegray-500);
+    // .p-button:not(.p-button-text) {
+    //   background-color: var(--event-color);
+    //   border-color: var(--event-color);
+    // }
+    // .p-button.p-button-text:not(.p-button-danger) {
+    //   color: var(--event-color);
+    // }
   }
 </style>
