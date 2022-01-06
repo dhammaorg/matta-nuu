@@ -85,7 +85,8 @@ export default {
 
 <style lang="scss">
   .event-end:not(:last-child) {
-    border-right-color: var(--bluegray-400) !important;
+    border-right-color: var(--bluegray-300) !important;
+    border-right-width: 2px !important;
   }
   .product-column:not(.w-auto) {
     width: 200px;

@@ -205,9 +205,11 @@ export default {
     padding: .7rem 1rem !important;
     .p-button.p-button-sm.btn-add-day {
       padding: .45rem .6rem;
+      border-radius: 4px;
       .p-button-icon {
         font-size: .7rem;
         line-height: 1.5;
+        margin-right: 5px;
       }
     }
   }

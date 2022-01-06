@@ -1,16 +1,16 @@
 <template>
   <div class="submenu px-3 d-flex align-items-center">
-
-    <div class="d-flex align-items-center flex-grow-1">
+    <TabMenu :model="items" class="flex-shrink-0"/>
+    <div class="d-flex justify-content-center flex-grow-1">
       <Inplace :closable="true">
         <template #display>
-          <h2 class="m-0 me-3 fs-5" title="Edit">{{ session.name }}</h2>
+          <h2 class="m-0 me-3" title="Edit">{{ session.name }}</h2>
         </template>
         <template #content>
           <InputText v-model="session.name" autoFocus />
         </template>
       </Inplace>
-      <TabMenu :model="items"/>
+
     </div>
     <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
             @click="undo" :disabled="history.length <= 1" v-if="history" />
@@ -90,7 +90,7 @@ export default {
 <style lang='scss' scoped>
   $background-color: var(--indigo-500);
   $active-color: white;
-  $inactive-color: var(--indigo-50);
+  $inactive-color: var(--indigo-100);
 
   ::v-deep .p-tabmenu .p-tabmenu-nav {
     .p-tabmenuitem .p-menuitem-link {
@@ -120,7 +120,8 @@ export default {
   .submenu {
     background-color: $background-color;
     h2 {
-      color: $inactive-color !important;
+      color: var(--indigo-50) !important;
+      font-size: 1.2rem;
       font-weight: normal;
     }
   }
