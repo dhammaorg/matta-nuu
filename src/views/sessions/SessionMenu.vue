@@ -1,16 +1,22 @@
 <template>
   <div class="submenu px-3 d-flex align-items-center">
-    <TabMenu :model="items" class="flex-shrink-0"/>
-    <div class="d-flex justify-content-center flex-grow-1">
+
+    <div class="d-flex justify-content-center">
       <Inplace :closable="true">
         <template #display>
-          <h2 class="m-0 me-3" title="Edit">{{ session.name }}</h2>
+          <h2 class="m-0 me-3" title="Edit">
+            {{ session.name }}
+            <span class="ms-2 pi pi-pencil xs"></span>
+          </h2>
         </template>
         <template #content>
           <InputText v-model="session.name" autoFocus />
         </template>
       </Inplace>
 
+    </div>
+    <div class="flex-grow-1 flex-shrink-0 text-center">
+      <TabMenu :model="items" class="d-inline-flex"/>
     </div>
     <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
             @click="undo" :disabled="history.length <= 1" v-if="history" />
@@ -121,8 +127,7 @@ export default {
     background-color: $background-color;
     h2 {
       color: var(--indigo-50) !important;
-      font-size: 1.2rem;
-      font-weight: normal;
+      font-size: 1rem;
     }
   }
 </style>
