@@ -1,9 +1,10 @@
 <template>
-  <div class="px-3 d-flex align-items-center">
+  <div class="submenu px-3 d-flex align-items-center">
+
     <div class="d-flex align-items-center flex-grow-1">
       <Inplace :closable="true">
         <template #display>
-          <h1 class="me-3" title="Edit">{{ session.name }}</h1>
+          <h2 class="m-0 me-3 fs-5" title="Edit">{{ session.name }}</h2>
         </template>
         <template #content>
           <InputText v-model="session.name" autoFocus />
@@ -87,9 +88,28 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  ::v-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
-    border: none;
-    box-shadow: none !important;
+  $background-color: var(--indigo-500);
+  $active-color: white;
+  $inactive-color: var(--indigo-50);
+
+  ::v-deep .p-tabmenu .p-tabmenu-nav {
+    .p-tabmenuitem .p-menuitem-link {
+      border-color: $background-color !important;
+      padding-top: 1.5rem;
+      background-color: transparent !important;
+      color: $inactive-color !important;
+      box-shadow: none !important;
+      font-weight: normal;
+    }
+    background-color: transparent;
+    .p-tabmenuitem.p-highlight .p-menuitem-link {
+      border-color: $active-color !important;
+      color: $active-color !important;
+      font-weight: 700;
+    }
+    .p-tabmenuitem:hover .p-menuitem-link {
+      color: $active-color !important;
+    }
   }
   ::v-deep .p-inplace-display {
     display: flex;
@@ -97,7 +117,11 @@ export default {
   ::v-deep .p-inplace .p-inplace-display:not(.p-disabled):hover {
     background: transparent;
   }
-  h1 {
-    margin: 0;
+  .submenu {
+    background-color: $background-color;
+    h2 {
+      color: $inactive-color !important;
+      font-weight: normal;
+    }
   }
 </style>

@@ -13,6 +13,9 @@ h1, h2 {
 td input, td .p-autocomplete {
   width: 100% !important;
 }
+td .p-button.p-button-icon-only {
+  padding: 0.5rem 0;
+}
 .editable-cells-table .p-editable-column {
   &:hover {
     cursor: text;
@@ -34,6 +37,24 @@ td input, td .p-autocomplete {
   .p-inputnumber {
     width: 100%;
   }
+}
+.p-datatable-wrapper {
+  @extend .custom-scroll-bar;
+}
+.custom-scroll-bar::-webkit-scrollbar-track {
+  background-color: var(--surface-content);
+  border: 1px solid var(--bluegray-100);
+}
+
+.custom-scroll-bar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.custom-scroll-bar::-webkit-scrollbar-thumb {
+  background-color: var(--indigo-200);
+  min-height: 40px;
+  min-width: 40px;
 }
 
 .p-field + .p-field {

@@ -4,7 +4,10 @@
 
   <Menubar :model="navItems">
     <template #start>
-      <span class="mx-3 fw-bold">Matta Nuu</span>
+      <div class="d-flex align-items-center">
+        <span class="pi pi-box ms-3 fs-3"></span>
+        <h1 class="d-inline ms-2 me-5 fs-5 fw-bold">Matta Nuu</h1>
+      </div>
     </template>
   </Menubar>
 
@@ -24,8 +27,8 @@ export default {
   data() {
     return {
       navItems: [
-        { label: 'Sessions', to: { name: 'sessions' } },
-        { label: 'Recipies', to: { name: 'recipies' } },
+        { label: 'Sessions', to: { name: 'sessions' }, icon: 'pi pi-folder-open' },
+        { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
       ],
       sessions: {},
       recipies: {},
@@ -109,17 +112,43 @@ export default {
     height: 100%;
     font-size: 15px;
     text-color: var(--text-color);
+    background-color:var(--surface-ground);
   }
   .matta-nuu .p-menubar {
     border-radius: 0;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border: none;
+    background: var(--bluegray-900);
+    color: var(--indigo-100);
+    h1 { color: var(--indigo-100); }
+  }
+  .matta-nuu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
+    box-shadow: none !important;
+    &:hover {
+      background-color: var(--primary-color) !important;
+      .p-menuitem-icon, .p-menuitem-text {
+        color: var(--surface-0) !important;
+      }
+    }
+    .p-menuitem-icon, .p-menuitem-text {
+      color: var(--indigo-200) !important;
+    }
+    .p-menuitem-text {
+      font-weight: 600 !important;
+    }
   }
   .page-content {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: 1rem;
+    background: white;
+    padding: 3rem;
+    padding-top: 2.5rem;
+    margin-top: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 5px rgba(0,0,0,.02),0 0 2px rgba(0,0,0,.05),0 1px 4px rgba(0,0,0,.08)!important;
+  }
+  .page-full-content {
+    padding: 2rem;
+    padding-bottom: 0;
   }
 </style>

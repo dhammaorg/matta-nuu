@@ -1,8 +1,10 @@
 <template>
   <SessionMenu ref="menu"/>
 
-  <div style="height: calc(100vh - 7.5rem)" v-if="$root.isSessionFullyLoaded">
-    <router-view :session-days="sessionDays"></router-view>
+  <div class="page-full-content">
+    <div style="height: calc(100vh - 10.5rem)" v-if="$root.isSessionFullyLoaded">
+      <router-view :session-days="sessionDays"></router-view>
+    </div>
   </div>
 
   <ConfirmDialog></ConfirmDialog>
@@ -83,7 +85,7 @@ export default {
 
 <style lang="scss">
   .event-end:not(:last-child) {
-    border-right-color: var(--text-color-secondary) !important;
+    border-right-color: var(--bluegray-400) !important;
   }
   .product-column:not(.w-auto) {
     width: 200px;
@@ -92,7 +94,7 @@ export default {
     justify-content: flex-start !important;
   }
   td.product-column {
-    background-color: var(--bluegray-600) !important;
+    background-color: var(--bluegray-500) !important;
     color: var(--bluegray-50);
     font-weight: 600;
   }
@@ -100,14 +102,13 @@ export default {
     width: 50px;
     min-width: 50px !important;
     max-width: 50px !important;
+    background-color: var(--bluegray-50) !important;
+    font-size: .9rem;
     padding: 0 !important;
     .p-datatable-reorderablerow-handle {
       padding: 1rem;
       cursor: move;
     }
-  }
-  th.top-left-cell {
-    background-color: var(--surface-0) !important;
   }
   th.day-date {
     font-size: .8rem;
@@ -117,8 +118,10 @@ export default {
   th.day-date:not(.p-0), th.day-label {
     padding: .7rem !important;
   }
-  th.blank {
-    background-color: var(--surface-section) !important;
+  th.transparent {
+    background-color: var(--surface-ground) !important;
+    border-top: none !important;
+    border-left: none !important;
   }
   td {
     padding: .7rem !important;
@@ -149,7 +152,7 @@ export default {
       font-weight: bold;
       font-size: .8rem;
       margin-bottom: 5px;
-      color: var(--indigo-400);
+      color: var(--indigo-500);
     }
     .amount {
       font-size: 1.2rem;

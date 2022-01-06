@@ -5,7 +5,7 @@
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell" frozen :rowspan="3">
+        <Column class="top-left-cell transparent" frozen :rowspan="3">
           <template #header>
             <Button type="button" icon="pi pi-plus" label="Order" class="p-button-sm"
                       @click="$refs.orderForm.show()" />

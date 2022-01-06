@@ -6,7 +6,7 @@
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell" frozen :rowspan="3" :colspan="2">
+        <Column class="top-left-cell transparent" frozen :rowspan="3" :colspan="2">
           <template #header>
             <div class="d-flex flex-column">
               <NewRowButton @add-row="addRow"/>
@@ -20,12 +20,12 @@
                 class="event-start event-end header-group event-editor">
           <template #header>
             <div class="d-flex align-items-center w-100">
-              <span style="flex: 1 auto">{{ event.name }}</span>
+              <span class="flex-grow-1 text-center">{{ event.name }}</span>
               <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
                       class="p-button-sm p-button-secondary p-button-text pe-0" />
               <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
                       class="p-button-sm p-button-danger p-button-text" />
-              <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary"
+              <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
                       @click="event.days.push(event.days.length)"
                       :disabled="disableAddDayFor(event)" />
             </div>
@@ -202,14 +202,13 @@ export default {
     max-width: 249px !important;
   }
   ::v-deep th.event-editor {
-    padding: .5rem 1rem !important;
-    // --event-color: var(--bluegray-500);
-    // .p-button:not(.p-button-text) {
-    //   background-color: var(--event-color);
-    //   border-color: var(--event-color);
-    // }
-    // .p-button.p-button-text:not(.p-button-danger) {
-    //   color: var(--event-color);
-    // }
+    padding: .7rem 1rem !important;
+    .p-button.p-button-sm.btn-add-day {
+      padding: .45rem .6rem;
+      .p-button-icon {
+        font-size: .7rem;
+        line-height: 1.5;
+      }
+    }
   }
 </style>

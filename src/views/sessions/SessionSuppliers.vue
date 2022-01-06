@@ -3,7 +3,7 @@
              editMode="cell" class="editable-cells-table suppliers-table">
     <ColumnGroup type="header">
       <Row>
-          <Column class="blank" :colspan="2" />
+          <Column class="transparent" :colspan="2" />
           <Column class="header-group" header="Custom Packaging" :colspan="2" />
       </Row>
       <Row>
