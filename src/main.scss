@@ -45,6 +45,9 @@ td .p-button.p-button-icon-only {
     width: 100%;
   }
 }
+.p-datatable .p-datatable-thead > tr > th {
+  font-weight: 600;
+}
 .p-datatable-scrollable .p-datatable-thead {
   z-index: 500;
 }

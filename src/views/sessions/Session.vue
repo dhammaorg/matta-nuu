@@ -150,7 +150,7 @@ export default {
     label {
       width: 100%;
       text-align: center;
-      font-weight: bold;
+      font-weight: 600;
       font-size: .8rem;
       margin-bottom: 5px;
       color: var(--indigo-500);

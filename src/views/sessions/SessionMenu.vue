@@ -111,7 +111,7 @@ export default {
     .p-tabmenuitem.p-highlight .p-menuitem-link {
       border-color: $active-color !important;
       color: $active-color !important;
-      font-weight: 700;
+      font-weight: 600;
     }
     .p-tabmenuitem:hover .p-menuitem-link {
       color: $active-color !important;
@@ -128,6 +128,7 @@ export default {
     h2 {
       color: var(--indigo-50) !important;
       font-size: 1rem;
+      font-weight: 500;
     }
   }
 </style>
