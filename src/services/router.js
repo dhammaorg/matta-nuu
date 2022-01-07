@@ -3,6 +3,8 @@ import SessionsIndex from '@/views/sessions/SessionsIndex.vue'
 import Session from '@/views/sessions/Session.vue'
 import SessionSchedule from '@/views/sessions/SessionSchedule.vue'
 import SessionStocks from '@/views/sessions/SessionStocks.vue'
+import SessionOrdersIndex from '@/views/sessions/SessionOrdersIndex.vue'
+import SessionOrder from '@/views/sessions/SessionOrder.vue'
 import SessionSuppliers from '@/views/sessions/SessionSuppliers.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
 
@@ -31,6 +33,16 @@ const routes = [
         path: 'suppliers',
         name: 'session_suppliers',
         component: SessionSuppliers,
+      },
+      {
+        path: 'orders',
+        name: 'session_orders',
+        component: SessionOrdersIndex,
+      },
+      {
+        path: 'order/:order_id',
+        name: 'session_order',
+        component: SessionOrder,
       },
     ],
   },

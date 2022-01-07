@@ -64,7 +64,7 @@
 
   </DataTable>
 
-  <OrderForm ref="orderForm" :days="days" />
+  <OrderNewDialog ref="orderForm" :days="sessionDays" />
 
 </template>
 
@@ -72,13 +72,13 @@
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
-import OrderForm from './OrderForm.vue'
+import OrderNewDialog from './OrderNewDialog.vue'
 import { unitFactor, unitParent } from '@/services/units'
 
 export default {
   props: ['sessionDays'],
   components: {
-    ColumnGroup, Row, InputNumber, OrderForm,
+    ColumnGroup, Row, InputNumber, OrderNewDialog,
   },
   data() {
     return {

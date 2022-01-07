@@ -3,18 +3,20 @@
           header="New Order">
 
     <div class="p-field" v-if="$root.suppliers.length > 0">
-      <Dropdown v-model="order.suppliers" :options="$root.suppliers" placeholder="Supplier" />
+      <Dropdown v-model="order.supplier" :options="$root.suppliers" placeholder="Supplier" />
     </div>
+
     <!-- Date -->
     <div class="p-field">
       <label>Calculate quantities needed unil</label>
-      <Dropdown v-model="order.targetDate" :options="daysOptions" class="w-100" optionLabel="fullLabel"/>
+      <Dropdown v-model="order.target_date" :options="daysOptions" class="w-100"
+                optionLabel="fullLabel" optionValue="date"/>
     </div>
 
-    <div class="p-field">
+    <!--<div class="p-field">
       <label>Delivery Date</label>
       <Dropdown v-model="order.delivery" :options="daysOptions" class="w-100" optionLabel="fullLabel"/>
-    </div>
+    </div>-->
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
@@ -38,7 +40,7 @@ export default {
   computed: {
     daysOptions() {
       return this.days.map((day) => {
-        day.fullLabel = this.$root.session.events.length > 1 && day.event ? `${day.event.name} - ` : ''
+        day.fullLabel = this.$root.session.events.length > 1 && day.event ? `${day.event.name} : ` : ''
         day.fullLabel += `${day.label} - ${day.id}`
         return day
       })
@@ -47,14 +49,21 @@ export default {
   methods: {
     show() {
       this.order = {
-        targetDate: this.days.at(-1),
-        delivery: this.days.at(0),
+        target_date: this.days.at(-1).date,
+        session_id: this.$root.session.id,
+        // delivery: this.days.at(0),
       }
       if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.supplier
       this.visible = true
     },
-    createOrder() {
-      this.visible = false
+    async createOrder() {
+      if (this.order.supplier || this.$root.suppliers.length === 0) {
+        this.dbCreate('orders', this.order, (order) => {
+          this.visible = false
+          this.$router.push({ name: 'session_order', params: { id: this.$route.params.id, order_id: order.id } })
+          this.order = {}
+        })
+      }
     },
   },
 }

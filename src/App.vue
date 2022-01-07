@@ -31,6 +31,7 @@ export default {
       ],
       sessions: {},
       recipies: {},
+      orders: {},
       fullyLoadedSessions: [],
     }
   },

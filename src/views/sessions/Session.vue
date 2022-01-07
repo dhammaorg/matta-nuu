@@ -1,8 +1,8 @@
 <template>
   <SessionMenu ref="menu"/>
 
-  <div class="page-full-content">
-    <div style="height: calc(100vh - 10.5rem)" v-if="$root.isSessionFullyLoaded">
+  <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
+    <div :style="{'height: calc(100vh - 10.5rem)': contentFullPage}" v-if="$root.isSessionFullyLoaded">
       <router-view :session-days="sessionDays"></router-view>
     </div>
   </div>
@@ -35,6 +35,9 @@ export default {
         })
       })
       return days
+    },
+    contentFullPage() {
+      return this.$route.name !== 'session_orders'
     },
   },
   async mounted() {
