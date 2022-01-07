@@ -28,22 +28,25 @@ td .p-button.p-button-icon-only {
     cursor: text;
     background-color: var(--surface-50);
   }
-  &.p-cell-editing {
-    padding: 0 !important;
-    input {
-      padding: .7rem;
-    }
-    &.editor-sm, .editor-sm {
+}
+.form-cell, .p-editable-column.p-cell-editing {
+  padding: 0 !important;
+  input {
+    padding: .7rem;
+  }
+  &.editor-sm, .editor-sm {
+    font-size: .9rem;
+    input, .p-dropdown-label, .p-autocomplete-dropdown {
+      padding: .5rem;
       font-size: .9rem;
-      input, .p-dropdown-label, .p-autocomplete-dropdown {
-        padding: .5rem;
-        font-size: .9rem;
-      }
     }
   }
-  .p-inputnumber {
-    width: 100%;
-  }
+}
+.form-cell input:not(:focus), .form-cell .p-dropdown:not(.p-focus)  {
+  border-color: transparent !important;
+}
+td .p-inputnumber {
+  width: 100%;
 }
 .p-datatable .p-datatable-thead > tr > th {
   font-weight: 600;

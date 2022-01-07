@@ -2,6 +2,10 @@
   <Dialog v-model:visible="visible" :style="{width: '600px'}" :modal="true" class="p-fluid"
           header="New Order">
 
+    <div class="p-field">
+      <InputText v-model="order.name" placeholder="Order Name"/>
+    </div>
+
     <div class="p-field" v-if="$root.suppliers.length > 0">
       <Dropdown v-model="order.supplier" :options="$root.suppliers" placeholder="Supplier" />
     </div>
@@ -9,8 +13,7 @@
     <!-- Date -->
     <div class="p-field">
       <label>Calculate quantities needed unil</label>
-      <Dropdown v-model="order.target_date" :options="daysOptions" class="w-100"
-                optionLabel="fullLabel" optionValue="date"/>
+      <InputDay v-model="order.target_date" :days="sessionDays" class="w-100"/>
     </div>
 
     <template #footer>
@@ -22,24 +25,16 @@
 
 <script>
 import Dropdown from 'primevue/dropdown'
+import InputDay from '@/components/InputDay.vue'
 
 export default {
   inject: ['sessionDays'],
-  components: { Dropdown },
+  components: { Dropdown, InputDay },
   data() {
     return {
       visible: false,
       order: {},
     }
-  },
-  computed: {
-    daysOptions() {
-      return this.sessionDays.map((day) => {
-        day.fullLabel = this.$root.session.events.length > 1 && day.event ? `${day.event.name} : ` : ''
-        day.fullLabel += `${day.label} - ${day.id}`
-        return day
-      })
-    },
   },
   methods: {
     show() {
