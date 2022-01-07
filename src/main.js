@@ -25,7 +25,7 @@ import './main.scss'
 
 utils()
 
-createApp(App)
+const app = createApp(App)
   .use(router)
   .use(db)
   .use(PrimeVue)
@@ -38,4 +38,6 @@ createApp(App)
   .component('InputText', InputText)
   .component('ConfirmDialog', ConfirmDialog)
   .component('Dropdown', Dropdown)
-  .mount('#app')
+
+app.config.unwrapInjectedRef = true
+app.mount('#app')

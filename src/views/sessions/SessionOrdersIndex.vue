@@ -28,7 +28,7 @@ import { FilterMatchMode } from 'primevue/api'
 import OrderNewDialog from './OrderNewDialog.vue'
 
 export default {
-  props: ['sessionDays'],
+  inject: ['sessionDays'],
   components: { OrderNewDialog },
   data() {
     return {

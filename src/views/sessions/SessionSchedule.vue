@@ -124,7 +124,7 @@ import EventForm from './EventForm.vue'
 import NewRowButton from './SessionNewRowButton.vue'
 
 export default {
-  props: ['sessionDays'],
+  inject: ['sessionDays'],
   components: {
     ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, NewRowButton, EventForm,
   },

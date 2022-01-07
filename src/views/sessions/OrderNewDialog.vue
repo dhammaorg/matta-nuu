@@ -13,11 +13,6 @@
                 optionLabel="fullLabel" optionValue="date"/>
     </div>
 
-    <!--<div class="p-field">
-      <label>Delivery Date</label>
-      <Dropdown v-model="order.delivery" :options="daysOptions" class="w-100" optionLabel="fullLabel"/>
-    </div>-->
-
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
       <Button label="Create Order" icon="pi pi-check" class="p-button-text" @click="createOrder" />
@@ -29,7 +24,7 @@
 import Dropdown from 'primevue/dropdown'
 
 export default {
-  props: ['days'],
+  inject: ['sessionDays'],
   components: { Dropdown },
   data() {
     return {
@@ -39,7 +34,7 @@ export default {
   },
   computed: {
     daysOptions() {
-      return this.days.map((day) => {
+      return this.sessionDays.map((day) => {
         day.fullLabel = this.$root.session.events.length > 1 && day.event ? `${day.event.name} : ` : ''
         day.fullLabel += `${day.label} - ${day.id}`
         return day
@@ -49,9 +44,8 @@ export default {
   methods: {
     show() {
       this.order = {
-        target_date: this.days.at(-1).date,
+        target_date: this.sessionDays.at(-1).date,
         session_id: this.$root.session.id,
-        // delivery: this.days.at(0),
       }
       if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.supplier
       this.visible = true

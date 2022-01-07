@@ -42,7 +42,7 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in days" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock editor-sm">
+    <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock editor-sm">
       <template #body="{ data, field }">
         <div class="cell-content" :class="{'negative-value': round(data.values[field].value) < 0 }">
           <span class="stock-value">
@@ -76,7 +76,7 @@ import OrderNewDialog from './OrderNewDialog.vue'
 import { unitFactor, unitParent } from '@/services/units'
 
 export default {
-  props: ['sessionDays'],
+  inject: ['sessionDays', 'stockDays'],
   components: {
     ColumnGroup, Row, InputNumber, OrderNewDialog,
   },
@@ -89,22 +89,11 @@ export default {
     session() {
       return this.$root.session
     },
-    days() {
-      if (this.sessionDays.length === 0) return []
-      // Adds a fake day for initial stocks
-      const firstDay = this.sessionDays[0]
-      const days = [...this.sessionDays]
-      const date = firstDay.date.removeDays(1)
-      days.unshift({
-        id: date.toDateString(), class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,
-      })
-      return days
-    },
     stocks() {
       return this.$root.products.map((product) => {
         const values = {}
         let previousStock = 0
-        this.days.forEach((day) => {
+        this.stockDays.forEach((day) => {
           const bought = (this.session.buys[product] || {})[day.id] || 0
           const consumption = this.consumption(product, day)
           const real = (this.session.realStocks[product] || {})[day.id]

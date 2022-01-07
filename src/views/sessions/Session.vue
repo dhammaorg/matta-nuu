@@ -3,7 +3,7 @@
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
     <div :style="{'height: calc(100vh - 10.5rem)': contentFullPage}" v-if="$root.isSessionFullyLoaded">
-      <router-view :session-days="sessionDays"></router-view>
+      <router-view></router-view>
     </div>
   </div>
 
@@ -12,10 +12,17 @@
 </template>
 
 <script>
+import { computed } from 'vue'
 import SessionMenu from './SessionMenu.vue'
 
 export default {
   components: { SessionMenu },
+  provide() {
+    return {
+      sessionDays: computed(() => this.sessionDays),
+      stockDays: computed(() => this.stockDays),
+    }
+  },
   computed: {
     session() {
       return this.$root.session
@@ -33,6 +40,17 @@ export default {
             id: date.toDateString(), label: day, event, index, date, class: classes.join(' '), dateHeader,
           })
         })
+      })
+      return days
+    },
+    stockDays() {
+      if (this.sessionDays.length === 0) return []
+      // Adds a fake day for initial stocks
+      const firstDay = this.sessionDays[0]
+      const days = [...this.sessionDays]
+      const date = firstDay.date.removeDays(1)
+      days.unshift({
+        id: date.toDateString(), class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,
       })
       return days
     },
