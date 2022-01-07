@@ -42,11 +42,19 @@ td .p-button.p-button-icon-only {
     }
   }
 }
+
 .form-cell input:not(:focus), .form-cell .p-dropdown:not(.p-focus)  {
   border-color: transparent !important;
 }
 td .p-inputnumber {
   width: 100%;
+}
+.matta-nuu .p-inplace-display {
+  display: flex;
+  padding: 0;
+}
+.p-inplace .p-inplace-display:not(.p-disabled):hover {
+  background: transparent;
 }
 .p-datatable .p-datatable-thead > tr > th {
   font-weight: 600;

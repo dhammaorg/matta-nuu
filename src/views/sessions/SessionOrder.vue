@@ -1,9 +1,22 @@
 <template>
   <div style="max-width: 800px" class="mx-auto">
+
     <div class="mb-3">
-      <InputText v-model="order.name" placeholder="Order Name"/>
-      <Dropdown v-model="order.supplier" :options="$root.suppliers" placeholder="Supplier" />
-      <div class="p-inputgroup mt-3">
+      <p>{{ order.supplier }}</p>
+
+      <Inplace :closable="true" class="mb-4">
+        <template #display>
+          <h2 class="m-0 me-3" title="Edit">
+            {{ order.name }}
+            <span class="ms-2 pi pi-pencil xs d-print-none"></span>
+          </h2>
+        </template>
+        <template #content>
+          <InputText v-model="order.name" autofocus/>
+        </template>
+      </Inplace>
+
+      <div class="p-inputgroup mt-3 d-print-none">
         <span class="p-inputgroup-addon">Quantities until</span>
         <InputDay v-model="order.target_date" :days="sessionDays" />
         <Button label="Calculate" icon="pi pi-refresh" @click="calculate" />
@@ -28,23 +41,30 @@
           <span v-else>{{ data.unit }}</span>
         </template>
       </Column>
-      <Column field="needed" header="Needed" class="text-center needed" />
+      <Column field="needed" header="Needed" class="text-center needed d-print-none" />
 
       <template #empty>
         No products in this order yet
       </template>
     </DataTable>
 
-    <div class="p-inputgroup d-inline-flex w-auto">
-      <InputProduct v-model="newProduct" :dropdown="false" />
-      <Button label="Add Product" :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
+    <div class="d-flex justify-content-between">
+      <div class="p-inputgroup d-inline-flex d-print-none" style="width: 200px">
+        <InputProduct v-model="newProduct" :dropdown="false" placeholder="Add Product" />
+        <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
+      </div>
+      <div>
+        <Button label="Print" :disabled="values.length == 0" class="p-button-success" icon="pi pi-print" @click="print()" />
+      </div>
     </div>
+
   </div>
 
 </template>
 
 <script>
 import InputNumber from 'primevue/inputnumber'
+import Inplace from 'primevue/inplace'
 import InputDay from '@/components/InputDay.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import InputProduct from '@/components/InputProduct.vue'
@@ -54,7 +74,7 @@ export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, InputUnit,
+    InputDay, InputProduct, InputNumber, InputUnit, Inplace,
   },
   data() {
     return {

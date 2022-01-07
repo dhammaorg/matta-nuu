@@ -2,7 +2,7 @@
 
   <Toast position="top-center" />
 
-  <Menubar :model="navItems">
+  <Menubar :model="navItems" class="d-print-none">
     <template #start>
       <div class="d-flex align-items-center">
         <img src="./assets/logo.png" class="ms-2 me-4" height="50" style="margin-top: -5px"/>

@@ -118,12 +118,7 @@ export default {
       color: $active-color !important;
     }
   }
-  ::v-deep .p-inplace-display {
-    display: flex;
-  }
-  ::v-deep .p-inplace .p-inplace-display:not(.p-disabled):hover {
-    background: transparent;
-  }
+
   .submenu {
     background-color: $background-color;
     h2 {
