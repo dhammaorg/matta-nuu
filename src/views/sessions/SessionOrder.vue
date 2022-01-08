@@ -124,11 +124,15 @@ export default {
       return result
     },
     values() {
-      return Object.values(this.order.values)
+      return Object.values(this.order.values || {})
     },
   },
   methods: {
     async fetchOrder(orderId) {
+      if (this.$root.orders[orderId]) {
+        this.order = this.$root.orders[orderId]
+        return
+      }
       const { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
       if (data === null) {
         this.toastError('Could not find the order')
@@ -136,8 +140,10 @@ export default {
       } else {
         data.target_date = new Date(data.target_date)
         data.delivery_date = new Date(data.delivery_date)
+        const firstInit = !this.order.values
+        data.values ||= {}
         this.order = data
-        if (!this.order.values && this.order.target_date) this.calculate()
+        if (firstInit && this.order.target_date) this.calculate()
       }
     },
     calculate() {

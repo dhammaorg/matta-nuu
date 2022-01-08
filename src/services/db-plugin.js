@@ -27,6 +27,8 @@ export default {
 
           if (error) this.toastError(error)
           else {
+            if (data.delivery_date) data.delivery_date = new Date(data.delivery_date)
+            if (data.target_date) data.target_date = new Date(data.target_date)
             this.$root[dbName][object.id] = data
           }
           this.loading = false

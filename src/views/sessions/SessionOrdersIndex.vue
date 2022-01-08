@@ -39,13 +39,6 @@ export default {
   },
   async created() {
     this.initFilters()
-    this.$db.from('orders').select('id, name, created_at, session_id, supplier').match({ session_id: this.$route.params.id }).then((result) => {
-      result.data.forEach((order) => {
-        if (!this.$root.orders[order.id]) {
-          this.$root.orders[order.id] = order
-        }
-      })
-    })
   },
   computed: {
     orders() {

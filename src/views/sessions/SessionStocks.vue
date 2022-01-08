@@ -99,7 +99,10 @@ export default {
       width: 100%;
       height: 100%;
       display: flex;
-      &.negative-value { background-color: var(--pink-50); }
+      &.negative-value {
+        color: white;
+        background-color: var(--bluegray-700);
+      }
 
       .stock-value {
         display: flex;
@@ -110,6 +113,7 @@ export default {
         .bought {
           color: #22C55E;
           font-size: .8rem;
+          font-weight: bold;
         }
         .consumption {
           opacity: .6;

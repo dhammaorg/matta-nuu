@@ -15,7 +15,10 @@ export default {
         const values = {}
         let previousStock = 0
         this.stockDays.forEach((day) => {
-          const bought = (this.session.buys[product] || {})[day.id] || 0
+          let bought = (this.session.buys[product] || {})[day.id] || 0
+          this.orders.filter((order) => order.delivery_date.getTime() === day.date.getTime()).forEach((order) => {
+            if (order.values[product]) bought += order.values[product].value
+          })
           const consumption = this.consumption(product, day)
           const real = (this.session.realStocks[product] || {})[day.id]
           const theoric = previousStock - consumption + bought
@@ -27,6 +30,9 @@ export default {
         })
         return { product, values }
       })
+    },
+    orders() {
+      return Object.values(this.$root.orders).filter((order) => order.report_values_in_stocks && order.values)
     },
   },
   methods: {
