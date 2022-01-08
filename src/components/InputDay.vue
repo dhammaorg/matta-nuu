@@ -8,8 +8,9 @@ export default {
   computed: {
     daysOptions() {
       return this.days.map((day) => {
-        day.fullLabel = this.$root.session.events.length > 1 && day.event ? `${day.event.name} : ` : ''
-        day.fullLabel += `${day.label} - ${day.id}`
+        day.fullLabel = day.id
+        day.fullLabel += this.$root.session.events.length > 1 && day.event ? ` - ${day.event.name}` : ''
+        day.fullLabel += ` - ${day.label}`
         return day
       })
     },

@@ -18,10 +18,12 @@
     <div class="flex-grow-1 flex-shrink-0 text-center">
       <TabMenu :model="items" class="d-inline-flex"/>
     </div>
-    <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-3"
-            @click="undo" :disabled="history.length <= 1" v-if="history" />
-    <Button icon="pi pi-save" label="Save" class="p-button-success"
-            @click="save" :loading="saving" :disabled="!unsavedChanges" />
+    <div :style="{visibility: orderSection ? 'hidden' : 'visible' }" class="d-flex">
+      <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-2"
+              @click="undo" :disabled="history.length <= 1" v-if="history" />
+      <Button icon="pi pi-save" label="Save" class="p-button-success"
+              @click="save" :loading="saving" :disabled="!unsavedChanges" />
+    </div>
   </div>
 </template>
 
@@ -55,6 +57,9 @@ export default {
     },
     unsavedChangesWarning() {
       return this.unsavedChanges && window.location.hostname !== 'localhost'
+    },
+    orderSection() {
+      return ['session_orders', 'session_order'].includes(this.$route.name)
     },
   },
   methods: {

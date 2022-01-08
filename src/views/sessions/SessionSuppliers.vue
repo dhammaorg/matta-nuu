@@ -1,6 +1,6 @@
 <template>
   <DataTable :value="products" showGridlines :scrollable="true" scrollHeight="flex"
-             editMode="cell" class="editable-cells-table suppliers-table">
+             editMode="cell" class="editable-cells-table suppliers-table session-table">
     <ColumnGroup type="header">
       <Row>
           <Column class="transparent" :colspan="2" />

@@ -42,6 +42,7 @@ export default {
           this.loading = false
         },
         toastError(error) {
+          if (typeof error === 'string') error = { message: 'Error', details: error }
           this.$toast.add({
             severity: 'error', summary: error.message, detail: error.details, life: 3000,
           })

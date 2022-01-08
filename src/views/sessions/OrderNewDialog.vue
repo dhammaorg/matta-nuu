@@ -28,7 +28,7 @@ import Dropdown from 'primevue/dropdown'
 import InputDay from '@/components/InputDay.vue'
 
 export default {
-  inject: ['sessionDays'],
+  inject: ['sessionDays', 'stockDays'],
   components: { Dropdown, InputDay },
   data() {
     return {
@@ -41,6 +41,8 @@ export default {
       this.order = {
         target_date: this.sessionDays.at(-1).date,
         session_id: this.$root.session.id,
+        report_values_in_stocks: true,
+        delivery_date: this.stockDays.at(0).date,
       }
       if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.supplier
       this.visible = true

@@ -42,7 +42,9 @@ td .p-button.p-button-icon-only {
     }
   }
 }
-
+th.text-center .p-column-header-content {
+  justify-content: center;
+}
 .form-cell input:not(:focus), .form-cell .p-dropdown:not(.p-focus)  {
   border-color: transparent !important;
 }
@@ -99,5 +101,19 @@ td .p-inputnumber {
 }
 .p-datatable-scrollable .p-frozen-column {
   z-index: 50;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--surface-border);
+  margin: 1.5rem 0;
+}
+
+.p-checkbox {
+  transform: scale(0.9);
+}
+.p-inputtext {
+  display: flex;
+  align-items: center;
 }
 

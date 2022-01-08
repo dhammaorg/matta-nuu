@@ -1,7 +1,7 @@
 <template>
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
-             editMode="cell" class="editable-cells-table stocks-table">
+             editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
@@ -93,7 +93,7 @@ export default {
     min-width: 200px !important;
     max-width: 200px !important;
   }
-  .cell-stock {
+  .stocks-table .cell-stock {
     padding: 0 !important;
     .cell-content {
       width: 100%;

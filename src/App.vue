@@ -140,10 +140,13 @@ export default {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    background: white;
-    padding: 3rem;
     padding-top: 2.5rem;
     margin-top: 3rem;
+    @extend .card;
+  }
+  .card {
+    background: white;
+    padding: 3rem;
     border-radius: 10px;
     box-shadow: 0 3px 5px rgba(0,0,0,.02),0 0 2px rgba(0,0,0,.05),0 1px 4px rgba(0,0,0,.08)!important;
   }

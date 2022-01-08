@@ -2,7 +2,7 @@
   <SessionMenu ref="menu" class="d-print-none" />
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
-    <div :style="{'height: calc(100vh - 10.5rem)': contentFullPage}" v-if="$root.isSessionFullyLoaded">
+    <div :style="contentFullPage ? 'height: calc(100vh - 10.5rem)' : ''" v-if="$root.isSessionFullyLoaded">
       <router-view></router-view>
     </div>
   </div>
@@ -163,6 +163,9 @@ export default {
       text-align: center;
     }
   }
+  .matta-nuu .p-datatable .p-datatable-thead > tr > th {
+    padding: 1rem .7rem;
+  }
   td, th {
     min-width: 120px !important;
     justify-content: center;
@@ -187,7 +190,7 @@ export default {
       right: 0;
     }
   }
-  .p-datatable .p-column-header-content {
+  .session-table.p-datatable .p-column-header-content {
     justify-content: center;
   }
   .day-input {

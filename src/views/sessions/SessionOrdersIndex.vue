@@ -11,12 +11,14 @@
   <DataTable :value="orders" dataKey="id"
              :paginator="true" :rows="20" :filters="filters">
 
-    <Column field="name" header="Name" :sortable="true"></Column>
+    <Column field="name" header="Name" :sortable="true" header-class="text-start"></Column>
+    <Column field="supplier" header="Supplier" :sortable="true"></Column>
     <Column class="text-end">
       <template #body="{data}">
         <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id }}">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary" />
         </router-link>
+        <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="destroy(data)" />
       </template>
     </Column>
   </DataTable>
@@ -37,7 +39,7 @@ export default {
   },
   async created() {
     this.initFilters()
-    this.$db.from('orders').select('id, name, created_at, session_id').match({ session_id: this.$route.params.id }).then((result) => {
+    this.$db.from('orders').select('id, name, created_at, session_id, supplier').match({ session_id: this.$route.params.id }).then((result) => {
       result.data.forEach((order) => {
         if (!this.$root.orders[order.id]) {
           this.$root.orders[order.id] = order
@@ -55,6 +57,16 @@ export default {
       this.filters = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       }
+    },
+    destroy(order) {
+      this.$confirm.require({
+        message: `Are you sure you want to delete ${order.name} ?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+          this.dbDestroy('orders', order)
+        },
+      })
     },
   },
 }

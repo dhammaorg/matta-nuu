@@ -2,7 +2,7 @@
   <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
              @rowReorder="session.rows = $event.value"
-             editMode="cell" class="editable-cells-table" @cell-edit-complete="onCellEditComplete">
+             editMode="cell" class="editable-cells-table session-table" @cell-edit-complete="onCellEditComplete">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
