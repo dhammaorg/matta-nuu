@@ -1,5 +1,5 @@
 <template>
-  <SessionMenu ref="menu" class="d-print-none" />
+  <SessionMenu ref="menu" />
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
     <div :style="contentFullPage ? 'height: calc(100vh - 10.5rem)' : ''" v-if="$root.isSessionFullyLoaded">

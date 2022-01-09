@@ -16,7 +16,6 @@ h1, h2 {
 .xs {
   font-size: .8rem;
 }
-
 td input, td .p-autocomplete {
   width: 100% !important;
 }
@@ -113,7 +112,7 @@ hr {
   transform: scale(0.9);
 }
 .p-inputtext {
-  display: flex;
+  display: inline-flex;
   align-items: center;
 }
 

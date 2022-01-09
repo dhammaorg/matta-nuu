@@ -18,6 +18,7 @@
       </div>
       <div class="d-print-none">
         <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy"/>
+        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print" onclick="print()" />
         <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save" :loading="loading"/>
       </div>
     </div>
@@ -36,48 +37,44 @@
       <div class="p-inputgroup mb-3 d-print-none">
         <span class="p-inputgroup-addon">Quantities until</span>
         <InputDay v-model="order.target_date" :days="sessionDays" />
-        <Button label="Refresh" icon="pi pi-refresh" class="btn-right p-button-secondary" @click="calculate" />
+        <Button label="Refresh" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" />
       </div>
     </div>
 
     <hr class="d-print-none">
 
-    <DataTable :value="values" class="mb-3">
-      <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
-        <template #body="{ data }">
-          <InputText v-model="data.name" class="text-start" />
-        </template>
-      </Column>
-      <Column field="value" header="Amount" class="text-center" body-class="form-cell">
-        <template #body="{ data }">
-          <InputNumber v-model="data.value" />
-        </template>
-      </Column>
-      <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
-        <template #body="{ data }">
-          <InputUnit v-if="!data.needed" v-model="data.unit" />
-          <span v-else>{{ data.unit }}</span>
-        </template>
-      </Column>
-      <Column field="needed" header="Needed" class="needed text-center d-print-none" />
+    <div class="card">
+      <DataTable :value="values" class="mb-3">
+        <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
+          <template #body="{ data }">
+            <InputText v-model="data.name" class="text-start" />
+          </template>
+        </Column>
+        <Column field="value" header="Amount" class="text-center" body-class="form-cell">
+          <template #body="{ data }">
+            <InputNumber v-model="data.value" />
+          </template>
+        </Column>
+        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
+          <template #body="{ data }">
+            <InputUnit v-if="!data.needed" v-model="data.unit" />
+            <span v-else>{{ data.unit }}</span>
+          </template>
+        </Column>
+        <Column field="needed" header="Needed" class="needed text-center d-print-none" />
 
-      <template #empty>
-        No products in this order yet
-      </template>
-    </DataTable>
+        <template #empty>
+          No products in this order yet
+        </template>
+      </DataTable>
 
-    <div class="d-flex justify-content-between d-print-none">
-      <div class="p-inputgroup d-inline-flex" style="width: 200px">
-        <InputProduct v-model="newProduct" :dropdown="false" placeholder="Add Product" />
-        <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
-      </div>
-      <div class="p-buttonset">
-        <Button label="New Order" class="p-button-outlined" @click="$refs.orderForm.show()" />
-        <Button label="Print" class="btn-right" :disabled="values.length == 0" icon="pi pi-print" onclick="print()" />
+      <div class="d-flex justify-content-between d-print-none">
+        <div class="p-inputgroup d-inline-flex" style="width: 200px">
+          <InputProduct v-model="newProduct" :dropdown="false" placeholder="Add Product" />
+          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
+        </div>
       </div>
     </div>
-
-    <OrderNewDialog ref="orderForm" :days="sessionDays"/>
 
   </div>
 
@@ -92,13 +89,12 @@ import InputDay from '@/components/InputDay.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
-import OrderNewDialog from './OrderNewDialog.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, InputUnit, Inplace, OrderNewDialog, Checkbox,
+    InputDay, InputProduct, InputNumber, InputUnit, Inplace, Checkbox,
   },
   data() {
     return {
@@ -140,7 +136,7 @@ export default {
       } else {
         data.target_date = new Date(data.target_date)
         data.delivery_date = new Date(data.delivery_date)
-        const firstInit = !this.order.values
+        const firstInit = Object.values(data.values || {}).length === 0
         data.values ||= {}
         this.order = data
         if (firstInit && this.order.target_date) this.calculate()
@@ -192,10 +188,7 @@ export default {
 
 <style lang='scss' scoped>
   ::v-deep td.needed {
-    background-color: var(--surface-c);
-  }
-  .btn-right {
-    width: 120px;
+    background-color: var(--indigo-50);
   }
   .p-inputgroup-addon {
     width: 130px;

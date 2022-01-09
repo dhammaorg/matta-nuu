@@ -1,5 +1,5 @@
 <template>
-  <div class="submenu px-3 d-flex align-items-center">
+  <div class="submenu px-3 d-flex align-items-center d-print-none">
 
     <div class="d-flex justify-content-center">
       <Inplace :closable="true">
@@ -18,27 +18,37 @@
     <div class="flex-grow-1 flex-shrink-0 text-center">
       <TabMenu :model="items" class="d-inline-flex"/>
     </div>
-    <div :style="{visibility: orderSection ? 'hidden' : 'visible' }" class="d-flex">
-      <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-2"
-              @click="undo" :disabled="history.length <= 1" v-if="history" />
-      <Button icon="pi pi-save" label="Save" class="p-button-success"
-              @click="save" :loading="saving" :disabled="!unsavedChanges" />
+    <div :style="{visibility: $route.name == 'session_orders' ? 'hidden' : 'visible' }" class="d-flex">
+      <template v-if="$route.name == 'session_order'">
+        <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm ms-5 me-4"
+                @click="$refs.orderForm.show()" />
+      </template>
+      <template v-else>
+        <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-2"
+                @click="undo" :disabled="history.length <= 1" v-if="history" />
+        <Button icon="pi pi-save" label="Save" class="p-button-success"
+                @click="save" :loading="saving" :disabled="!unsavedChanges" />
+      </template>
     </div>
+
+    <OrderNewDialog ref="orderForm" :days="sessionDays"/>
   </div>
 </template>
 
 <script>
 import TabMenu from 'primevue/tabmenu'
 import Inplace from 'primevue/inplace'
+import OrderNewDialog from './OrderNewDialog.vue'
 
 export default {
-  components: { TabMenu, Inplace },
+  inject: ['sessionDays'],
+  components: { TabMenu, Inplace, OrderNewDialog },
   data() {
     return {
       items: [
         { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id: this.$route.params.id } } },
         { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id: this.$route.params.id } } },
-        { label: 'Suppliers', icon: 'pi pi-shopping-cart', to: { name: 'session_suppliers', params: { id: this.$route.params.id } } },
+        { label: 'Products', icon: 'pi pi-shopping-cart', to: { name: 'session_suppliers', params: { id: this.$route.params.id } } },
         { label: 'Orders', icon: 'pi pi-dollar', to: { name: 'session_orders', params: { id: this.$route.params.id } } },
       ],
       saving: false,
@@ -57,9 +67,6 @@ export default {
     },
     unsavedChangesWarning() {
       return this.unsavedChanges && window.location.hostname !== 'localhost'
-    },
-    orderSection() {
-      return ['session_orders', 'session_order'].includes(this.$route.name)
     },
   },
   methods: {
@@ -131,5 +138,8 @@ export default {
       font-size: 1rem;
       font-weight: 500;
     }
+  }
+  .btn-new-order {
+    background-color: var(--surface-0) !important;
   }
 </style>

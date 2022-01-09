@@ -148,7 +148,12 @@ export default {
     background: white;
     padding: 3rem;
     border-radius: 10px;
-    box-shadow: 0 3px 5px rgba(0,0,0,.02),0 0 2px rgba(0,0,0,.05),0 1px 4px rgba(0,0,0,.08)!important;
+    box-shadow: 0 3px 5px rgba(0,0,0,.02),0 0 2px rgba(0,0,0,.05),0 1px 4px rgba(0,0,0,.08);
+    @media print {
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+    }
   }
   .page-full-content {
     padding: 2rem;
