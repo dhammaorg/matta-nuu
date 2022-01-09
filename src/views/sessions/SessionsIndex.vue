@@ -1,7 +1,7 @@
 <template>
   <div class="page-content">
     <div class="mb-3">
-      <Button label="New Session" icon="pi pi-plus" class="p-button-success me-2"
+      <Button label="New Session" icon="pi pi-plus" class="me-2"
               @click="$refs.newSessionModal.open()" />
       <span class="p-input-icon-left float-end">
         <i class="pi pi-search" />

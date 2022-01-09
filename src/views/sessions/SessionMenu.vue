@@ -18,10 +18,10 @@
     <div class="flex-grow-1 flex-shrink-0 text-center">
       <TabMenu :model="items" class="d-inline-flex"/>
     </div>
-    <div :style="{visibility: $route.name == 'session_orders' ? 'hidden' : 'visible' }" class="d-flex">
-      <template v-if="$route.name == 'session_order'">
-        <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm ms-5 me-4"
-                @click="$refs.orderForm.show()" />
+    <div class="d-flex">
+      <template v-if="['session_orders', 'session_order'].includes($route.name)">
+        <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm"
+                @click="$refs.orderForm.show()" style="margin-left: 4.5rem" />
       </template>
       <template v-else>
         <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-2"

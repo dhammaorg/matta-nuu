@@ -1,6 +1,6 @@
 <template>
   <div class="mb-3">
-    <Button label="New Order" icon="pi pi-plus" class="p-button-success me-2"
+    <Button label="New Order" icon="pi pi-plus" class="me-2"
             @click="$refs.orderForm.show()" />
     <span class="p-input-icon-left float-end">
       <i class="pi pi-search" />
