@@ -118,4 +118,15 @@ hr {
   display: inline-flex;
   align-items: center;
 }
-
+@media print {
+  .hide-print { 
+    visibility: hidden !important;
+  }
+  .p-datatable-scrollable .p-datatable-wrapper { 
+    overflow: visible !important; 
+  }
+  .p-datatable-scrollable .p-frozen-column {
+    position: relative;
+    left: 0 !important;
+  }
+}

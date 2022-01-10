@@ -1,5 +1,5 @@
 <template>
-  <Button type="button" icon="pi pi-plus" class="mb-2 p-button-sm" label="Row"
+  <Button type="button" icon="pi pi-plus" class="p-button-sm" label="Row"
           @click="$refs.addRowMenu.toggle($event)" />
   <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true" />
 </template>

@@ -158,5 +158,6 @@ export default {
   .page-full-content {
     padding: 2rem;
     padding-bottom: 0;
+    @media print { padding: 0; }
   }
 </style>

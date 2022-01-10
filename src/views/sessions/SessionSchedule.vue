@@ -2,16 +2,19 @@
   <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
              @rowReorder="session.rows = $event.value"
-             editMode="cell" class="editable-cells-table session-table" @cell-edit-complete="onCellEditComplete">
+             editMode="cell" class="editable-cells-table session-table" @cell-edit-complete="onCellEditComplete"
+             :rowClass="rowClass">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell transparent" frozen :rowspan="3" :colspan="2">
+        <Column class="top-left-cell transparent hide-print" frozen :rowspan="3" :colspan="2">
           <template #header>
-            <div class="d-flex flex-column">
+            <PrintButton />
+            <div class="d-flex flex-column ms-4">
               <NewRowButton @add-row="addRow"/>
-              <Button type="button" icon="pi pi-plus" label="Event" class="p-button-sm p-button-outlined"
+              <Button type="button" icon="pi pi-plus" label="Event" class="mt-2 p-button-sm p-button-outlined"
                       @click="$refs.eventForm.show()" />
+
             </div>
           </template>
         </Column>
@@ -21,13 +24,15 @@
           <template #header>
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">{{ event.name }}</span>
-              <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
-                      class="p-button-sm p-button-secondary p-button-text pe-0" />
-              <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
-                      class="p-button-sm p-button-danger p-button-text" />
-              <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
-                      @click="event.days.push(event.days.length)"
-                      :disabled="disableAddDayFor(event)" />
+              <span class="d-print-none">
+                <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
+                        class="p-button-sm p-button-secondary p-button-text pe-0" />
+                <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
+                        class="p-button-sm p-button-danger p-button-text" />
+                <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
+                        @click="event.days.push(event.days.length)"
+                        :disabled="disableAddDayFor(event)" />
+              </span>
             </div>
           </template>
         </Column>
@@ -55,7 +60,7 @@
       </Row>
     </ColumnGroup>
 
-    <Column :rowReorder="true" class="reorder-column" frozen />
+    <Column :rowReorder="true" class="reorder-column d-print-none" frozen />
 
     <!-- First Column : Row Type -->
     <Column frozen class="product-column">
@@ -66,8 +71,12 @@
         </span>
         <span v-else-if="data.type == 'recipie'">{{ data.recipie ? data.recipie.name : '' }}</span>
         <span v-else>{{ data.label }}</span>
-        <Button icon="pi pi-trash" @click.prevent="deleteRow(data)"
-                class="btn-on-hover p-button-small p-button-danger p-button-text" />
+        <span class="btn-on-hover d-print-none">
+          <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash" @click.stop
+                        title="Printable ?" class="p-button-sm"/>
+          <Button icon="pi pi-trash" @click.prevent="deleteRow(data)"
+                class=" p-button-small p-button-danger p-button-text" />
+        </span>
       </template>
       <template #editor="{ data }">
         <div v-if="data.type == 'product'" class="editor-sm">
@@ -117,16 +126,18 @@
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
+import ToggleButton from 'primevue/togglebutton'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import EventForm from './EventForm.vue'
 import NewRowButton from './SessionNewRowButton.vue'
+import PrintButton from './SessionSchedulePrintButton.vue'
 
 export default {
   inject: ['sessionDays'],
   components: {
-    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, NewRowButton, EventForm,
+    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, NewRowButton, EventForm, ToggleButton, PrintButton,
   },
   data() {
     return {
@@ -159,9 +170,12 @@ export default {
       data.unit = newData.unit
       data.recipie = newData.recipie
     },
+    rowClass(data) {
+      return data.printable ? null : 'd-print-none'
+    },
     addRow(type) {
       const row = {
-        id: this.newId(this.session.rows), type, label: '', values: {},
+        id: this.newId(this.session.rows), type, label: '', values: {}, printable: true,
       }
       this.sessionDays.forEach((day) => { row.values[day.id] = {} })
       this.session.rows.push(row)
@@ -197,9 +211,18 @@ export default {
 
 <style lang="scss" scoped>
   ::v-deep th.top-left-cell {
-    width: 249px;
-    min-width: 249px !important;
-    max-width: 249px !important;
+    @media screen {
+      // Reorder column width + product width
+      width: 249px;
+      min-width: 249px !important;
+      max-width: 249px !important;
+    }
+    @media print {
+      // Product width
+      width: 200px;
+      min-width: 200px !important;
+      max-width: 200px !important;
+    }
   }
   ::v-deep th.event-editor {
     padding: .7rem 1rem !important;
@@ -212,5 +235,35 @@ export default {
         margin-right: 5px;
       }
     }
+  }
+
+  @page { size: landscape; }
+
+  ::v-deep .pi.pi-print.slash {
+    position: relative;
+    color: var(--bluegray-300) !important;
+    &:after {
+      content: "";
+      width: 20px;
+      height: 2px;
+      background-color: var(--bluegray-500);
+      position: absolute;
+      left: -4px;
+      top: 45%;
+      transform: rotate(45deg);
+    }
+  }
+
+  @media print {
+    .session-table.hide-amounts .amount {
+      visibility: hidden;
+    }
+  }
+
+  td .btn-on-hover { display: none; }
+  td:hover .btn-on-hover {
+    display: flex;
+    position: absolute;
+    right: 0;
   }
 </style>

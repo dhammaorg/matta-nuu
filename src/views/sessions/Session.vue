@@ -192,13 +192,6 @@ export default {
     .amount {
       font-size: 1.2rem;
     }
-
-    .btn-on-hover { display: none; }
-    &:hover .btn-on-hover {
-      display: block;
-      position: absolute;
-      right: 0;
-    }
   }
   .session-table.p-datatable .p-column-header-content {
     justify-content: center;
