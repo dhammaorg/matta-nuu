@@ -44,7 +44,7 @@
     <hr class="d-print-none">
 
     <div class="card">
-      <DataTable :value="values" class="mb-3">
+      <DataTable :value="values" class="mb-3 border border-bottom-0">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
             <InputText v-model="data.name" class="text-start" />
@@ -120,13 +120,19 @@ export default {
       return result
     },
     values() {
-      return Object.values(this.order.values || {})
+      let values = this.order.values || {}
+      // Sort by key == product
+      values = Object.keys(values).sort().reduce((result, key) => {
+        result[key] = values[key]
+        return result
+      }, {})
+      return Object.values(values)
     },
   },
   methods: {
     async fetchOrder(orderId) {
       if (this.$root.orders[orderId]) {
-        this.order = this.$root.orders[orderId]
+        this.order = { ...this.$root.orders[orderId] }
         return
       }
       const { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
@@ -153,7 +159,7 @@ export default {
             name: config.reference || product,
             value: Math.ceil(needed / (config.conditioning || 1)),
             unit: config.conditioning ? '' : this.productsUnits[product],
-            needed,
+            needed: `${needed} ${this.productsUnits[product]}`,
           }
         }
       })

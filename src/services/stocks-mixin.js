@@ -16,15 +16,21 @@ export default {
         let previousStock = 0
         this.stockDays.forEach((day) => {
           let bought = (this.session.buys[product] || {})[day.id] || 0
+          const ordered = []
           this.orders.filter((order) => order.delivery_date.getTime() === day.date.getTime()).forEach((order) => {
-            if (order.values[product]) bought += order.values[product].value
+            if (order.values[product]) {
+              const config = this.session.products[product] || {}
+              const value = order.values[product].value * unitFactor(order.values[product].unit) * (config.conditioning || 1)
+              bought += value
+              ordered.push({ value, id: order.id, name: order.name })
+            }
           })
           const consumption = this.consumption(product, day)
           const real = (this.session.realStocks[product] || {})[day.id]
           const theoric = previousStock - consumption + bought
           const value = real != null ? real : theoric
           values[day.id] = {
-            real, bought, consumption, theoric, value,
+            real, bought, consumption, theoric, value, ordered,
           }
           previousStock = value
         })
@@ -32,7 +38,10 @@ export default {
       })
     },
     orders() {
-      return Object.values(this.$root.orders).filter((order) => order.report_values_in_stocks && order.values)
+      return Object.values(this.$root.orders)
+        .filter((order) => order.report_values_in_stocks
+          && order.values
+          && order.id != this.$route.params.order_id /* We exclude current edited order so we can recalculate */)
     },
   },
   methods: {
