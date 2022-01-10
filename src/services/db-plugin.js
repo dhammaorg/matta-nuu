@@ -11,6 +11,7 @@ export default {
           const { data, error } = await this.$db.from(dbName).insert([object]).single()
           if (error) this.toastError(error)
           else {
+            if (dbName === 'sessions') data.events.forEach((e) => { e.start_date = new Date(e.start_date) })
             this.$root[dbName][data.id] = data
 
             if (onSuccess) onSuccess(data)
@@ -46,7 +47,7 @@ export default {
         toastError(error) {
           if (typeof error === 'string') error = { message: 'Error', details: error }
           this.$toast.add({
-            severity: 'error', summary: error.message, detail: error.details, life: 3000,
+            severity: 'error', summary: error.message, detail: error.details, life: 8000,
           })
         },
       },

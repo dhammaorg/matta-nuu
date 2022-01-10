@@ -11,6 +11,7 @@ import Dropdown from 'primevue/dropdown'
 import ConfirmationService from 'primevue/confirmationservice'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ToastService from 'primevue/toastservice'
+import Tooltip from 'primevue/tooltip'
 
 import App from './App.vue'
 import router from '@/services/router'
@@ -31,6 +32,7 @@ const app = createApp(App)
   .use(PrimeVue)
   .use(ConfirmationService)
   .use(ToastService)
+  .directive('tooltip', Tooltip)
   .component('Dialog', Dialog)
   .component('Button', Button)
   .component('DataTable', DataTable)

@@ -2,7 +2,7 @@
   <SessionMenu ref="menu" />
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
-    <div :style="contentFullPage ? 'height: calc(100vh - 10.5rem)' : ''" v-if="$root.isSessionFullyLoaded">
+    <div :style="contentFullPage ? 'height: calc(100vh - 10.5rem)' : ''" v-if="$root.isSessionFullyLoaded()">
       <router-view></router-view>
     </div>
   </div>
@@ -59,7 +59,7 @@ export default {
     },
   },
   async mounted() {
-    if (this.$root.isSessionFullyLoaded) return // if already loaded do nothing
+    if (this.$root.isSessionFullyLoaded()) return // if already loaded do nothing
 
     const { data } = await this.$db.from('sessions').select().match({ id: this.$route.params.id }).single()
     data.events ||= []

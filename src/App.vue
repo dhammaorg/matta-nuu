@@ -19,7 +19,7 @@ import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
 
 const emptySession = {
-  rows: [], events: [], stocks: {}, realStocks: {}, buys: {}, products: {},
+  rows: [], events: [], realStocks: {}, buys: {}, products: {},
 }
 export default {
   components: { Menubar, Toast },
@@ -57,9 +57,6 @@ export default {
       set(value) {
         this.sessions[this.$route.params.id] = value
       },
-    },
-    isSessionFullyLoaded() {
-      return this.fullyLoadedSessions.includes(parseInt(this.$route.params.id, 10))
     },
     products() {
       const result = new Set()
@@ -106,6 +103,9 @@ export default {
       // @page can be declared only once. As vuejs use same page for every page
       // We do this trick of changing directly the DOM
       document.getElementById('print-orientation').innerHTML = `@page { size: ${mode}; }`
+    },
+    isSessionFullyLoaded(id = parseInt(this.$route.params.id, 10)) {
+      return this.fullyLoadedSessions.includes(id)
     },
   },
 }

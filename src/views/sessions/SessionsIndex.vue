@@ -9,15 +9,17 @@
       </span>
     </div>
 
-    <DataTable :value="Object.values($root.sessions)" dataKey="id"
+    <DataTable :value="Object.values($root.sessions).reverse()" dataKey="id"
       :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
         <template #body="{data}">
           <router-link :to="{ name: 'session_schedule', params: { id: data.id }}">
-            <Button icon="pi pi-pencil" class="p-button-text p-button-primary" />
+            <Button icon="pi pi-pencil" class="p-button-text" />
           </router-link>
+          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
+                  @click="duplicateSession(data)"/>
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
                   @click="deleteSession(data)" />
         </template>
@@ -53,6 +55,17 @@ export default {
           this.dbDestroy('sessions', session)
         },
       })
+    },
+    async duplicateSession(session) {
+      // Fully Load the session
+      if (!this.$root.isSessionFullyLoaded(session.id)) {
+        const { data } = await this.$db.from('sessions').select().match({ id: session.id }).single()
+        session = data
+      }
+      const newSession = { ...session }
+      delete newSession.id
+      newSession.name = `${session.name} (COPY)`
+      this.dbCreate('sessions', newSession)
     },
     initFilters() {
       this.filters = {

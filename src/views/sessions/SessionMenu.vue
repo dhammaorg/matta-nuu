@@ -103,7 +103,7 @@ export default {
       handler() {
         const sessionJson = JSON.stringify(this.session)
         // Check for fake change
-        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1]) && this.$root.isSessionFullyLoaded) {
+        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1]) && this.$root.isSessionFullyLoaded()) {
           // Parse + stringify makes object deep copy
           const newValue = JSON.parse(sessionJson)
           if (this.history.length !== 0) this.unsavedChanges = true
