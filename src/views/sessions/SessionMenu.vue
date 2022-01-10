@@ -60,6 +60,9 @@ export default {
     window.onbeforeunload = () => {
       if (this.unsavedChangesWarning) return 'You have unsaved changes, are you sure to quit?'
     }
+    window.addEventListener('keydown', (e) => {
+      if (e.keyCode === 90 && e.ctrlKey) this.undo()
+    })
   },
   computed: {
     session() {
@@ -81,6 +84,7 @@ export default {
       this.unsavedChanges = false
     },
     undo() {
+      if (this.history.length <= 1) return
       // poping twice the history, cause last history value is the same as current value
       let lastSession = this.history.pop()
       lastSession = this.history.pop()
