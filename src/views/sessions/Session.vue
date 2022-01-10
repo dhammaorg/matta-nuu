@@ -123,11 +123,17 @@ export default {
     width: 200px;
     min-width: 200px !important;
     max-width: 200px !important;
-    justify-content: flex-start !important;
+    @media screen { justify-content: flex-start !important; }
   }
   td.product-column {
-    background-color: var(--bluegray-500) !important;
-    color: var(--bluegray-50);
+    @media screen {
+      background-color: var(--bluegray-500) !important;
+      color: var(--bluegray-50);
+    }
+    @media print {
+      background-color: var(--bluegray-50) !important;
+      border-left: 1px solid var(--surface-border) !important;
+    }
     font-weight: 600;
   }
   td.reorder-column {
@@ -152,6 +158,7 @@ export default {
   }
   th.transparent {
     background-color: var(--surface-ground) !important;
+    @media print { background-color: var(--surface-0) !important; }
     border-top: none !important;
     border-left: none !important;
   }
@@ -177,7 +184,8 @@ export default {
     padding: 1rem .7rem;
   }
   td, th {
-    min-width: 120px !important;
+    min-width: 110px !important;
+    @media print { min-width: 60px !important; }
     justify-content: center;
     position: relative;
 
@@ -187,7 +195,7 @@ export default {
       font-weight: 600;
       font-size: .8rem;
       margin-bottom: 5px;
-      color: var(--indigo-500);
+      @media screen { color: var(--indigo-500); }
     }
     .amount {
       font-size: 1.2rem;

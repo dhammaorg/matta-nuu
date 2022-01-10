@@ -101,10 +101,22 @@ export default {
       },
     },
   },
+  methods: {
+    setPrintMode(mode) {
+      // @page can be declared only once. As vuejs use same page for every page
+      // We do this trick of changing directly the DOM
+      document.getElementById('print-orientation').innerHTML = `@page { size: ${mode}; }`
+    },
+  },
 }
 </script>
 
 <style lang="scss">
+  @media print {
+    // Hide header and footer added while printed with website url and date
+    @page { margin: 0; }
+    body { padding: 30px !important; }
+  }
   #app, body, html {
     margin: 0;
     padding: 0;
@@ -112,7 +124,9 @@ export default {
     height: 100%;
     font-size: 15px;
     color: var(--text-color);
-    background-color:var(--surface-ground);
+    @media screen { background-color:var(--surface-ground); }
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
   .matta-nuu .p-menubar {
     border-radius: 0;

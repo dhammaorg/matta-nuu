@@ -1,5 +1,5 @@
 <template>
-  <div style="max-width: 800px" class="mx-auto">
+  <div class="session-order mx-auto">
 
     <div class="mb-3 d-flex">
       <div class="flex-grow-1">
@@ -112,6 +112,7 @@ export default {
   },
   async mounted() {
     this.fetchOrder(this.$route.params.order_id)
+    this.$root.setPrintMode('portrait')
   },
   async beforeRouteUpdate(to, from) {
     this.fetchOrder(to.params.order_id)
@@ -195,7 +196,6 @@ export default {
       this.newProduct = ''
     },
     deleteRow(row) {
-      console.log('delete', row)
       delete this.order.values[row.id]
     },
   },
@@ -203,6 +203,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+  .session-order {
+    max-width: 800px;
+  }
   ::v-deep td.needed, ::v-deep td.actions {
     background-color: var(--indigo-50);
   }
@@ -230,5 +233,12 @@ export default {
   }
   ::v-deep td, ::v-deep th {
     min-width: 100px !important;
+  }
+  @media print {
+    .session-order {
+      max-width: 600px;
+      margin-top: 2rem;
+    }
+    .card { margin-top: 2rem; }
   }
 </style>

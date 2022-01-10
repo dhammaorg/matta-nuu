@@ -146,6 +146,7 @@ export default {
   },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show()
+    this.$root.setPrintMode('landscape')
   },
   computed: {
     session() {
@@ -236,8 +237,6 @@ export default {
       }
     }
   }
-
-  @page { size: landscape; }
 
   ::v-deep .pi.pi-print.slash {
     position: relative;
