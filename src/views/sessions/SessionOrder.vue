@@ -37,7 +37,7 @@
       <div class="p-inputgroup mb-3 d-print-none">
         <span class="p-inputgroup-addon">Quantities until</span>
         <InputDay v-model="order.target_date" :days="sessionDays" />
-        <Button label="Refresh" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" />
+        <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" />
       </div>
     </div>
 
@@ -62,6 +62,11 @@
           </template>
         </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
+        <Column field="id" class="d-print-none actions w-auto">
+          <template #body="{ data }">
+            <Button icon="pi pi-times" class="p-button-text p-0" @click="deleteRow(data)" />
+          </template>
+        </Column>
 
         <template #empty>
           No products in this order yet
@@ -70,7 +75,7 @@
 
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
-          <InputProduct v-model="newProduct" :dropdown="false" placeholder="Add Product" />
+          <InputProduct v-model="newProduct" :dropdown="false" placeholder="Add Product" @keyup.enter="addProduct" />
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
         </div>
       </div>
@@ -156,6 +161,7 @@ export default {
         const needed = 0 - (values[this.order.target_date.toDateString()] || {}).value
         if (needed > 0) {
           this.order.values[product] = {
+            id: product,
             name: config.reference || product,
             value: Math.ceil(needed / (config.conditioning || 1)),
             unit: config.conditioning ? '' : this.productsUnits[product],
@@ -188,12 +194,16 @@ export default {
       }
       this.newProduct = ''
     },
+    deleteRow(row) {
+      console.log('delete', row)
+      delete this.order.values[row.id]
+    },
   },
 }
 </script>
 
 <style lang='scss' scoped>
-  ::v-deep td.needed {
+  ::v-deep td.needed, ::v-deep td.actions {
     background-color: var(--indigo-50);
   }
   .p-inputgroup-addon {
@@ -217,5 +227,8 @@ export default {
     .p-button, .p-inputtext {
       font-size: .9rem;
     }
+  }
+  ::v-deep td, ::v-deep th {
+    min-width: 100px !important;
   }
 </style>

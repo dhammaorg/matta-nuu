@@ -22,6 +22,9 @@ td input, td .p-autocomplete {
 td .p-button.p-button-icon-only {
   padding: 0.5rem 0;
 }
+td.w-auto, th.w-auto {
+  min-width: 0 !important;
+}
 .editable-cells-table .p-editable-column {
   &:hover {
     cursor: text;
