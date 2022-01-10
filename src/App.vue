@@ -111,7 +111,7 @@ export default {
     width: 100%;
     height: 100%;
     font-size: 15px;
-    text-color: var(--text-color);
+    color: var(--text-color);
     background-color:var(--surface-ground);
   }
   .matta-nuu .p-menubar {
