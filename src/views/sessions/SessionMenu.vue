@@ -62,6 +62,11 @@ export default {
     }
     window.addEventListener('keydown', (e) => {
       if (e.keyCode === 90 && e.ctrlKey) this.undo()
+      if (e.keyCode === 83 && e.ctrlKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        this.save()
+      }
     })
   },
   computed: {
