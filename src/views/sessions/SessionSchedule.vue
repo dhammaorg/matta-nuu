@@ -110,7 +110,7 @@
             <InputUnit v-model="data.values[field].unit" />
           </template>
           <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
-          <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus />
+          <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus :maxFractionDigits="2" />
         </div>
       </template>
     </Column>

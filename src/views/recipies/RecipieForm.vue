@@ -15,7 +15,7 @@
     <div class="mb-3">
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
         <InputProduct v-model="product.name" class="me-2 w-50" placeholder="Name"/>
-        <InputNumber v-model="product.amount" mode="decimal" :maxFractionDigits="5"
+        <InputNumber v-model="product.amount" :maxFractionDigits="5"
                     class="me-2 w-25" placeholder="Amount"/>
         <InputUnit v-model="product.unit" class="w-25"/>
         <Button icon="pi pi-times" class="p-button-text p-button-danger"

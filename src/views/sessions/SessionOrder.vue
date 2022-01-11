@@ -52,7 +52,7 @@
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
           <template #body="{ data }">
-            <InputNumber v-model="data.value" />
+            <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
         <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
