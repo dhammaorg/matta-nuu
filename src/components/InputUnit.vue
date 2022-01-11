@@ -1,5 +1,5 @@
 <template>
-  <Dropdown :options="units" placeholder="Unit" class="w-100" />
+  <Dropdown :options="units" placeholder="Unit" />
 </template>
 
 <script>
@@ -13,3 +13,9 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+  .p-dropdown {
+    width: 100%;
+  }
+</style>
