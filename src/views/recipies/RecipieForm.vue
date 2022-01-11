@@ -28,7 +28,7 @@
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
-      <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveRecipie" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveRecipie" />
     </template>
   </Dialog>
 </template>
@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       visible: false,
+      loading: false,
       recipie: {},
     }
   },
