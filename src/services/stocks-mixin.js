@@ -58,9 +58,8 @@ export default {
           result += dayAmount * unitFactor(dayUnit)
           return
         }
-        const dayRecipie = row.recipie || dayValue.recipie
-        if (!dayRecipie) return
-        dayRecipie.products.forEach((recipieProduct) => {
+        const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id);
+        (dayRecipie.products || []).forEach((recipieProduct) => {
           if (recipieProduct.name === product) {
             this.productsUnits[product] = unitParent(recipieProduct.unit)
             result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount * unitFactor(recipieProduct.unit)

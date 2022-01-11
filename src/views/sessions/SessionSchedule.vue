@@ -69,7 +69,7 @@
           {{ data.product }}
           <span v-if="data.unit">({{ data.unit }})</span>
         </span>
-        <span v-else-if="data.type == 'recipie'">{{ data.recipie ? data.recipie.name : '' }}</span>
+        <span v-else-if="data.type == 'recipie'">{{ data.recipie_id ? $root.getRecipie(data.recipie_id).name : '' }}</span>
         <span v-else>{{ data.label }}</span>
         <span class="btn-on-hover d-print-none">
           <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash" @click.stop
@@ -83,7 +83,7 @@
           <InputProduct v-model="data.product" />
           <InputUnit v-model="data.unit" />
         </div>
-        <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie" />
+        <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie_id" />
         <InputText    v-else v-model="data.label" placeholder="Row Name" />
       </template>
     </Column>
@@ -97,8 +97,8 @@
             {{ data.values[field].product }}
             <span v-if="data.values[field].unit">({{ data.values[field].unit }})</span>
           </label>
-          <label v-if="data.type == 'recipies' && data.values[field].recipie">
-            {{ data.values[field].recipie.name }}
+          <label v-if="data.type == 'recipies' && data.values[field].recipie_id">
+            {{ $root.getRecipie(data.values[field].recipie_id).name }}
           </label>
           <div class="amount">{{ data.values[field].amount }}</div>
         </template>
@@ -109,7 +109,7 @@
             <InputProduct v-model="data.values[field].product" />
             <InputUnit v-model="data.values[field].unit" />
           </template>
-          <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie" />
+          <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
           <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus />
         </div>
       </template>
@@ -169,7 +169,7 @@ export default {
       data.label = newData.label
       data.product = newData.product
       data.unit = newData.unit
-      data.recipie = newData.recipie
+      data.recipie_id = newData.recipie_id
     },
     rowClass(data) {
       return data.printable ? null : 'd-print-none'

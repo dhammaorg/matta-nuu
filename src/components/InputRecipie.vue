@@ -1,5 +1,5 @@
 <template>
-  <Dropdown v-bind="$attrs" :options="$root.recipiesArray" optionLabel="name"
+  <Dropdown v-bind="$attrs" :options="$root.recipiesArray" optionLabel="name" optionValue="id"
             placeholder="Recipie" :filter="true" filterPlaceholder=""
             class="w-100">
     <template #footer>
@@ -10,7 +10,7 @@
     </template>
   </Dropdown>
 
-  <RecipieForm ref="form" @created="$emit('update:modelValue', $event)"></RecipieForm>
+  <RecipieForm ref="form" @created="$emit('update:modelValue', $event.id)"></RecipieForm>
 </template>
 
 <script>

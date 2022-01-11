@@ -107,6 +107,9 @@ export default {
     isSessionFullyLoaded(id = parseInt(this.$route.params.id, 10)) {
       return this.fullyLoadedSessions.includes(id)
     },
+    getRecipie(id) {
+      return this.recipies[id] || {}
+    },
   },
 }
 </script>
