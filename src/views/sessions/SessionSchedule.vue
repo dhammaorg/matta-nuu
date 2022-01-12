@@ -23,10 +23,16 @@
                 class="event-start event-end header-group event-editor">
           <template #header>
             <div class="d-flex align-items-center w-100">
-              <span class="flex-grow-1 text-center">{{ event.name }}</span>
-              <span class="d-print-none">
+              <span class="flex-grow-1 text-center">
+                {{ event.name }}
+                <span v-if="event.people_count" class="fw-normal ms-2 xs">{{ event.people_count }} people</span>
+              </span>
+              <span class="d-print-none btn-on-hover">
+                <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
+                        class="p-button-sm p-button-success p-button-text"
+                        v-tooltip.top="'Save as template'" />
                 <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
-                        class="p-button-sm p-button-secondary p-button-text pe-0" />
+                        class="p-button-sm p-button-text" />
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
                         class="p-button-sm p-button-danger p-button-text" />
                 <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
@@ -120,6 +126,9 @@
   <EventForm ref="eventForm" @save="createOrUpdateEvent($event)"
              :disabled-dates="sessionDays.map(d => d.date)"
              :default-date="sessionDays.length > 1 ? sessionDays.at(-1).date.addDays(1) : null"/>
+
+  <SaveTemplate ref="saveTemplate"/>
+
 </template>
 
 <script>
@@ -133,11 +142,22 @@ import InputUnit from '@/components/InputUnit.vue'
 import EventForm from './EventForm.vue'
 import NewRowButton from './SessionNewRowButton.vue'
 import PrintButton from './SessionSchedulePrintButton.vue'
+import SaveTemplate from '@/views/templates/SaveTemplateDialog.vue'
 
 export default {
   inject: ['sessionDays'],
   components: {
-    ColumnGroup, Row, InputProduct, InputRecipie, InputUnit, InputNumber, NewRowButton, EventForm, ToggleButton, PrintButton,
+    ColumnGroup,
+    Row,
+    InputProduct,
+    InputRecipie,
+    InputUnit,
+    InputNumber,
+    NewRowButton,
+    EventForm,
+    ToggleButton,
+    PrintButton,
+    SaveTemplate,
   },
   data() {
     return {
@@ -228,8 +248,12 @@ export default {
   ::v-deep th.event-editor {
     padding: .7rem 1rem !important;
     .p-button.p-button-sm.btn-add-day {
-      padding: .45rem .6rem;
+      padding: 0.0rem 0.5rem;
       border-radius: 4px;
+      height: 2rem;
+      align-self: center;
+      margin-right: .5rem;
+      margin-left: .25rem;
       .p-button-icon {
         font-size: .7rem;
         line-height: 1.5;
@@ -259,10 +283,16 @@ export default {
     }
   }
 
-  td .btn-on-hover { display: none; }
-  td:hover .btn-on-hover {
-    display: flex;
-    position: absolute;
-    right: 0;
+  td, th {
+    .btn-on-hover { display: none; }
+    &:hover .btn-on-hover {
+      display: flex;
+      position: absolute;
+      right: 0;
+    }
+    &:not(:hover) .d-hover { display: none; }
+  }
+  th .btn-on-hover {
+    background-color: var(--bluegray-50);
   }
 </style>

@@ -9,7 +9,7 @@
       </span>
     </div>
 
-    <DataTable :value="Object.values($root.sessions).reverse()" dataKey="id"
+    <DataTable :value="Object.values($root.sessions)" dataKey="id"
       :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>

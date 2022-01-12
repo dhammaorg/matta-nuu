@@ -12,6 +12,8 @@
 
   <router-view/>
 
+  <ConfirmDialog></ConfirmDialog>
+
 </template>
 
 <script>
@@ -28,8 +30,10 @@ export default {
       navItems: [
         { label: 'Sessions', to: { name: 'sessions' }, icon: 'pi pi-folder-open' },
         { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
+        { label: 'Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
       ],
       sessions: {},
+      templates: {},
       recipies: {},
       orders: {},
       fullyLoadedSessions: [],
@@ -41,7 +45,12 @@ export default {
         this.recipies[recipie.id] = recipie
       })
     })
-    this.$db.from('sessions').select('id, name').then((result) => {
+    this.$db.from('templates').select('id, name').order('id', { ascending: false }).then((result) => {
+      result.data.forEach((template) => {
+        this.templates[template.id] = template
+      })
+    })
+    this.$db.from('sessions').select('id, name').order('id', { ascending: false }).then((result) => {
       result.data.forEach((session) => {
         if (!this.sessions[session.id]) {
           this.sessions[session.id] = { ...session, ...emptySession }

@@ -21,7 +21,6 @@
         </template>
       </Column>
     </DataTable>
-    <ConfirmDialog></ConfirmDialog>
 
     <RecipieForm ref="form"></RecipieForm>
   </div>

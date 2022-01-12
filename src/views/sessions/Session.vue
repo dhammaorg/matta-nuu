@@ -7,8 +7,6 @@
     </div>
   </div>
 
-  <ConfirmDialog></ConfirmDialog>
-
 </template>
 
 <script>

@@ -7,6 +7,7 @@ import SessionOrdersIndex from '@/views/sessions/SessionOrdersIndex.vue'
 import SessionOrder from '@/views/sessions/SessionOrder.vue'
 import SessionSuppliers from '@/views/sessions/SessionSuppliers.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
+import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
 
 const routes = [
   {
@@ -50,6 +51,11 @@ const routes = [
     path: '/recipes',
     name: 'recipies',
     component: RecipiesIndex,
+  },
+  {
+    path: '/templates',
+    name: 'templates',
+    component: TemplatesIndex,
   },
 ]
 

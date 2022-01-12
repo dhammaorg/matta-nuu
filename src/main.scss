@@ -53,6 +53,10 @@ th.text-center .p-column-header-content {
 td .p-inputnumber {
   width: 100%;
 }
+.p-datatable.table-clickable .p-datatable-tbody > tr:hover {
+  background-color: var(--bluegray-50);
+  cursor: pointer;
+}
 .matta-nuu .p-inplace-display {
   display: flex;
   padding: 0;

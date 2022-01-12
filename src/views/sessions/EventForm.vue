@@ -7,6 +7,11 @@
     </div>
 
     <div class="p-field">
+      <label>Number of People</label>
+      <InputNumber v-model="event.people_count" />
+    </div>
+
+    <div class="p-field">
       <label>Start Date</label>
       <Calendar v-model="event.start_date" required="true" dateFormat="d MM yy" icon="pi pi-calendar"
                 :disabledDates="disabledDates" />
@@ -21,9 +26,10 @@
 
 <script>
 import Calendar from 'primevue/calendar'
+import InputNumber from 'primevue/inputnumber'
 
 export default {
-  components: { Calendar },
+  components: { Calendar, InputNumber },
   props: ['disabledDates', 'defaultDate'],
   data() {
     return {
