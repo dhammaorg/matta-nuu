@@ -92,7 +92,10 @@ export default {
       return [...new Set(result)] // uniqueness
     },
     recipiesArray() {
-      return Object.values(this.$root.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
+      return Object.values(this.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
+    },
+    templatesArray() {
+      return Object.values(this.templates)
     },
   },
   watch: {

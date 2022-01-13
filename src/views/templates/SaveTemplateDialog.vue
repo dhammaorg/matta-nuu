@@ -48,6 +48,7 @@ export default {
         name: event.name,
         people_count: event.people_count,
         rows: this.$root.session.rows,
+        days: event.days,
       }
       this.visible = true
     },

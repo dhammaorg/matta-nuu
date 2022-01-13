@@ -6,6 +6,12 @@
       <InputText v-model.trim="event.name" required="true" placeholder="Name" autofocus/>
     </div>
 
+    <div class="p-field" v-if="isNew">
+      <Dropdown :options="$root.templatesArray" optionLabel="name" v-model="template"
+                placeholder="Use a template (optional)" :filter="true" filterPlaceholder=""
+                class="w-100" />
+    </div>
+
     <div class="p-field">
       <label>Number of People</label>
       <InputNumber v-model="event.people_count" />
@@ -34,6 +40,7 @@ export default {
   data() {
     return {
       visible: false,
+      template: {},
       event: {},
     }
   },
@@ -48,12 +55,23 @@ export default {
       if (!this.event.start_date) this.event.start_date = this.defaultDate
       this.visible = true
     },
-    save() {
+    async save() {
       if (this.event.name && this.event.start_date) {
+        if (this.isNew && this.template.id) {
+          if (!this.template.rows) {
+            const { data } = await this.$db.from('templates').select().match({ id: this.template.id }).single()
+            this.$root.templates[this.template.id] = data
+            this.template = data
+          }
+          this.event = { ...this.template, ...this.event }
+          this.event.days = this.template.days
+        }
+
         if (!this.event.days) this.event.days = ['0']
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}
+        this.template = {}
       }
     },
   },
