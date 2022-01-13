@@ -14,7 +14,14 @@
 
     <div class="p-field">
       <label>Number of People</label>
-      <InputNumber v-model="event.people_count" />
+      <div class="p-inputgroup">
+        <InputNumber v-model="event.people_count" />
+        <span class="p-inputgroup-addon" v-if="!isNew && event.people_count"
+              v-tooltip.top="'Example : if you change number of people from 20 to 40, all amounts will be multiplied by 2'">
+          <Checkbox v-model="updateAmounts" :binary="true" />
+          <label class="m-0 ms-2">Proportionally update amounts</label>
+        </span>
+      </div>
     </div>
 
     <div class="p-field">
@@ -33,15 +40,18 @@
 <script>
 import Calendar from 'primevue/calendar'
 import InputNumber from 'primevue/inputnumber'
+import Checkbox from 'primevue/checkbox'
 
 export default {
-  components: { Calendar, InputNumber },
+  components: { Calendar, InputNumber, Checkbox },
   props: ['disabledDates', 'defaultDate'],
   data() {
     return {
       visible: false,
       template: {},
       event: {},
+      updateAmounts: false,
+      previousPeopleCount: null,
     }
   },
   computed: {
@@ -52,6 +62,7 @@ export default {
   methods: {
     show(object = {}) {
       this.event = { ...object }
+      this.previousPeopleCount = this.event.people_count
       if (!this.event.start_date) this.event.start_date = this.defaultDate
       this.visible = true
     },
@@ -74,11 +85,23 @@ export default {
           })
         }
 
+        // Proprtionally update amounts
+        if (this.updateAmounts && this.previousPeopleCount && this.previousPeopleCount !== this.event.people_count) {
+          const eventId = `Event${this.event.id}_`
+          const factor = this.event.people_count / this.previousPeopleCount
+          this.$root.session.rows.forEach((row) => {
+            Object.entries(row.values).forEach(([day, value]) => {
+              if (day.includes(eventId)) value.amount = Math.round(value.amount * factor)
+            })
+          })
+        }
+
         if (!this.event.days) this.event.days = ['0']
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}
         this.template = {}
+        this.updateAmounts = false
       }
     },
   },
