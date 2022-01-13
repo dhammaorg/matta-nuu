@@ -37,6 +37,10 @@ export default {
         },
         async dbDestroy(dbName, object) {
           this.loading = true
+          if (dbName == 'sessions') {
+            const { error } = await this.$db.from('orders').delete().match({ session_id: object.id })
+            if (error) this.toastError(error)
+          }
           const { error } = await this.$db.from(dbName).delete().match({ id: object.id }).single()
 
           if (error) this.toastError(error)
