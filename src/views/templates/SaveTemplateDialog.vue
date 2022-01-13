@@ -47,7 +47,7 @@ export default {
       this.template = {
         name: event.name,
         people_count: event.people_count,
-        rows: this.$root.session.rows,
+        rows: this.getEventRows(event),
         days: event.days,
       }
       this.visible = true
@@ -76,6 +76,20 @@ export default {
           this.dbUpdate('templates', this.template, () => { this.visible = false })
         },
       })
+    },
+    getEventRows(event) {
+      const result = []
+      const eventId = `Event${event.id}_`
+      this.$root.session.rows.forEach((row) => {
+        const values = []
+        // filters values associated to this event
+        Object.entries(row.values).forEach(([key, value]) => {
+          if (key.includes(eventId)) values.push(value)
+        })
+        // If this row is used by the event (i.e. there is at least on value for this row in this event)
+        if (values.find((v) => Object.values(v).length > 0)) result.push({ ...row, ...{ values } })
+      })
+      return result
     },
   },
 }

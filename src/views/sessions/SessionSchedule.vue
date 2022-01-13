@@ -218,7 +218,25 @@ export default {
         this.session.events[index] = event
       } else {
         // createNew
-        this.session.events.push({ ...event, ...{ id: this.newId(this.session.events) } })
+        const newEventId = this.newId(this.session.events)
+        if (event.templateRows) {
+          event.templateRows.forEach((templateRow) => {
+            const existingRow = this.session.rows.find((r) => ['label', 'product', 'type', 'unit'].every((prop) => r[prop] === templateRow[prop]))
+            if (existingRow) {
+              templateRow.values.forEach((rowValue, rowIndex) => {
+                existingRow.values[`Event${newEventId}_${rowIndex}`] = rowValue
+              })
+            } else {
+              const values = {}
+              templateRow.values.forEach((rowValue, rowIndex) => {
+                values[`Event${newEventId}_${rowIndex}`] = rowValue
+              })
+              this.session.rows.push({ ...templateRow, ...{ id: this.newId(this.session.rows), values } })
+            }
+          })
+          delete event.templateRows
+        }
+        this.session.events.push({ ...event, ...{ id: newEventId } })
       }
       this.session.events.sort((a, b) => (a.start_date > b.start_date ? 1 : -1))
     },

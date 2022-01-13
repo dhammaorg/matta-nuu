@@ -35,7 +35,7 @@ export default {
           const date = event.start_date.addDays(index)
           const dateHeader = date.toLocaleDateString([], { weekday: 'short', month: 'numeric', day: 'numeric' })
           days.push({
-            id: date.toDateString(), label: day, event, index, date, class: classes.join(' '), dateHeader,
+            id: `Event${event.id}_${index}`, label: day, event, index, date, class: classes.join(' '), dateHeader,
           })
         })
       })
@@ -48,7 +48,7 @@ export default {
       const days = [...this.sessionDays]
       const date = firstDay.date.removeDays(1)
       days.unshift({
-        id: date.toDateString(), class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,
+        id: 'initial', class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,
       })
       return days
     },
