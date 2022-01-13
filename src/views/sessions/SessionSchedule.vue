@@ -25,7 +25,10 @@
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
                 {{ event.name }}
-                <span v-if="event.people_count" class="fw-normal ms-2 xs">{{ event.people_count }} people</span>
+                <span v-if="event.people_count" class="fw-normal ms-2 xs d-inline-flex align-items-center">
+                  {{ event.people_count }}
+                  <span class="pi pi-users xs ms-1"></span>
+                </span>
               </span>
               <span class="d-print-none btn-on-hover">
                 <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
@@ -45,13 +48,13 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, 'day-date', {'p-0': dayHover == day.id}]">
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, 'day-date']">
           <template #header>
-            <div @mouseover="dayHover = day.id" @mouseleave="dayHover = null" >
-                <Button icon="pi pi-trash" class="p-button-danger p-button-text p-0"
-                        v-if="dayHover == day.id && day.class.includes('event-end') && day.event.days.length > 1"
-                        @click="day.event.days.pop()" />
-                <span v-else>{{ day.dateHeader }}</span>
+            <span>{{ day.dateHeader }}</span>
+            <div class="btn-on-hover w-100 justify-content-center">
+              <Button icon="pi pi-trash" class="p-button-danger p-button-text p-0"
+                      v-if="day.class.includes('event-end') && day.event.days.length > 1"
+                      @click="day.event.days.pop()" />
             </div>
           </template>
         </Column>
@@ -158,11 +161,6 @@ export default {
     ToggleButton,
     PrintButton,
     SaveTemplate,
-  },
-  data() {
-    return {
-      dayHover: null,
-    }
   },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show()
