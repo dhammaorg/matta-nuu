@@ -25,7 +25,6 @@
         </template>
       </Column>
     </DataTable>
-    <ConfirmDialog></ConfirmDialog>
 
     <SessionNew ref="newSessionModal"></SessionNew>
   </div>
