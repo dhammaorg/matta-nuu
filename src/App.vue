@@ -31,23 +31,6 @@ export default {
     }
   },
   created() {
-    this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
-      result.data.forEach((recipie) => {
-        this.recipies[recipie.id] = recipie
-      })
-    })
-    this.$db.from('templates').select('id, name').order('id', { ascending: false }).then((result) => {
-      result.data.forEach((template) => {
-        this.templates[template.id] = template
-      })
-    })
-    this.$db.from('sessions').select('id, name').order('id', { ascending: false }).then((result) => {
-      result.data.forEach((session) => {
-        if (!this.sessions[session.id]) {
-          this.sessions[session.id] = { ...session, ...emptySession }
-        }
-      })
-    })
     this.user = supabase.auth.user()
   },
   computed: {
@@ -101,8 +84,35 @@ export default {
         })
       },
     },
+    user() {
+      this.fetchData()
+    },
   },
   methods: {
+    fetchData() {
+      this.recipies = {}
+      this.templates = {}
+      this.sessions = {}
+      if (!this.user) return
+
+      this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
+        result.data.forEach((recipie) => {
+          this.recipies[recipie.id] = recipie
+        })
+      })
+      this.$db.from('templates').select('id, name').order('id', { ascending: false }).then((result) => {
+        result.data.forEach((template) => {
+          this.templates[template.id] = template
+        })
+      })
+      this.$db.from('sessions').select('id, name').order('id', { ascending: false }).then((result) => {
+        result.data.forEach((session) => {
+          if (!this.sessions[session.id]) {
+            this.sessions[session.id] = { ...session, ...emptySession }
+          }
+        })
+      })
+    },
     setPrintMode(mode) {
       // @page can be declared only once. As vuejs use same page for every page
       // We do this trick of changing directly the DOM
