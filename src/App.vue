@@ -9,7 +9,9 @@
       </div>
     </template>
     <template #end>
-      <Button icon="pi pi-sign-out" class="p-button-rounded p-button-sm me-2" @click="logout"
+      <ToggleButton v-model="help" class="p-button-sm p-button-text me-3" style="height: 2rem"
+                    onLabel="Help" offLabel="Help" onIcon="pi pi-question-circle" offIcon="pi pi-question-circle" />
+      <Button icon="pi pi-sign-out" class="p-button-rounded p-button-text me-2" @click="logout"
               v-if="user" v-tooltip.left="'Logout'"/>
     </template>
   </Menubar>
@@ -23,13 +25,14 @@
 <script>
 import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
+import ToggleButton from 'primevue/togglebutton'
 import supabase from '@/services/supabase'
 
 const emptySession = {
   rows: [], events: [], realStocks: {}, buys: {}, products: {},
 }
 export default {
-  components: { Menubar, Toast },
+  components: { Menubar, Toast, ToggleButton },
   data() {
     return {
       navItems: [
@@ -41,8 +44,9 @@ export default {
       templates: {},
       recipies: {},
       orders: {},
-      fullyLoadedSessions: [],
-      user: null,
+      fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
+      user: null, // current user, null if nobody is loggued in
+      help: false, // Displaying or not help messages
     }
   },
   created() {
@@ -203,5 +207,12 @@ export default {
     padding: 2rem;
     padding-bottom: 0;
     @media print { padding: 0; }
+  }
+  .p-menubar-start, .p-menubar-end {
+    display: flex;
+    align-items: center;
+  }
+  .p-menubar .p-button.p-button-text {
+    color: var(--indigo-200);
   }
 </style>
