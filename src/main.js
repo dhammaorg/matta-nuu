@@ -12,6 +12,7 @@ import ConfirmationService from 'primevue/confirmationservice'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
+import HelpMessage from '@/components/HelpMessage.vue'
 
 import App from './App.vue'
 import router from '@/services/router'
@@ -41,6 +42,7 @@ const app = createApp(App)
   .component('InputText', InputText)
   .component('ConfirmDialog', ConfirmDialog)
   .component('Dropdown', Dropdown)
+  .component('HelpMessage', HelpMessage)
 
 router.beforeEach((to, from) => {
   const user = supabase.auth.user()

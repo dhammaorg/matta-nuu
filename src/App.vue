@@ -157,6 +157,9 @@ export default {
     margin-top: 3rem;
     @extend .card;
   }
+  .p-message + .page-content {
+    margin-top: 1rem;
+  }
   .card {
     background: white;
     padding: 3rem;

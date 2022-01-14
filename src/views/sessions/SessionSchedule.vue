@@ -1,4 +1,12 @@
 <template>
+  <HelpMessage>
+    <strong>Schedule</strong> is where you organize the consumptions.
+    <ol>
+      <li>Adds <strong>Days</strong> to Event (hover the event name to display actions)</li>
+      <li>Adds <strong>Rows</strong></li>
+    </ol>
+  </HelpMessage>
+
   <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
              @rowReorder="session.rows = $event.value"

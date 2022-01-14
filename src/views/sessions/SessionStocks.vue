@@ -1,4 +1,18 @@
 <template>
+  <HelpMessage>
+    <p>
+      Theorical <strong>Stocks</strong> are calculated based on the <strong>Schedule</strong>.
+      You can adjust real values per day
+    </p>
+    <p>
+      Everything you buy should be displayed here. You can either enter manually bought amount on each cell, or use the
+      <strong>orders</strong> feature to help you manage them
+    </p>
+    <p>
+      <strong>All stocks amounts are the ones at the end of the day</strong>
+    </p>
+  </HelpMessage>
+
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
              editMode="cell" class="editable-cells-table stocks-table session-table">
