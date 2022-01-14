@@ -16,6 +16,7 @@ import Tooltip from 'primevue/tooltip'
 import App from './App.vue'
 import router from '@/services/router'
 import db from '@/services/db-plugin'
+import supabase from '@/services/supabase'
 import { utils } from '@/services/utils'
 
 import 'bootstrap/dist/css/bootstrap-utilities.css'
@@ -40,6 +41,11 @@ const app = createApp(App)
   .component('InputText', InputText)
   .component('ConfirmDialog', ConfirmDialog)
   .component('Dropdown', Dropdown)
+
+router.beforeEach((to, from) => {
+  const user = supabase.auth.user()
+  if (!user && !['login', 'register'].includes(to.name)) return { name: 'login' }
+})
 
 app.config.unwrapInjectedRef = true
 app.mount('#app')

@@ -8,6 +8,10 @@
         <img src="./assets/logo.png" class="me-4" height="50" style="margin-top: -5px"/>
       </div>
     </template>
+    <template #end>
+      <Button icon="pi pi-sign-out" class="p-button-rounded p-button-sm me-2" @click="logout"
+              v-if="user" v-tooltip.left="'Logout'"/>
+    </template>
   </Menubar>
 
   <router-view/>
@@ -19,6 +23,7 @@
 <script>
 import Menubar from 'primevue/menubar'
 import Toast from 'primevue/toast'
+import supabase from '@/services/supabase'
 
 const emptySession = {
   rows: [], events: [], realStocks: {}, buys: {}, products: {},
@@ -37,6 +42,7 @@ export default {
       recipies: {},
       orders: {},
       fullyLoadedSessions: [],
+      user: null,
     }
   },
   created() {
@@ -57,6 +63,7 @@ export default {
         }
       })
     })
+    this.user = supabase.auth.user()
   },
   computed: {
     session: {
@@ -121,6 +128,14 @@ export default {
     },
     getRecipie(id) {
       return this.recipies[id] || {}
+    },
+    async logout() {
+      const { error } = await supabase.auth.signOut()
+      if (error) this.toastError(error)
+      else {
+        this.user = null
+        this.$router.push({ name: 'login' })
+      }
     },
   },
 }

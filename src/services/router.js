@@ -8,8 +8,20 @@ import SessionOrder from '@/views/sessions/SessionOrder.vue'
 import SessionSuppliers from '@/views/sessions/SessionSuppliers.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
 import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
+import Login from '@/views/auth/Login.vue'
+import Register from '@/views/auth/Register.vue'
 
 const routes = [
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register,
+  },
   {
     path: '/',
     name: 'sessions',
