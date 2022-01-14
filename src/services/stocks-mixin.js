@@ -10,8 +10,27 @@ export default {
     session() {
       return this.$root.session
     },
+    sessionProducts() {
+      const result = new Set()
+      this.session.rows.forEach((row) => {
+        if (row.type === 'product') {
+          result.add(row.product)
+        } else if (row.type === 'products') {
+          Object.values(row.values).forEach((value) => {
+            result.add(value.product)
+          })
+        } else if (row.type === 'recipie') {
+          this.recipieProducts(row.recipie_id).forEach((product) => { result.add(product.name) })
+        } else if (row.type === 'recipies') {
+          Object.values(row.values).forEach((value) => {
+            this.recipieProducts(value.recipie_id).forEach((product) => { result.add(product.name) })
+          })
+        }
+      })
+      return Array.from(result).filter((r) => !!r).sort()
+    },
     stocks() {
-      return this.$root.products.map((product) => {
+      return this.sessionProducts.map((product) => {
         const values = {}
         let previousStock = 0
         this.stockDays.forEach((day) => {
@@ -70,6 +89,9 @@ export default {
     },
     round(n, decimals = 2) {
       return Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`)
+    },
+    recipieProducts(recipieId) {
+      return this.$root.getRecipie(recipieId).products || []
     },
   },
 }
