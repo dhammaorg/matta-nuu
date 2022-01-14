@@ -61,7 +61,7 @@ export default {
         toastSuccess(object, action) {
           const message = object.name ? `${object.name} successfully ${action}` : `Successfully ${action}`
           this.$toast.add({
-            severity: 'success', summary: 'Success', detail: message, life: 8000,
+            severity: 'success', summary: 'Success', detail: message, life: 4000,
           })
         },
       },
