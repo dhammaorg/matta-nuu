@@ -32,6 +32,7 @@ export default {
   },
   created() {
     this.user = supabase.auth.user()
+    this.help = localStorage.getItem('help') === 'true'
   },
   computed: {
     session: {
@@ -86,6 +87,9 @@ export default {
     },
     user() {
       this.fetchData()
+    },
+    help() {
+      localStorage.setItem('help', this.help)
     },
   },
   methods: {
