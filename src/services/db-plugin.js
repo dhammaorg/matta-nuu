@@ -8,7 +8,7 @@ export default {
       methods: {
         async dbCreate(dbName, object, onSuccess) {
           this.loading = true
-          const { data, error } = await this.$db.from(dbName).insert([object]).single()
+          const { data, error } = await this.$db.from(dbName).insert([this.addUserId(object)]).single()
           if (error) this.toastError(error)
           else {
             if (dbName === 'sessions') (data.events || []).forEach((e) => { e.start_date = new Date(e.start_date) })
@@ -22,7 +22,7 @@ export default {
         async dbUpdate(dbName, object) {
           this.loading = true
           const { data, error } = await this.$db.from(dbName)
-            .update(object)
+            .update(this.addUserId(object))
             .match({ id: object.id })
             .single()
 
@@ -48,6 +48,9 @@ export default {
             delete this.$root[dbName][object.id]
           }
           this.loading = false
+        },
+        addUserId(object) {
+          return { ...object, ...{ user_id: supabase.auth.user().id } }
         },
         toastError(error) {
           if (typeof error === 'string') error = { message: 'Error', details: error }
