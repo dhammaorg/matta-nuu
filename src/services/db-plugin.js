@@ -8,10 +8,10 @@ export default {
       methods: {
         async dbCreate(dbName, object, onSuccess) {
           this.loading = true
-          const { data, error } = await this.$db.from(dbName).insert([this.addUserId(object)]).single()
+          let { data, error } = await this.$db.from(dbName).insert([this.addUserId(object)]).single()
           if (error) this.toastError(error)
           else {
-            if (dbName === 'sessions') (data.events || []).forEach((e) => { e.start_date = new Date(e.start_date) })
+            data = this.fixData(data, dbName)
             this.$root[dbName][data.id] = data
             this.toastSuccess(data, 'created')
             if (onSuccess) onSuccess(data)
@@ -21,15 +21,14 @@ export default {
         },
         async dbUpdate(dbName, object) {
           this.loading = true
-          const { data, error } = await this.$db.from(dbName)
+          let { data, error } = await this.$db.from(dbName)
             .update(this.addUserId(object))
             .match({ id: object.id })
             .single()
 
           if (error) this.toastError(error)
           else {
-            if (data.delivery_date) data.delivery_date = new Date(data.delivery_date)
-            if (data.target_date) data.target_date = new Date(data.target_date)
+            data = this.fixData(data, dbName)
             this.$root[dbName][object.id] = data
             this.toastSuccess(data, 'updated')
           }
@@ -63,6 +62,12 @@ export default {
           this.$toast.add({
             severity: 'success', summary: 'Success', detail: message, life: 4000,
           })
+        },
+        fixData(data, dbName = '') {
+          if (dbName === 'sessions') (data.events || []).forEach((e) => { e.start_date = new Date(e.start_date) })
+          if (data.delivery_date) data.delivery_date = new Date(data.delivery_date)
+          if (data.target_date) data.target_date = new Date(data.target_date)
+          return data
         },
       },
     })

@@ -141,13 +141,12 @@ export default {
         this.order = { ...this.$root.orders[orderId] }
         return
       }
-      const { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
+      let { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
       if (data === null) {
         this.toastError('Could not find the order')
         this.$router.push({ name: 'session_orders', params: { id: this.$route.params.id } })
       } else {
-        data.target_date = new Date(data.target_date)
-        data.delivery_date = new Date(data.delivery_date)
+        data = this.fixData(data)
         const firstInit = Object.values(data.values || {}).length === 0
         data.values ||= {}
         this.order = data

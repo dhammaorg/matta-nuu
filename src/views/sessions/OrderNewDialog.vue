@@ -44,7 +44,7 @@ export default {
         report_values_in_stocks: true,
         delivery_date: this.stockDays.at(0).date,
       }
-      if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.supplier
+      if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.suppliers
       this.visible = true
     },
     async createOrder() {

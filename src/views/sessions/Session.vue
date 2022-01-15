@@ -51,8 +51,9 @@ export default {
       const firstDay = this.sessionDays[0]
       const days = [...this.sessionDays]
       const date = firstDay.date.removeDays(1)
+      const dateHeader = date.toLocaleDateString([], { weekday: 'short', month: 'numeric', day: 'numeric' })
       days.unshift({
-        id: 'initial', class: 'event-start event-end', label: 'Initial Stocks', date, initial: true,
+        id: 'initial', class: 'event-start event-end', label: 'Initial Stocks', date, initial: true, dateHeader,
       })
       return days
     },
