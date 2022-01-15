@@ -139,19 +139,21 @@ export default {
     async fetchOrder(orderId) {
       if (this.$root.orders[orderId]) {
         this.order = { ...this.$root.orders[orderId] }
-        return
-      }
-      let { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
-      if (data === null) {
-        this.toastError('Could not find the order')
-        this.$router.push({ name: 'session_orders', params: { id: this.$route.params.id } })
       } else {
+        let { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
+        if (data === null) {
+          this.toastError('Could not find the order')
+          this.order = {}
+          this.$router.push({ name: 'session_orders', params: { id: this.$route.params.id } })
+          return
+        }
         data = this.fixData(data)
-        const firstInit = Object.values(data.values || {}).length === 0
         data.values ||= {}
         this.order = data
-        if (firstInit && this.order.target_day) this.calculate()
       }
+
+      const firstInit = Object.values(this.order.values || {}).length === 0
+      if (firstInit && this.order.target_day) this.calculate()
     },
     calculate() {
       this.order.values = {}
