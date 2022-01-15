@@ -1,6 +1,10 @@
 <template>
   <SessionMenu ref="menu" />
 
+  <HelpMessage v-if="$route.name == 'session_orders'">
+    <strong>Orders</strong> let you easily get the list of products you need to order
+  </HelpMessage>
+
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
     <div :style="contentFullPage ? 'height: calc(100vh - 10.5rem)' : ''" v-if="$root.isSessionFullyLoaded()">
       <router-view></router-view>

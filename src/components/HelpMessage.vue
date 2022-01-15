@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style lang='scss'>
-  .help-message {
+  .help-message.p-message {
     max-width: 800px;
     margin: 0 auto;
     margin-top: 1rem;

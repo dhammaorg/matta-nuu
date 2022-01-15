@@ -1,4 +1,5 @@
 <template>
+
   <HelpMessage>
     <strong>Event Templates</strong> allows you to easily reuse events.
     To create a template, first create an event within a session, and then use

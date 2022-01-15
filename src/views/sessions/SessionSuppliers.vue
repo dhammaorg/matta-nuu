@@ -1,4 +1,10 @@
 <template>
+  <HelpMessage>
+    <p>Here you can link a <strong>Supplier</strong> to each product. It would be helpful to create
+    <strong>orders per supplier</strong>.</p>
+    <p>You can also customize <strong>how a product is packaged</strong> by the supplier, changing the name and conditioning</p>
+  </HelpMessage>
+
   <DataTable :value="products" showGridlines :scrollable="true" scrollHeight="flex"
              editMode="cell" class="editable-cells-table suppliers-table session-table">
     <ColumnGroup type="header">
@@ -9,8 +15,16 @@
       <Row>
         <Column header="Product" />
         <Column header="Supplier" />
-        <Column header="Name / Reference" />
-        <Column header="Conditioning" />
+        <Column><template #header>
+          <span v-tooltip.top="'Change the name of a product. Example : Sugar -> Raw Organic Sugar'">
+            Name / Reference
+          </span>
+        </template></Column>
+        <Column><template #header>
+          <span v-tooltip.top="'Example : if you buy Rice in 5kg bag, then enter 5 in this column. The order will be adjusted so if you need 24kg it will order 5 bag of 5kg'">
+            Conditioning
+          </span>
+        </template></Column>
       </Row>
     </ColumnGroup>
 
