@@ -36,7 +36,7 @@ export default {
         this.stockDays.forEach((day) => {
           let bought = (this.session.buys[product] || {})[day.id] || 0
           const ordered = []
-          this.orders.filter((order) => order.delivery_date.getTime() === day.date.getTime()).forEach((order) => {
+          this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
             if (order.values[product]) {
               const config = this.session.products[product] || {}
               const value = order.values[product].value * unitFactor(order.values[product].unit) * (config.conditioning || 1)

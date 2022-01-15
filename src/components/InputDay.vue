@@ -1,5 +1,5 @@
 <template>
-  <Dropdown :options="daysOptions" optionLabel="fullLabel" optionValue="date" v-bind="$attrs" />
+  <Dropdown :options="daysOptions" optionLabel="fullLabel" optionValue="id" v-bind="$attrs" />
 </template>
 
 <script>

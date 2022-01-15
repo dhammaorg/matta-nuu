@@ -13,7 +13,7 @@
     <!-- Date -->
     <div class="p-field">
       <label>Calculate quantities needed unil</label>
-      <InputDay v-model="order.target_date" :days="sessionDays" class="w-100"/>
+      <InputDay v-model="order.target_day" :days="sessionDays" class="w-100"/>
     </div>
 
     <template #footer>
@@ -39,10 +39,10 @@ export default {
   methods: {
     show() {
       this.order = {
-        target_date: this.sessionDays.at(-1).date,
+        target_day: this.sessionDays.at(-1).id,
         session_id: this.$root.session.id,
         report_values_in_stocks: true,
-        delivery_date: this.stockDays.at(0).date,
+        delivery_day: this.stockDays.at(0).id,
       }
       if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.suppliers
       this.visible = true

@@ -74,8 +74,6 @@ export default {
 
     this.$db.from('orders').select().match({ session_id: this.$route.params.id }).then((result) => {
       result.data.forEach((order) => {
-        order.target_date = new Date(order.target_date)
-        order.delivery_date = new Date(order.delivery_date)
         if (!this.$root.orders[order.id]) {
           this.$root.orders[order.id] = order
         }

@@ -28,7 +28,7 @@
     <div class="order-options mb-4">
       <div class="p-inputgroup mb-3 d-print-none">
         <span class="p-inputgroup-addon text-start">Delivery Date</span>
-        <InputDay v-model="order.delivery_date" :days="stockDays" />
+        <InputDay v-model="order.delivery_day" :days="stockDays" />
         <span class="p-inputgroup-addon w-auto">
           <Checkbox v-model="order.report_values_in_stocks" :binary="true" />
           <label class="ms-2">Report values in Stocks</label>
@@ -36,7 +36,7 @@
       </div>
       <div class="p-inputgroup mb-3 d-print-none">
         <span class="p-inputgroup-addon">Quantities until</span>
-        <InputDay v-model="order.target_date" :days="sessionDays" />
+        <InputDay v-model="order.target_day" :days="sessionDays" />
         <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" />
       </div>
     </div>
@@ -150,7 +150,7 @@ export default {
         const firstInit = Object.values(data.values || {}).length === 0
         data.values ||= {}
         this.order = data
-        if (firstInit && this.order.target_date) this.calculate()
+        if (firstInit && this.order.target_day) this.calculate()
       }
     },
     calculate() {
@@ -158,7 +158,7 @@ export default {
       this.stocks.forEach(({ product, values }) => {
         const config = this.session.products[product] || {}
         if (this.order.supplier && config.supplier !== this.order.supplier) return
-        const needed = 0 - (values[this.order.target_date.toDateString()] || {}).value
+        const needed = 0 - (values[this.order.target_day] || {}).value
         if (needed > 0) {
           this.order.values[product] = {
             id: product,

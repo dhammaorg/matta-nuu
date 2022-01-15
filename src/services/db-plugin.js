@@ -65,8 +65,6 @@ export default {
         },
         fixData(data, dbName = '') {
           if (dbName === 'sessions') (data.events || []).forEach((e) => { e.start_date = new Date(e.start_date) })
-          if (data.delivery_date) data.delivery_date = new Date(data.delivery_date)
-          if (data.target_date) data.target_date = new Date(data.target_date)
           return data
         },
       },
