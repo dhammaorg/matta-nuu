@@ -43,6 +43,7 @@ export default {
   computed: {
     orders() {
       return Object.values(this.$root.orders).filter((order) => order.session_id === this.$root.session.id)
+        .sort((a, b) => (a.id < b.id ? 1 : -1))
     },
   },
   methods: {
