@@ -15,7 +15,7 @@
     <div class="p-field">
       <label>Number of People</label>
       <div class="p-inputgroup">
-        <InputNumber v-model="event.people_count" />
+        <InputNumber v-model="event.people_count" class="w-auto" />
         <span class="p-inputgroup-addon" v-if="!isNew && event.people_count"
               v-tooltip.top="'Example : if you change number of people from 20 to 40, all amounts will be multiplied by 2'">
           <Checkbox v-model="updateAmounts" :binary="true" />
@@ -91,7 +91,7 @@ export default {
           const factor = this.event.people_count / this.previousPeopleCount
           this.$root.session.rows.forEach((row) => {
             Object.entries(row.values).forEach(([day, value]) => {
-              if (day.includes(eventId)) value.amount = Math.round(value.amount * factor)
+              if (day.includes(eventId) && value.amount) value.amount = Math.round(value.amount * factor)
             })
           })
         }
