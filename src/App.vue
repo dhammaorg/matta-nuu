@@ -21,9 +21,11 @@ export default {
   components: { Toast, Menu },
   data() {
     return {
+      products: {},
+      suppliers: {},
+      recipies: {},
       sessions: {},
       templates: {},
-      recipies: {},
       orders: {},
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
@@ -43,32 +45,14 @@ export default {
         this.sessions[this.$route.params.id] = value
       },
     },
-    products() {
-      const result = new Set()
-      this.recipiesArray.forEach((recipie) => {
-        recipie.products.forEach((product) => {
-          result.add(product.name)
-        })
-      })
-      Object.values(this.sessions).forEach((session) => {
-        session.rows.forEach((row) => {
-          if (row.type === 'product') {
-            result.add(row.product)
-          } else if (row.type === 'products') {
-            Object.values(row.values).forEach((value) => {
-              result.add(value.product)
-            })
-          }
-        })
-      })
-      return Array.from(result).filter((r) => !!r).sort()
-    },
-    suppliers() {
-      const result = Object.values(this.session.products).map((p) => p.supplier).filter((p) => !!p)
-      return [...new Set(result)] // uniqueness
-    },
     recipiesArray() {
       return Object.values(this.recipies).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
+    },
+    productsArray() {
+      return Object.values(this.products).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
+    },
+    suppliersArray() {
+      return Object.values(this.suppliers).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
     },
     templatesArray() {
       return Object.values(this.templates)
@@ -78,10 +62,9 @@ export default {
     products: {
       deep: true,
       handler() {
-        this.products.forEach((p) => {
-          this.session.realStocks[p] ||= {}
-          this.session.buys[p] ||= {}
-          this.session.products[p] ||= {}
+        this.productsArray.forEach((p) => {
+          this.session.realStocks[p.id] ||= {}
+          this.session.buys[p.id] ||= {}
         })
       },
     },
@@ -102,6 +85,16 @@ export default {
       this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
         result.data.forEach((recipie) => {
           this.recipies[recipie.id] = recipie
+        })
+      })
+      this.$db.from('products').select().order('id', { ascending: false }).then((result) => {
+        result.data.forEach((product) => {
+          this.products[product.id] = product
+        })
+      })
+      this.$db.from('suppliers').select().order('id', { ascending: false }).then((result) => {
+        result.data.forEach((supplier) => {
+          this.suppliers[supplier.id] = supplier
         })
       })
       this.$db.from('templates').select('id, name').order('id', { ascending: false }).then((result) => {
@@ -125,8 +118,14 @@ export default {
     isSessionFullyLoaded(id = parseInt(this.$route.params.id, 10)) {
       return this.fullyLoadedSessions.includes(id)
     },
+    getProduct(id) {
+      return this.products[id] || {}
+    },
     getRecipie(id) {
       return this.recipies[id] || {}
+    },
+    getSupplier(id) {
+      return this.suppliers[id] || {}
     },
   },
 }

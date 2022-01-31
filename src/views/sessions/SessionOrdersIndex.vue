@@ -12,7 +12,11 @@
              :paginator="true" :rows="20" :filters="filters">
 
     <Column field="name" header="Name" :sortable="true" header-class="text-start"></Column>
-    <Column field="supplier" header="Supplier" :sortable="true"></Column>
+    <Column field="supplier_id" header="Supplier" :sortable="true">
+      <template #body="{data}">
+        {{ $root.getSupplier(data.supplier_id).name }}
+      </template>
+    </Column>
     <Column class="text-end">
       <template #body="{data}">
         <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id }}">

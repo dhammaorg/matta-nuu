@@ -83,10 +83,10 @@
     <Column frozen class="product-column">
       <template #body="{ data }">
         <span v-if="data.type == 'product'">
-          {{ data.product }}
-          <span v-if="data.unit">({{ data.unit }})</span>
+          {{ $root.getProduct(data.product_id).name }}
+          <span v-if="$root.getProduct(data.product_id).unit">({{ $root.getProduct(data.product_id).unit }})</span>
         </span>
-        <span v-else-if="data.type == 'recipie'">{{ data.recipie_id ? $root.getRecipie(data.recipie_id).name : '' }}</span>
+        <span v-else-if="data.type == 'recipie'">{{ $root.getRecipie(data.recipie_id).name }}</span>
         <span v-else>{{ data.label }}</span>
         <span class="btn-on-hover d-print-none">
           <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash" @click.stop
@@ -96,10 +96,7 @@
         </span>
       </template>
       <template #editor="{ data }">
-        <div v-if="data.type == 'product'" class="editor-sm">
-          <InputProduct v-model="data.product" />
-          <InputUnit v-model="data.unit" />
-        </div>
+        <InputProduct v-if="data.type == 'product'" v-model="data.product_id" class="editor-sm w-100" />
         <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie_id" />
         <InputText    v-else v-model="data.label" placeholder="Row Name" />
       </template>
@@ -111,8 +108,8 @@
       <template #body="{ data, field }">
         <template v-if="data.values[field]" >
           <label v-if="data.type == 'products'">
-            {{ data.values[field].product }}
-            <span v-if="data.values[field].unit">({{ data.values[field].unit }})</span>
+            {{ $root.getProduct(data.values[field].product_id).name }}
+            <span v-if="$root.getProduct(data.values[field].product_id).unit">({{ $root.getProduct(data.values[field].product_id).unit }})</span>
           </label>
           <label v-if="data.type == 'recipies' && data.values[field].recipie_id">
             {{ $root.getRecipie(data.values[field].recipie_id).name }}
@@ -122,12 +119,14 @@
       </template>
       <template #editor="{ data, field }">
         <div :class="{'editor-sm': ['products', 'recipies'].includes(data.type)}">
-          <template v-if="data.type == 'products'">
-            <InputProduct v-model="data.values[field].product" />
-            <InputUnit v-model="data.values[field].unit" />
-          </template>
+          <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id" class="w-100" />
           <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
-          <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus :maxFractionDigits="2" />
+          <div class="p-inputgroup">
+            <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus :maxFractionDigits="2" />
+            <span class="p-inputgroup-addon rounded-0 p-0" v-show="data.values[field].product_id">
+              {{ $root.getProduct(data.values[field].product_id).unit }}
+            </span>
+          </div>
         </div>
       </template>
     </Column>
@@ -149,7 +148,6 @@ import InputNumber from 'primevue/inputnumber'
 import ToggleButton from 'primevue/togglebutton'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
-import InputUnit from '@/components/InputUnit.vue'
 import EventForm from './EventForm.vue'
 import NewRowButton from './SessionNewRowButton.vue'
 import PrintButton from './SessionSchedulePrintButton.vue'
@@ -162,7 +160,6 @@ export default {
     Row,
     InputProduct,
     InputRecipie,
-    InputUnit,
     InputNumber,
     NewRowButton,
     EventForm,
@@ -185,16 +182,15 @@ export default {
       return this.sessionDays.find((day) => day.date.toDateString() === newDate.toDateString())
     },
     onCellEditComplete(event) {
-      // When creating a recipie from the InputRecipie any click on a dropdown inside the dialog was
+      // When creating an object from a modal any click on a dropdown inside the modal was
       // interpreted as a click to close the cell edit, so preventing it
-      if (document.querySelector('.recipie-dialog')) {
+      if (document.querySelector('.p-dialog')) {
         event.preventDefault()
         return
       }
       const { data, newData } = event
       data.label = newData.label
-      data.product = newData.product
-      data.unit = newData.unit
+      data.product_id = newData.product_id
       data.recipie_id = newData.recipie_id
     },
     rowClass(data) {

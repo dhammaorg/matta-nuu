@@ -7,6 +7,8 @@ import SessionOrdersIndex from '@/views/sessions/SessionOrdersIndex.vue'
 import SessionOrder from '@/views/sessions/SessionOrder.vue'
 import SessionSuppliers from '@/views/sessions/SessionSuppliers.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
+import ProductsIndex from '@/views/products/ProductsIndex.vue'
+import SuppliersIndex from '@/views/suppliers/SuppliersIndex.vue'
 import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
@@ -58,6 +60,16 @@ const routes = [
         component: SessionOrder,
       },
     ],
+  },
+  {
+    path: '/products',
+    name: 'products',
+    component: ProductsIndex,
+  },
+  {
+    path: '/suppliers',
+    name: 'suppliers',
+    component: SuppliersIndex,
   },
   {
     path: '/recipes',

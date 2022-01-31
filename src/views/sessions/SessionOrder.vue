@@ -55,12 +55,7 @@
             <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
-        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
-          <template #body="{ data }">
-            <InputUnit v-if="!data.needed" v-model="data.unit" />
-            <span v-else>{{ data.unit }}</span>
-          </template>
-        </Column>
+        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell" />
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
         <Column field="id" class="d-print-none actions w-auto">
           <template #body="{ data }">
@@ -75,7 +70,7 @@
 
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
-          <InputProduct v-model="newProduct" :dropdown="false" placeholder="Add Product" @keyup.enter="addProduct" />
+          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product" @keyup.enter="addProduct" />
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
         </div>
       </div>
@@ -91,7 +86,6 @@ import Checkbox from 'primevue/checkbox'
 import InputNumber from 'primevue/inputnumber'
 import Inplace from 'primevue/inplace'
 import InputDay from '@/components/InputDay.vue'
-import InputUnit from '@/components/InputUnit.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 
@@ -99,7 +93,7 @@ export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, InputUnit, Inplace, Checkbox,
+    InputDay, InputProduct, InputNumber, Inplace, Checkbox,
   },
   data() {
     return {
@@ -118,13 +112,13 @@ export default {
     this.fetchOrder(to.params.order_id)
   },
   computed: {
-    products() {
-      const result = []
-      Object.entries(this.session.products).forEach(([product, config]) => {
-        if (config.supplier === this.order.supplier) result.push(product)
-      })
-      return result
-    },
+    // products() {
+    //   const result = []
+    //   this.$root.products.forEach((product) => {
+    //     if (product.supplier_id === this.order.supplier_id) result.push(product)
+    //   })
+    //   return result
+    // },
     values() {
       let values = this.order.values || {}
       // Sort by key == product
@@ -157,17 +151,18 @@ export default {
     },
     calculate() {
       this.order.values = {}
-      this.stocks.forEach(({ product, values }) => {
-        const config = this.session.products[product] || {}
-        if (this.order.supplier && config.supplier !== this.order.supplier) return
+      this.stocks.forEach(({ product_id, values }) => {
+        const product = this.$root.getProduct(product_id)
+        if (this.order.supplier_id && product.supplier_id !== this.order.supplier_id) return
         const needed = 0 - (values[this.order.target_day] || {}).value
+        const conditioning = product.packaging_conditioning || 1
         if (needed > 0) {
-          this.order.values[product] = {
-            id: product,
-            name: config.reference || product,
-            value: Math.ceil(needed / (config.conditioning || 1)),
-            unit: config.conditioning ? '' : this.productsUnits[product],
-            needed: `${needed} ${this.productsUnits[product]}`,
+          this.order.values[product_id] = {
+            id: product.id,
+            name: product.packaging_reference || product.name,
+            value: Math.ceil(needed / conditioning) * conditioning,
+            unit: product.unit,
+            needed: `${needed} ${product.unit}`,
           }
         }
       })
@@ -187,12 +182,12 @@ export default {
       })
     },
     addProduct() {
-      if (this.order.values[this.newProduct]) {
+      if (this.order.values[this.newProduct.id]) {
         this.$toast.add({
-          severity: 'error', summary: 'Error', detail: `"${this.newProduct}" is already in the order`, life: 4000,
+          severity: 'error', summary: 'Error', detail: `"${this.newProduct.name}" is already in the order`, life: 4000,
         })
       } else {
-        this.order.values[this.newProduct] = { name: this.newProduct }
+        this.order.values[this.newProduct.id] = { name: this.newProduct.name, unit: this.newProduct.unit }
       }
       this.newProduct = ''
     },

@@ -14,10 +14,12 @@
 
     <div class="mb-3">
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
-        <InputProduct v-model="product.name" class="me-2 w-50" placeholder="Name"/>
-        <InputNumber v-model="product.amount" :maxFractionDigits="5"
-                    class="me-2 w-25" placeholder="Amount"/>
-        <InputUnit v-model="product.unit" class="w-25"/>
+        <div class="p-inputgroup">
+          <InputProduct v-model="product.id" />
+          <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
+                       inputClass="border-start-0" />
+          <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
+        </div>
         <Button icon="pi pi-times" class="p-button-text p-button-danger"
                 @click="removeProduct(product)"/>
       </div>
@@ -37,10 +39,9 @@
 
 import InputNumber from 'primevue/inputnumber'
 import InputProduct from '@/components/InputProduct.vue'
-import InputUnit from '@/components/InputUnit.vue'
 
 export default {
-  components: { InputNumber, InputUnit, InputProduct },
+  components: { InputNumber, InputProduct },
   data() {
     return {
       visible: false,

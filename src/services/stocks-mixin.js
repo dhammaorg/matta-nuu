@@ -1,11 +1,4 @@
-import { unitFactor, unitParent } from '@/services/units'
-
 export default {
-  data() {
-    return {
-      productsUnits: {},
-    }
-  },
   computed: {
     session() {
       return this.$root.session
@@ -14,38 +7,37 @@ export default {
       const result = new Set()
       this.session.rows.forEach((row) => {
         if (row.type === 'product') {
-          result.add(row.product)
+          result.add(row.product_id)
         } else if (row.type === 'products') {
           Object.values(row.values).forEach((value) => {
-            result.add(value.product)
+            result.add(value.product_id)
           })
         } else if (row.type === 'recipie') {
-          this.recipieProducts(row.recipie_id).forEach((product) => { result.add(product.name) })
+          this.recipieProducts(row.recipie_id).forEach((product) => { result.add(product.id) })
         } else if (row.type === 'recipies') {
           Object.values(row.values).forEach((value) => {
-            this.recipieProducts(value.recipie_id).forEach((product) => { result.add(product.name) })
+            this.recipieProducts(value.recipie_id).forEach((product) => { result.add(product.id) })
           })
         }
       })
       return Array.from(result).filter((r) => !!r).sort()
     },
     stocks() {
-      return this.sessionProducts.map((product) => {
+      return this.sessionProducts.map((productId) => {
         const values = {}
         let previousStock = 0
         this.stockDays.forEach((day) => {
-          let bought = (this.session.buys[product] || {})[day.id] || 0
+          let bought = (this.session.buys[productId] || {})[day.id] || 0
           const ordered = []
           this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
-            if (order.values[product]) {
-              const config = this.session.products[product] || {}
-              const value = order.values[product].value * unitFactor(order.values[product].unit) * (config.conditioning || 1)
+            if (order.values[productId]) {
+              const { value } = order.values[productId]
               bought += value
               ordered.push({ value, id: order.id, name: order.name })
             }
           })
-          const consumption = this.consumption(product, day)
-          const real = (this.session.realStocks[product] || {})[day.id]
+          const consumption = this.consumption(productId, day)
+          const real = (this.session.realStocks[productId] || {})[day.id]
           const theoric = previousStock - consumption + bought
           const value = real != null ? real : theoric
           values[day.id] = {
@@ -53,7 +45,7 @@ export default {
           }
           previousStock = value
         })
-        return { product, values }
+        return { product_id: productId, values }
       })
     },
     orders() {
@@ -64,24 +56,21 @@ export default {
     },
   },
   methods: {
-    consumption(product, day) {
+    consumption(productId, day) {
       let result = 0
       if (day.initial) return 0
       this.session.rows.forEach((row) => {
         const dayValue = row.values[day.id]
         const dayAmount = dayValue.amount || 0
-        const dayProduct = row.product || dayValue.product
-        const dayUnit = row.unit || dayValue.unit
-        if (dayProduct && dayProduct === product) {
-          this.productsUnits[product] = unitParent(dayUnit)
-          result += dayAmount * unitFactor(dayUnit)
+        const dayProduct = row.product_id || dayValue.product_id
+        if (dayProduct && dayProduct === productId) {
+          result += dayAmount
           return
         }
         const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id);
         (dayRecipie.products || []).forEach((recipieProduct) => {
-          if (recipieProduct.name === product) {
-            this.productsUnits[product] = unitParent(recipieProduct.unit)
-            result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount * unitFactor(recipieProduct.unit)
+          if (recipieProduct.id === productId) {
+            result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
           }
         })
       })

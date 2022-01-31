@@ -6,8 +6,9 @@
       <InputText v-model="order.name" placeholder="Order Name"/>
     </div>
 
-    <div class="p-field" v-if="$root.suppliers.length > 0">
-      <Dropdown v-model="order.supplier" :options="$root.suppliers" placeholder="Supplier" />
+    <div class="p-field" v-if="suppliers.length > 0">
+      <Dropdown v-model="order.supplier_id" :options="suppliers" placeholder="Supplier"
+                optionLabel="name" optionValue="id" />
     </div>
 
     <!-- Date -->
@@ -36,6 +37,11 @@ export default {
       order: {},
     }
   },
+  computed: {
+    suppliers() {
+      return this.$root.suppliersArray
+    },
+  },
   methods: {
     show() {
       this.order = {
@@ -44,11 +50,11 @@ export default {
         report_values_in_stocks: true,
         delivery_day: this.stockDays.at(0).id,
       }
-      if (this.$root.suppliers.length === 1) [this.order.supplier] = this.$root.suppliers
+      if (this.suppliers.length === 1) this.order.supplier_id = this.suppliers.at(0).id
       this.visible = true
     },
     async createOrder() {
-      if (this.order.supplier || this.$root.suppliers.length === 0) {
+      if (this.order.supplier_id || this.suppliers.length === 0) {
         this.dbCreate('orders', this.order, (order) => {
           this.visible = false
           this.$router.push({ name: 'session_order', params: { id: this.$route.params.id, order_id: order.id } })

@@ -1,23 +1,21 @@
 <template>
-  <AutoComplete v-bind="$attrs"
-                :suggestions="suggestions" :dropdown="true"
-                @complete="search($event)"/>
+  <Dropdown v-bind="$attrs" :options="$root.suppliersArray" optionLabel="name" optionValue="id"
+            placeholder="Supplier" :filter="true" filterPlaceholder="">
+    <template #footer>
+      <div class="p-dropdown-header">
+        <Button icon="pi pi-plus" label="Supplier" class="p-button-sm"
+                @click="$refs.form.show()" />
+      </div>
+    </template>
+  </Dropdown>
+
+  <SupplierForm ref="form" @created="$emit('update:modelValue', $event.id)"></SupplierForm>
 </template>
 
 <script>
-import AutoComplete from 'primevue/autocomplete'
+import SupplierForm from '@/views/suppliers/SupplierForm.vue'
 
 export default {
-  components: { AutoComplete },
-  data() {
-    return {
-      suggestions: [],
-    }
-  },
-  methods: {
-    search(event) {
-      this.suggestions = this.$root.suppliers.filter((p) => p.toLowerCase().includes(event.query.toLowerCase()))
-    },
-  },
+  components: { SupplierForm },
 }
 </script>

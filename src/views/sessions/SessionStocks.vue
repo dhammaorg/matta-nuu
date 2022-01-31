@@ -50,8 +50,8 @@
     <!-- First Column : Product -->
     <Column frozen class="product-column">
       <template #body="{ data }">
-        {{ data.product }}
-        <span v-show="productsUnits[data.product]" class="ms-1 fw-normal">({{ productsUnits[data.product] }})</span>
+        {{ $root.getProduct(data.product_id).name }}
+        <span v-show="$root.getProduct(data.product_id).unit" class="ms-1 fw-normal">({{ $root.getProduct(data.product_id).unit }})</span>
       </template>
     </Column>
 
@@ -71,8 +71,8 @@
         </div>
       </template>
       <template #editor="{ data, field }">
-        <InputNumber v-model="session.realStocks[data.product][field]" placeholder="Stock" :maxFractionDigits="2" />
-        <InputNumber v-model="session.buys[data.product][field]" placeholder="Bought" :maxFractionDigits="2" />
+        <InputNumber v-model="session.realStocks[data.product_id][field]" placeholder="Stock" :maxFractionDigits="2" />
+        <InputNumber v-model="session.buys[data.product_id][field]" placeholder="Bought" :maxFractionDigits="2" />
         <div v-for="order in data.values[field].ordered" :key="day + field + order.id"
              :title="`Ordered Amount from ${order.name}`" class="p-2">
           <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: order.id }}">

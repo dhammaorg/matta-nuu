@@ -25,8 +25,10 @@ export default {
     return {
       navItems: [
         { label: 'Sessions', to: { name: 'sessions' }, icon: 'pi pi-folder-open' },
+        { label: 'Products', to: { name: 'products' }, icon: 'pi pi-apple' },
+        { label: 'Suppliers', to: { name: 'suppliers' }, icon: 'pi pi-shopping-cart' },
         { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
-        { label: 'Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
+        { label: 'Event Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
       ],
     }
   },
