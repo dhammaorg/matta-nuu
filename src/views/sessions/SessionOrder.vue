@@ -162,7 +162,7 @@ export default {
             name: product.packaging_reference || product.name,
             value: Math.ceil(needed / conditioning) * conditioning,
             unit: product.unit,
-            needed: `${needed} ${product.unit}`,
+            needed: `${needed.toFixed(3)} ${product.unit}`,
           }
         }
       })
