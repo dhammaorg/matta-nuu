@@ -13,6 +13,15 @@
       <InputSupplier v-model="product.supplier_id" />
     </div>
 
+    <div class="p-field">
+      <InputText v-model="product.packaging_reference" placeholder="Packaging Name / Reference"/>
+    </div>
+
+    <div class="p-field">
+      <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
+                   :suffix="' ' + product.unit" />
+    </div>
+
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
       <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveProduct" />
@@ -22,11 +31,12 @@
 
 <script>
 
+import InputNumber from 'primevue/inputnumber'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 
 export default {
-  components: { InputUnit, InputSupplier },
+  components: { InputUnit, InputSupplier, InputNumber },
   data() {
     return {
       visible: false,

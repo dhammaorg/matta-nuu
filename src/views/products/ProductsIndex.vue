@@ -1,23 +1,63 @@
 <template>
-  <div class="page-content">
+  <div class="page-full-content">
     <div class="mb-3">
       <Button label="Add Product" icon="pi pi-plus" class="me-2" @click="$refs.form.show()" />
-      <span class="p-input-icon-left float-end">
+      <span class="p-input-icon-left">
         <i class="pi pi-search" />
         <InputText v-model="filters['global'].value" placeholder="Search..." />
       </span>
+      <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save" :loading="loading" />
     </div>
 
-    <DataTable :value="$root.productsArray" dataKey="id"
-      :paginator="true" :rows="20" :filters="filters">
+    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="flex"
+               class="editable-cells-table session-table products-table" :filters="filters"
+               style="height: calc(100vh - 10.5rem);">
 
-      <Column field="name" header="Name" :sortable="true"></Column>
-      <Column class="text-end">
+      <!-- Name -->
+      <Column field="name" header="Name" class="product-column w-auto" />
+
+      <!-- Unit -->
+      <Column field="unit" header="Unit" style="max-width: 8rem">
+        <template #body="{ data }">
+          <InputUnit v-model="data.unit" />
+        </template>
+      </Column>
+
+      <!-- Supplier -->
+      <Column field="supplier_id" header="Supplier">
+        <template #body="{ data }">
+          <InputSupplier v-model="data.supplier_id" placeholder="" />
+        </template>
+      </Column>
+
+      <!-- Packaging Name -->
+      <Column field="packaging_reference">
+        <template #body="{ data }">
+          <input class="p-inputtext p-component" v-model="data.packaging_reference" :placeholder="data.name" />
+        </template>
+        <template #header>
+          <span v-tooltip.top="'Change the name of a product for this supplier. Example : Sugar -> Raw Organic Sugar'">
+            Packaging Name
+          </span>
+        </template>
+      </Column>
+
+      <!-- Conditioning -->
+      <Column field="packaging_conditioning" style="max-width: 8rem">
+        <template #body="{ data }">
+          <InputNumber v-model="data.packaging_conditioning" :suffix="' ' + data.unit" />
+        </template>
+        <template #header>
+          <span v-tooltip.top="'Example : if you buy Rice in 5kg bag, then enter 5 in this column. The order will be adjusted so if you need 24kg it will order 5 bag of 5kg'">
+            Conditioning
+          </span>
+        </template>
+      </Column>
+
+      <!-- Actions -->
+      <Column class="text-end" style="max-width: 40px">
         <template #body="{data}">
-          <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                  @click="$refs.form.show(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteProduct(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteProduct(data)" />
         </template>
       </Column>
     </DataTable>
@@ -28,13 +68,20 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api'
+import InputNumber from 'primevue/inputnumber'
 import ProductForm from './ProductForm.vue'
+import InputSupplier from '@/components/InputSupplier.vue'
+import InputUnit from '@/components/InputUnit.vue'
 
 export default {
-  components: { ProductForm },
+  components: {
+    ProductForm, InputSupplier, InputUnit, InputNumber,
+  },
   data() {
     return {
+      loading: false,
       filters: {},
+      productsChanged: [],
     }
   },
   created() {
@@ -44,7 +91,7 @@ export default {
     deleteProduct(product) {
       this.$confirm.require({
         message: `
-          Are you sure you want to delete ${product.name} ? 
+          Are you sure you want to delete ${product.name} ?
           All references to this product in any Sessions or Recipies will be lost as well`,
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
@@ -58,6 +105,36 @@ export default {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       }
     },
+    onCellEditComplete(event) {
+      const { data, newData } = event
+      data.packaging_reference = newData.packaging_reference
+    },
+    async save() {
+      this.loading = true
+      const { error } = await this.$db.from('products').upsert(this.$root.productsArray)
+      if (error) this.toastError(error)
+      else {
+        this.$toast.add({
+          severity: 'success', summary: 'Success', detail: 'All products sucessfully updated', life: 4000,
+        })
+      }
+      this.loading = false
+    },
   },
 }
 </script>
+
+<style lang="scss">
+  .products-table {
+    td {
+      padding: 0 !important;
+      &.product-column {
+        padding: 0 .7rem !important;
+        justify-content: flex-start;
+      }
+      input, .p-dropdown {
+        border: none !important;
+      }
+    }
+  }
+</style>

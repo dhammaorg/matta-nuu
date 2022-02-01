@@ -62,7 +62,7 @@ export default {
     products: {
       deep: true,
       handler() {
-        this.productsArray.forEach((p) => {
+        (this.productsArray || []).forEach((p) => {
           this.session.realStocks[p.id] ||= {}
           this.session.buys[p.id] ||= {}
         })
