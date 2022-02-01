@@ -52,7 +52,7 @@ export default {
   methods: {
     show(object = {}) {
       this.recipie = { ...object }
-      this.recipie.products ||= []
+      this.recipie.products ||= [{}]
       this.recipie.people_count ||= 10
       this.visible = true
     },
