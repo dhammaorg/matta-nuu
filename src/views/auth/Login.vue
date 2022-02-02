@@ -8,7 +8,8 @@
     </div>
 
     <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3"/>
-    <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"/>
+    <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
+               @keyup.enter="signIn" />
     <Button label="Sign In" class="w-100" @click="signIn"/>
   </div>
 </template>
