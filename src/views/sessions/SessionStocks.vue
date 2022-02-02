@@ -58,15 +58,15 @@
     <!-- Cells -->
     <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock editor-sm">
       <template #body="{ data, field }">
-        <div class="cell-content" :class="{'negative-value': round(data.values[field].value) < 0 }">
+        <div class="cell-content" :class="{'negative-value': data.values[field].value.round < 0 }">
           <span class="stock-value">
-            <span class="consumption" v-if="data.values[field].consumption > 0">-{{ round(data.values[field].consumption) }}</span>
+            <span class="consumption" v-if="data.values[field].consumption > 0">-{{ data.values[field].consumption.round }}</span>
           </span>
           <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
-            {{ round(data.values[field].value) }}
+            {{ data.values[field].value.round }}
           </span>
           <span class="stock-value">
-            <span class="bought" v-if="data.values[field].bought > 0">+{{ round(data.values[field].bought) }}</span>
+            <span class="bought" v-if="data.values[field].bought > 0">+{{ data.values[field].bought.round }}</span>
           </span>
         </div>
       </template>
@@ -76,7 +76,7 @@
         <div v-for="order in data.values[field].ordered" :key="day + field + order.id"
              :title="`Ordered Amount from ${order.name}`" class="p-2">
           <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: order.id }}">
-            <strong>+ {{ round(order.value) }}</strong>
+            <strong>+ {{ order.value.round }}</strong>
             <Button icon="pi pi-pencil" class="p-button-text p-button-sm p-0 px-2 w-auto" />
           </router-link>
         </div>

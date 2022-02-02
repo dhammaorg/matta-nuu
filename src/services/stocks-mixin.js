@@ -76,9 +76,6 @@ export default {
       })
       return result
     },
-    round(n, decimals = 2) {
-      return Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`)
-    },
     recipieProducts(recipieId) {
       return this.$root.getRecipie(recipieId).products || []
     },
