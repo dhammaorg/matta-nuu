@@ -9,13 +9,14 @@
 
   <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="flex"
+             :class="{'hide-dates': !displayDates}"
              @rowReorder="session.rows = $event.value"
-             editMode="cell" class="editable-cells-table session-table" @cell-edit-complete="onCellEditComplete"
+             editMode="cell" class="editable-cells-table session-table schedule-table" @cell-edit-complete="onCellEditComplete"
              :rowClass="rowClass">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell transparent hide-print" frozen :rowspan="3" :colspan="2">
+        <Column class="top-left-cell transparent hide-print" frozen :rowspan="displayDates ? 3 : 2" :colspan="2">
           <template #header>
             <PrintButton />
             <div class="d-flex flex-column ms-4">
@@ -167,6 +168,11 @@ export default {
     PrintButton,
     SaveTemplate,
   },
+  data() {
+    return {
+      displayDates: true,
+    }
+  },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show()
     this.$root.setPrintMode('landscape')
@@ -250,8 +256,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-  ::v-deep th.top-left-cell {
+<style lang="scss">
+  .schedule-table th.top-left-cell {
     @media screen {
       // Reorder column width + product width
       width: 249px;
@@ -265,7 +271,7 @@ export default {
       max-width: 200px !important;
     }
   }
-  ::v-deep th.event-editor {
+  .schedule-table th.event-editor {
     padding: .7rem 1rem !important;
     .p-button.p-button-sm.btn-add-day {
       padding: 0.0rem 0.5rem;
@@ -282,7 +288,7 @@ export default {
     }
   }
 
-  ::v-deep .pi.pi-print.slash {
+  .schedule-table .pi.pi-print.slash {
     position: relative;
     color: var(--bluegray-300) !important;
     &:after {
@@ -298,9 +304,16 @@ export default {
   }
 
   @media print {
-    .session-table.hide-amounts .amount {
+    .session-table.hide-amounts-on-print .amount {
       visibility: hidden;
     }
+    .schedule-table.hide-dates-on-print .p-datatable-thead > tr:nth-of-type(2) {
+      display: none;
+    }
+  }
+
+  .schedule-table.hide-dates .p-datatable-thead > tr:nth-of-type(2) {
+    display: none;
   }
 
   td, th {

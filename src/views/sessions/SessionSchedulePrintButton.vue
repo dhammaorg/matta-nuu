@@ -1,27 +1,50 @@
 <template>
   <Button type="button" icon="pi pi-print" class="p-button-sm p-button-rounded"
-          @click="$refs.printMenu.toggle($event)" />
-  <TieredMenu ref="printMenu" :model="menu" :popup="true" class="d-print-none" />
+          @click="visible = true" />
+
+  <Dialog v-model:visible="visible" :style="{width: '600px'}" :modal="true" class="p-fluid"
+          header="Print">
+
+    <div class="mb-3">
+      <Checkbox id="amount" v-model="hide.amounts" :binary="true" />
+      <label for="amount" class="ms-2">Hide Amounts</label>
+    </div>
+
+    <div class="mb-3">
+      <Checkbox id="dates" v-model="hide.dates" :binary="true" />
+      <label for="dates" class="ms-2">Hide Dates</label>
+    </div>
+
+    <template #footer>
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
+      <Button label="Print" icon="pi pi-print" @click="print" />
+    </template>
+  </Dialog>
 </template>
 
 <script>
-import TieredMenu from 'primevue/tieredmenu'
+import Checkbox from 'primevue/checkbox'
 
 export default {
-  components: { TieredMenu },
+  components: { Checkbox },
   data() {
     return {
-      menu: [
-        { label: 'Print with amounts', icon: 'pi pi-print', command: () => { this.print(true) } },
-        { label: 'Print without amounts (blank)', icon: 'pi pi-print', command: () => { this.print(false) } },
-      ],
+      visible: false,
+      hide: {
+        amounts: false,
+        dates: false,
+      },
     }
   },
   methods: {
-    print(withAmount) {
+    print() {
       const { classList } = document.querySelector('.session-table')
-      if (withAmount) classList.remove('hide-amounts')
-      else classList.add('hide-amounts')
+
+      Object.entries(this.hide).forEach(([key, value]) => {
+        if (value) classList.add(`hide-${key}-on-print`)
+        else classList.remove(`hide-${key}-on-print`)
+      })
+
       window.print()
     },
   },

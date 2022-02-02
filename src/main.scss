@@ -126,11 +126,17 @@ hr {
   .hide-print * { 
     visibility: hidden !important;
   }
+  .hide-print .p-column-header-content {
+    display: none;
+  }
   .p-datatable-scrollable .p-datatable-wrapper { 
     overflow: visible !important; 
   }
   .p-datatable-scrollable .p-frozen-column {
     position: relative;
     left: 0 !important;
+  }
+  .p-dialog-mask {
+    display: none;
   }
 }
