@@ -32,7 +32,7 @@
   </Dialog>
 
   <teleport to="#app">
-    <ScheduleQuantities :events="eventsToPrint" v-if="visible && printOption == 'quantities'" />
+    <ScheduleQuantities :events="eventsToPrint" v-if="showQuantities" />
   </teleport>
 </template>
 
@@ -64,6 +64,11 @@ export default {
   mounted() {
     if (this.$root.session.events.length === 1) this.eventsToPrint = this.$root.session.events
   },
+  computed: {
+    showQuantities() {
+      return this.visible && this.printOption === 'quantities'
+    },
+  },
   methods: {
     print() {
       const { classList } = document.querySelector('.session-table')
@@ -84,6 +89,14 @@ export default {
       style += '}'
       document.getElementById('print-event-filtering').innerHTML = style
       window.print()
+    },
+  },
+  watch: {
+    showQuantities() {
+      // Hide page-content so we can display the quantitites page
+      const pageClass = document.querySelector('.page-full-content').classList
+      if (this.showQuantities) pageClass.add('d-none')
+      else pageClass.remove('d-none')
     },
   },
 }

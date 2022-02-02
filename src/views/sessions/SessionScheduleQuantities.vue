@@ -1,9 +1,12 @@
 <template>
-  <div class="quantities-print">
-    TODO quantities table day by day
-    <template v-for="event in events">
-      <QuantitiesDay v-for="day in event.days" :day="day" :event="event" :key="day.id" />
-    </template>
+  <div class="quantities-container">
+    <div class="quantities-content">
+      <template v-for="event in events">
+        <QuantitiesDay v-for="(day, dayIndex) in event.days" :key="day.id"
+                      :day="day" :dayIndex="dayIndex" :event="event"
+                      :numbers="[10,20,40,60,80,100,120,140,150,160,180,200]"  />
+      </template>
+    </div>
   </div>
 </template>
 
@@ -17,11 +20,13 @@ export default {
 </script>
 
 <style lang='scss'>
-  .quantities-print {
-    position: fixed;
-    left: 0; right: 0; top: 0; bottom: 0;
-    background: white;
-    z-index: 500;
+  .quantities-container {
+    background-color: white;
     font-weight: normal;
+    overflow: auto;
+    padding: 0 2rem;
+  }
+  @media print {
+    .quantities-container { padding: 0; }
   }
 </style>

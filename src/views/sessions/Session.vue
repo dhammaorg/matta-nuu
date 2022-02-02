@@ -6,7 +6,7 @@
   </HelpMessage>
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
-    <div :style="contentFullPage ? 'height: calc(100vh - 10.5rem)' : ''" v-if="$root.isSessionFullyLoaded()">
+    <div :style="contentFullPage ? '' : ''" v-if="$root.isSessionFullyLoaded()">
       <router-view></router-view>
     </div>
   </div>
