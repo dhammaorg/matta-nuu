@@ -47,7 +47,7 @@
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
                         class="p-button-sm p-button-danger p-button-text" />
                 <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
-                        @click="event.days.push(event.days.length)"
+                        @click="event.days.push(`Day ${event.days.length}`)"
                         :disabled="disableAddDayFor(event)" />
               </span>
             </div>

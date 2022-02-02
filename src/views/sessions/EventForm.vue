@@ -96,7 +96,7 @@ export default {
           })
         }
 
-        if (!this.event.days) this.event.days = ['0']
+        if (!this.event.days) this.event.days = ['Day 0']
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}
