@@ -150,7 +150,7 @@ import ToggleButton from 'primevue/togglebutton'
 import InputProduct from '@/components/InputProduct.vue'
 import InputRecipie from '@/components/InputRecipie.vue'
 import EventForm from './EventForm.vue'
-import NewRowButton from './SessionNewRowButton.vue'
+import NewRowButton from './SessionScheduleNewRowButton.vue'
 import PrintButton from './SessionSchedulePrintButton.vue'
 import SaveTemplate from '@/views/templates/SaveTemplateDialog.vue'
 
