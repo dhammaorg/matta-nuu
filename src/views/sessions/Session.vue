@@ -33,7 +33,7 @@ export default {
       const days = []
       this.session.events.forEach((event) => {
         event.days.forEach((day, index) => {
-          const classes = []
+          const classes = [`event-${event.id}`]
           if (index === 0) classes.push('event-start')
           if (index === (event.days.length - 1)) classes.push('event-end')
           const date = event.start_date.addDays(index)

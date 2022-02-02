@@ -29,7 +29,7 @@
         </Column>
         <!-- Event Header -->
         <Column v-for="(event, index) in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end header-group event-editor">
+                class="event-start event-end header-group event-editor" :class="`event-${event.id}`">
           <template #header>
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
