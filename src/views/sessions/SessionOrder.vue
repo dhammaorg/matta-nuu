@@ -112,13 +112,6 @@ export default {
     this.fetchOrder(to.params.order_id)
   },
   computed: {
-    // products() {
-    //   const result = []
-    //   this.$root.products.forEach((product) => {
-    //     if (product.supplier_id === this.order.supplier_id) result.push(product)
-    //   })
-    //   return result
-    // },
     values() {
       let values = this.order.values || {}
       // Sort by key == product
