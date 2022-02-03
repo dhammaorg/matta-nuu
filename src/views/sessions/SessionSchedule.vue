@@ -106,6 +106,7 @@
     <!-- Cells -->
     <Column v-for="day in sessionDays" :key="`cell-${day.id}`" :field="day.id"
             :class="day.class">
+      <!-- Cell Show -->
       <template #body="{ data, field }">
         <template v-if="data.values[field]" >
           <label v-if="data.type == 'products'">
@@ -118,6 +119,7 @@
           <div class="amount">{{ data.values[field].amount }}</div>
         </template>
       </template>
+      <!-- Cell Edit -->
       <template #editor="{ data, field }">
         <div :class="{'editor-sm': ['products', 'recipies'].includes(data.type)}">
           <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id" class="w-100" />

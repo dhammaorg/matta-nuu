@@ -70,8 +70,9 @@
 
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
-          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product" @keyup.enter="addProduct" />
-          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" />
+          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product" @keyup.enter="addProduct"
+                        :showClear="false" :editable="false" />
+          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" class="flex-shrink-0" />
         </div>
       </div>
     </div>
