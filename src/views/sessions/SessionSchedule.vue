@@ -115,6 +115,8 @@
           </label>
           <label v-if="data.type == 'recipies' && data.values[field].recipie_id">
             {{ $root.getRecipie(data.values[field].recipie_id).name }}
+            <span class="pi pi-clock d-print-none" v-tooltip="'Needed to be prepared the day before'" style="font-size: 0.7rem"
+                  v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"></span>
           </label>
           <div class="amount">{{ data.values[field].amount }}</div>
         </template>
