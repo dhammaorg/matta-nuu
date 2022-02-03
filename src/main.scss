@@ -64,6 +64,9 @@ td .p-inputnumber {
 .p-inplace .p-inplace-display:not(.p-disabled):hover {
   background: transparent;
 }
+.p-inplace-content .pi.pi-times.p-button-icon:before {
+  content: "\e909"; // replace default "times" icone by the "check" icon
+}
 .p-datatable .p-datatable-thead > tr > th {
   font-weight: 600;
 }
