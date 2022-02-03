@@ -78,8 +78,8 @@ export default {
           this.event.days = this.template.days
           this.event.templateRows = this.template.rows.map((row) => {
             const newRow = { ...row }
-            newRow.values.forEach((v) => {
-              v.amount = Math.round((v.amount * this.event.people_count) / this.template.people_count)
+            newRow.values.filter((v) => v.amount).forEach((v) => {
+              v.amount = Math.round((v.amount * this.event.people_count) / this.template.people_count) || null
             })
             return newRow
           })
