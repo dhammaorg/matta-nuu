@@ -25,6 +25,13 @@
       </div>
     </template>
 
+    <template v-if="printOption == 'quantities'">
+      <div class="p-field mb-3">
+        <label>Numbers to be calculated, separated by comas</label>
+        <InputText v-model.lazy="numbersString" />
+      </div>
+    </template>
+
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
       <Button label="Print" icon="pi pi-print" @click="print" />
@@ -32,7 +39,7 @@
   </Dialog>
 
   <teleport to="#app">
-    <ScheduleQuantities :events="eventsToPrint" v-if="showQuantities" />
+    <ScheduleQuantities :events="eventsToPrint" v-if="showQuantities" :numbers="numbers" />
   </teleport>
 </template>
 
@@ -59,6 +66,7 @@ export default {
         amounts: false,
         dates: true,
       },
+      numbersString: '10,20,40,60,80,100,120,140,150,160,180,200',
     }
   },
   mounted() {
@@ -67,6 +75,9 @@ export default {
   computed: {
     showQuantities() {
       return this.visible && this.printOption === 'quantities'
+    },
+    numbers() {
+      return this.numbersString.split(',').map((n) => Number(n))
     },
   },
   methods: {

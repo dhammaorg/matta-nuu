@@ -4,7 +4,7 @@
       <template v-for="event in events">
         <QuantitiesDay v-for="(day, dayIndex) in event.days" :key="day.id"
                       :day="day" :dayIndex="dayIndex" :event="event"
-                      :numbers="[10,20,40,60,80,100,120,140,150,160,180,200]"  />
+                      :numbers="numbers"  />
       </template>
     </div>
   </div>
@@ -14,7 +14,7 @@
 import QuantitiesDay from './SessionScheduleQuantitiesDay.vue'
 
 export default {
-  props: ['events'],
+  props: ['events', 'numbers'],
   components: { QuantitiesDay },
 }
 </script>
