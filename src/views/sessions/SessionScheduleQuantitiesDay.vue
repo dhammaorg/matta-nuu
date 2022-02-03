@@ -42,7 +42,7 @@ export default {
         this.$root.session.rows.forEach((row) => {
           const dayValue = row.values[`Event${this.event.id}_${this.dayIndex}`] || {}
           const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
-          if (dayRecipie.id && !dayRecipie.prepare_day_before) {
+          if (dayRecipie.id && dayValue.amount && !dayRecipie.prepare_day_before) {
             result.push({ ...dayRecipie, ...{ row } })
           }
         })
@@ -52,7 +52,7 @@ export default {
       this.$root.session.rows.forEach((row) => {
         const dayAfterValue = row.values[`Event${this.event.id}_${this.dayIndex + 1}`] || {}
         const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
-        if (dayAfterRecipie.id && dayAfterRecipie.prepare_day_before) {
+        if (dayAfterRecipie.id && dayAfterValue.amount && dayAfterRecipie.prepare_day_before) {
           result.push({ ...dayAfterRecipie, ...{ row } })
         }
       })
