@@ -17,7 +17,8 @@
       </div>
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
         <div class="p-inputgroup">
-          <InputProduct v-model="product.id" />
+          <InputProduct v-model="product.id" :showClear="false" :editable="false"
+                       style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
           <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
                         inputClass="border-start-0" />
           <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
