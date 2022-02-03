@@ -4,6 +4,8 @@
     A session is composed of one or many sub Events
   </HelpMessage>
 
+  <img class="page-background" src="@/assets/undraw_events.svg" />
+
   <div class="page-content">
     <div class="mb-3">
       <Button label="New Session" icon="pi pi-plus" class="me-2"

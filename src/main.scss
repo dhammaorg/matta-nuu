@@ -148,3 +148,11 @@ hr {
   flex: 1 1 auto;
   width: 1%;
 }
+
+.page-background {
+  position: absolute;
+  height: 40vh;
+  opacity: .5;
+  right: 0;
+  bottom: 0;
+}

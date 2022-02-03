@@ -5,6 +5,8 @@
     <strong>Orders</strong> let you easily get the list of products you need to order
   </HelpMessage>
 
+  <img class="page-background" src="@/assets/undraw_cart.svg" v-if="$route.name == 'session_orders'" />
+
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
     <div :style="contentFullPage ? '' : ''" v-if="$root.isSessionFullyLoaded()">
       <router-view></router-view>

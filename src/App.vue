@@ -143,6 +143,7 @@ export default {
     width: 100%;
     height: 100%;
     font-size: 15px;
+    overflow-x: hidden;
     color: var(--text-color);
     @media screen { background-color:var(--surface-ground); }
     color-adjust: exact;
@@ -154,6 +155,7 @@ export default {
     margin: 0 auto;
     padding-top: 2.5rem;
     margin-top: 3rem;
+    position: relative;
     @extend .card;
   }
   .p-message + .page-content {

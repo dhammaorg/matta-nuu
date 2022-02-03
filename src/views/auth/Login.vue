@@ -1,4 +1,6 @@
 <template>
+  <img class="page-background" src="@/assets/undraw_login.svg"/>
+
   <div class="page-content" style="max-width: 400px">
     <h2 class="text-center mt-0">Login</h2>
 

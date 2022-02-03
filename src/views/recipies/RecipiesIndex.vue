@@ -2,6 +2,9 @@
   <HelpMessage>
     <strong>Recipies</strong> can be used in any sessions. Changing one recipie will update all sessions using it
   </HelpMessage>
+
+  <img class="page-background" src="@/assets/undraw_chef.svg"/>
+
   <div class="page-content">
     <div class="mb-3">
       <Button label="New Recipie" icon="pi pi-plus" class="me-2" @click="$refs.form.show()" />

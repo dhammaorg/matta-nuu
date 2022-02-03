@@ -1,4 +1,7 @@
 <template>
+
+  <img class="page-background" src="@/assets/undraw_shop.svg"/>
+
   <div class="page-content">
     <div class="mb-3">
       <Button label="Add Supplier" icon="pi pi-plus" class="me-2" @click="$refs.form.show()" />
