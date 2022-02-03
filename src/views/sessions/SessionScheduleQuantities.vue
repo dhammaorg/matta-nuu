@@ -1,7 +1,10 @@
 <template>
   <div class="quantities-container">
     <div class="quantities-content">
-      <template v-for="event in events">
+
+      <template v-for="event in events" :key="event">
+        <!-- In case some recipie from first day need to be prepare the day before, we add a fake index -1 -->
+        <QuantitiesDay day="Before" :dayIndex="-1" :event="event" :numbers="numbers"  />
         <QuantitiesDay v-for="(day, dayIndex) in event.days" :key="day.id"
                       :day="day" :dayIndex="dayIndex" :event="event"
                       :numbers="numbers"  />

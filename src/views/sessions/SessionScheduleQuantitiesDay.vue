@@ -1,12 +1,13 @@
 <template>
-  <div class="day-quantities mb-3">
+  <div class="day-quantities mb-3" v-if="products.length > 0">
     <h1 class="text-center">{{ event.name }} - {{ day }}</h1>
 
     <DataTable :value="products" showGridlines rowGroupMode="subheader" groupRowsBy="recipie.name"
                class="p-datatable-sm">
       <template #groupheader="{ data }">
         <h3 class="recipie-name">
-          {{ data.recipie.name}}
+          {{ data.recipie.name }}
+          <span class="fw-normal" v-if="data.recipie.prepare_day_before"> ({{ event.days[dayIndex + 1] }})</span>
           <span class="p-chip fw-normal fs-6 ms-2" v-if="data.recipie.row.label">{{ data.recipie.row.label}}</span>
         </h3>
       </template>
@@ -36,10 +37,24 @@ export default {
   computed: {
     recipies() {
       const result = []
+      // Recipie to be prepare for this day (not need for dayIndex == -1)
+      if (this.dayIndex >= 0) {
+        this.$root.session.rows.forEach((row) => {
+          const dayValue = row.values[`Event${this.event.id}_${this.dayIndex}`] || {}
+          const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
+          if (dayRecipie.id && !dayRecipie.prepare_day_before) {
+            result.push({ ...dayRecipie, ...{ row } })
+          }
+        })
+      }
+
+      // Add recipie to be prepare for the next day
       this.$root.session.rows.forEach((row) => {
-        const dayValue = row.values[`Event${this.event.id}_${this.dayIndex}`]
-        const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
-        if (dayRecipie.id) result.push({ ...dayRecipie, ...{ row } })
+        const dayAfterValue = row.values[`Event${this.event.id}_${this.dayIndex + 1}`] || {}
+        const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
+        if (dayAfterRecipie.id && dayAfterRecipie.prepare_day_before) {
+          result.push({ ...dayAfterRecipie, ...{ row } })
+        }
       })
       return result
     },
