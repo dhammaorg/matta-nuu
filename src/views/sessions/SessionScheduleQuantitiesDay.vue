@@ -1,5 +1,5 @@
 <template>
-  <div class="day-quantities mb-3" v-if="products.length > 0">
+  <div class="day-quantities" v-if="products.length > 0">
     <h1 class="text-center">{{ event.name }} - {{ day }}</h1>
 
     <DataTable :value="products" showGridlines rowGroupMode="subheader" groupRowsBy="recipie.name"
@@ -73,9 +73,12 @@ export default {
 
 <style lang="scss">
   .day-quantities {
-    page-break-after: always;
+    // page-break-after: always;
     page-break-inside: avoid;
-
+    padding-top: 2rem;
+    &:first-child {
+      padding-top: 0;
+    }
     td {
       padding: 0.35rem 0.5rem !important;
     }
@@ -106,8 +109,5 @@ export default {
       border: none !important;
       background-color: var(--surface-0) !important;
     }
-  }
-  .day-quantities:not(:first-child) {
-    margin-top: 3rem;
   }
 </style>
