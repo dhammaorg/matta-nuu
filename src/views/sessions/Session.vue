@@ -92,7 +92,14 @@ export default {
   watch: {
     sessionDays: {
       deep: true,
-      handler() { this.initDaysValuesForEachRow() },
+      handler(newVal, oldVal) {
+        const newIds = newVal.map((d) => d.id)
+        const removedDays = oldVal.filter((x) => !newIds.includes(x.id))
+        this.session.rows.forEach((row) => {
+          removedDays.forEach((dayToRemove) => { delete row.values[dayToRemove.id] })
+        })
+        this.initDaysValuesForEachRow()
+      },
     },
   },
   beforeRouteLeave(to, from, next) {
