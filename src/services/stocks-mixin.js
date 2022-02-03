@@ -52,6 +52,7 @@ export default {
       return Object.values(this.$root.orders)
         .filter((order) => order.report_values_in_stocks
           && order.values
+          && order.session_id === this.session.id
           && order.id != this.$route.params.order_id /* We exclude current edited order so we can recalculate */)
     },
   },
