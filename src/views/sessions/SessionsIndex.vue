@@ -66,7 +66,7 @@ export default {
         const { data } = await this.$db.from('sessions').select().match({ id: session.id }).single()
         session = data
       }
-      const newSession = { ...session }
+      const newSession = { ...session, ...{ realStocks: {}, buys: {} } }
       delete newSession.id
       newSession.name = `${session.name} (COPY)`
       this.dbCreate('sessions', newSession)
