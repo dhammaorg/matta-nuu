@@ -186,8 +186,9 @@ export default {
   },
   methods: {
     disableAddDayFor(event) {
-      const newDate = event.start_date.addDays(event.days.length)
-      return this.sessionDays.find((day) => day.date.toDateString() === newDate.toDateString())
+      // Allow events to overlap only for one day (in case event1 ends on the morning and event2 starts on the afternoon)
+      const newDate = event.start_date.addDays(event.days.length - 1)
+      return this.sessionDays.find((day) => day.event !== event && day.date.toDateString() === newDate.toDateString())
     },
     onCellEditComplete(event) {
       // When creating an object from a modal any click on a dropdown inside the modal was
