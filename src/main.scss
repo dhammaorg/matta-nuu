@@ -101,9 +101,12 @@ td .p-inputnumber {
 }
 
 .p-field label {
-  font-weight: 500;
-  margin-bottom: 5px;
   display: block;
+  font-weight: 600;
+  margin-bottom: .4rem;
+  color: var(--indigo-500);
+  display: block;
+  font-size: .85rem;
 }
 
 .p-dialog .p-dialog-content {
@@ -175,10 +178,13 @@ hr {
 
 
 .p-divider-solid.p-divider-horizontal:before {
-  border-top: 1px solid var(--primary-color) !important;
-  opacity: .5;
+  border-top: 4px solid var(--surface-200) !important;
+  border-radius: 2px;
 }
 .p-divider-content {
-  font-weight: 500;
-  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.p-divider.p-divider-horizontal .p-divider-content {
+  padding: 0 1rem;
 }
