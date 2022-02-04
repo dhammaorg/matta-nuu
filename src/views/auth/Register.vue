@@ -28,14 +28,8 @@ export default {
       if (error) this.toastError(error)
       else {
         this.$root.user = user
-        this.$router.push({ name: 'sessions' })
         this.$root.help = true
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Welcome to Matta-Nuu !!',
-          detail: 'The HELP has been activated to help you doing your first steps. You can toggle HELP any time from main menu',
-          life: 8000,
-        })
+        this.$router.push({ name: 'profile', query: { firstVisit: true } })
       }
     },
   },

@@ -29,6 +29,7 @@ export default {
       orders: {},
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
+      userData: {}, // users preferences
       help: false, // Displaying or not help messages
     }
   },
@@ -76,10 +77,16 @@ export default {
     },
   },
   methods: {
-    fetchData() {
+    resetData() {
       this.recipies = {}
       this.templates = {}
       this.sessions = {}
+      this.userData = {}
+      this.products = {}
+      this.suppliers = {}
+    },
+    fetchData() {
+      this.resetData()
       if (!this.user) return
 
       this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
@@ -108,6 +115,9 @@ export default {
             this.sessions[session.id] = { ...session, ...emptySession }
           }
         })
+      })
+      this.$db.from('users').select().single().then((result) => {
+        this.userData = result.data || {}
       })
     },
     setPrintMode(mode) {

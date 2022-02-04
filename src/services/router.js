@@ -11,6 +11,7 @@ import SuppliersIndex from '@/views/suppliers/SuppliersIndex.vue'
 import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
+import Profile from '@/views/auth/Profile.vue'
 
 const routes = [
   {
@@ -22,6 +23,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: Register,
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
   },
   {
     path: '/',

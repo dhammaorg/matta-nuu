@@ -51,8 +51,8 @@
 
       <div class="d-flex mb-5" style="white-space: pre-line;">
         <div class="orderer w-50">
-          <div class="mb-2"><b>Org Name</b></div>
-          Org Details
+          <div class="mb-2"><b>{{ $root.userData.org_name }}</b></div>
+          {{ $root.userData.org_details }}
         </div>
         <div class="supplier w-50">
           <div class="mb-2"><b>{{ order.supplier.name }}</b></div>

@@ -8,8 +8,10 @@
     <template #end>
       <ToggleButton v-model="$root.help" class="p-button-sm p-button-text me-3" style="height: 2rem"
                     onLabel="Help" offLabel="Help" onIcon="pi pi-question-circle" offIcon="pi pi-question-circle" />
-      <Button icon="pi pi-sign-out" class="p-button-rounded p-button-text me-2" @click="logout"
-              v-if="$root.user" v-tooltip.left="'Logout'"/>
+
+      <Button icon="pi pi-user" @click="this.$refs.menu.toggle($event)" v-if="$root.user"
+              class="btn-user p-button-rounded me-2"/>
+      <TieredMenu ref="menu" :model="userItems" :popup="true" />
     </template>
   </Menubar>
 </template>
@@ -17,10 +19,11 @@
 <script>
 import Menubar from 'primevue/menubar'
 import ToggleButton from 'primevue/togglebutton'
+import TieredMenu from 'primevue/tieredmenu'
 import supabase from '@/services/supabase'
 
 export default {
-  components: { Menubar, ToggleButton },
+  components: { Menubar, ToggleButton, TieredMenu },
   data() {
     return {
       navItems: [
@@ -29,6 +32,10 @@ export default {
         { label: 'Suppliers', to: { name: 'suppliers' }, icon: 'pi pi-shopping-cart' },
         { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
         { label: 'Event Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
+      ],
+      userItems: [
+        { label: 'Settings', to: { name: 'profile' }, icon: 'pi pi-cog' },
+        { label: 'Logout', command: () => { this.logout() }, icon: 'pi pi-sign-out' },
       ],
     }
   },
@@ -74,5 +81,10 @@ export default {
   }
   .p-menubar .p-button.p-button-text {
     color: var(--indigo-200);
+  }
+  .btn-user {
+    background: var(--indigo-200);
+    color: var(--bluegray-900);
+    border: none;
   }
 </style>
