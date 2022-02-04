@@ -1,10 +1,10 @@
 <template>
+  <img class="page-background" src="@/assets/undraw_events.svg" />
+
   <HelpMessage>
     A <strong>Session</strong> is where you can manage <strong>consumptions, stocks, orders..</strong>
     A session is composed of one or many sub Events
   </HelpMessage>
-
-  <img class="page-background" src="@/assets/undraw_events.svg" />
 
   <div class="page-content">
     <div class="mb-3">
