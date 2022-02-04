@@ -16,6 +16,10 @@ h1, h2 {
 .xs {
   font-size: .8rem;
 }
+.fw-semibold {
+  font-weight: 600;
+} 
+
 td input, td .p-autocomplete {
   width: 100% !important;
 }
@@ -142,6 +146,18 @@ hr {
   .p-dialog-mask {
     display: none;
   }
+  ::-webkit-input-placeholder { /* WebKit browsers */
+      color: transparent;
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+      color: transparent;
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+      color: transparent;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10+ */
+      color: transparent;
+  }
 }
 
 .p-inputgroup .p-inputgroup {
@@ -155,4 +171,14 @@ hr {
   opacity: .5;
   right: 0;
   bottom: 0;
+}
+
+
+.p-divider-solid.p-divider-horizontal:before {
+  border-top: 1px solid var(--primary-color) !important;
+  opacity: .5;
+}
+.p-divider-content {
+  font-weight: 500;
+  color: var(--primary-color);
 }

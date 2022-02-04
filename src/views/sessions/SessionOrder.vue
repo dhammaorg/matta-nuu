@@ -14,7 +14,7 @@
             <InputText v-model="order.name" autofocus/>
           </template>
         </Inplace>
-        <p class="mb-0">{{ order.supplier }}</p>
+        <p class="mb-0 d-print-none">{{ order.supplier.name }}</p>
       </div>
       <div class="d-print-none">
         <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy"/>
@@ -22,6 +22,10 @@
         <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save" :loading="loading"/>
       </div>
     </div>
+
+    <p class="d-print-none">
+      {{ order.supplier.description }}
+    </p>
 
     <hr class="d-print-none">
 
@@ -44,6 +48,20 @@
     <hr class="d-print-none">
 
     <div class="card">
+
+      <div class="d-flex mb-5" style="white-space: pre-line;">
+        <div class="orderer w-50">
+          <div class="mb-2"><b>Org Name</b></div>
+          Org Details
+        </div>
+        <div class="supplier w-50">
+          <div class="mb-2"><b>{{ order.supplier.name }}</b></div>
+          {{ order.supplier.contact_details }}
+        </div>
+      </div>
+
+      <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header" class="w-100 mb-3"/>
+
       <DataTable :value="values" class="mb-3 border border-bottom-0">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
@@ -75,6 +93,8 @@
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" class="flex-shrink-0" />
         </div>
       </div>
+
+      <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer" class="mt-3 w-100"/>
     </div>
 
   </div>
@@ -86,6 +106,7 @@
 import Checkbox from 'primevue/checkbox'
 import InputNumber from 'primevue/inputnumber'
 import Inplace from 'primevue/inplace'
+import Textarea from 'primevue/textarea'
 import InputDay from '@/components/InputDay.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
@@ -94,12 +115,13 @@ export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, Inplace, Checkbox,
+    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea,
   },
   data() {
     return {
       order: {
         values: {},
+        supplier: {},
       },
       newProduct: '',
       loading: false,
@@ -125,20 +147,22 @@ export default {
   },
   methods: {
     async fetchOrder(orderId) {
+      let order = {}
       if (this.$root.orders[orderId]) {
-        this.order = { ...this.$root.orders[orderId] }
+        order = { ...this.$root.orders[orderId] }
       } else {
-        let { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
+        const { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
         if (data === null) {
           this.toastError('Could not find the order')
-          this.order = {}
+          this.order = { supplier: {}, values: {} }
           this.$router.push({ name: 'session_orders', params: { id: this.$route.params.id } })
           return
         }
-        data = this.fixData(data)
-        data.values ||= {}
-        this.order = data
+        order = this.fixData(data)
+        order.values ||= {}
       }
+      order.supplier = this.$root.getSupplier(order.supplier_id)
+      this.order = order
 
       const firstInit = Object.values(this.order.values || {}).length === 0
       if (firstInit && this.order.target_day) this.calculate()
@@ -230,5 +254,11 @@ export default {
       margin-top: 2rem;
     }
     .card { margin-top: 2rem; }
+    .p-inputtextarea {
+      border: none;
+      padding: 0px;
+      margin-bottom: 0 !important;
+      font-weight: 500;
+    }
   }
 </style>

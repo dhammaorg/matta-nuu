@@ -55,6 +55,9 @@ export default {
     },
     async createOrder() {
       if (this.order.supplier_id || this.suppliers.length === 0) {
+        const supplier = this.$root.getSupplier(this.order.supplier_id)
+        this.order.header = supplier.order_header
+        this.order.footer = supplier.order_footer
         this.dbCreate('orders', this.order, (order) => {
           this.visible = false
           this.$router.push({ name: 'session_order', params: { id: this.$route.params.id, order_id: order.id } })
