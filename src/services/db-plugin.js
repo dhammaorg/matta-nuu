@@ -53,9 +53,13 @@ export default {
         },
         toastError(error) {
           if (typeof error === 'string') error = { message: 'Error', details: error }
-          this.$toast.add({
-            severity: 'error', summary: error.message, detail: error.details, life: 8000,
-          })
+          if (error.code === 401) {
+            this.$router.push({ name: 'login' })
+          } else {
+            this.$toast.add({
+              severity: 'error', summary: error.message, detail: error.details, life: 8000,
+            })
+          }
         },
         toastSuccess(object, action) {
           const message = object.name ? `${object.name} successfully ${action}` : `Successfully ${action}`
