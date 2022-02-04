@@ -1,6 +1,6 @@
 <template>
 
-  <img class="page-background" src="@/assets/undraw_shop.svg"/>
+  <img class="page-background" style="opacity: .2" src="@/assets/undraw_shop.svg"/>
 
   <div class="page-content">
     <div class="mb-3">
