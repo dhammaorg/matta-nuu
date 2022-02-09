@@ -131,6 +131,9 @@
             <span class="p-inputgroup-addon rounded-0 p-0" v-show="data.values[field].product_id">
               {{ $root.getProduct(data.values[field].product_id).unit }}
             </span>
+            <Button icon="pi pi-sync" v-show="data.values[field].recipie_id" class="p-button-secondary"
+                    @click="updateRecipieAmounts(data.values[field], day.event.people_count)"
+                    v-tooltip="'Update recipie to fit with event number of people'"/>
           </div>
         </div>
       </template>
@@ -256,6 +259,25 @@ export default {
     newId(values) {
       if (values.length === 0) return 1
       return Math.max(...values.map((r) => r.id)) + 1
+    },
+    // If the event is for 100 people, and a recipie is cooked for 120 people, this method will adjust
+    // recipie so that it will now be cooked for 100
+    updateRecipieAmounts(dayValue, targetAmount) {
+      const recipie = this.$root.getRecipie(dayValue.recipie_id)
+      this.$confirm.require({
+        message: `This will modify the recipie amounts to fit with the event people count.
+                  All recipies ingredient will be multiplied by ${dayValue.amount / targetAmount}
+                  Are you sure to continue ?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+          recipie.products.forEach((p) => {
+            p.amount = (p.amount * dayValue.amount) / targetAmount
+          })
+          dayValue.amount = targetAmount
+          this.dbUpdate('recipies', recipie)
+        },
+      })
     },
   },
 }
