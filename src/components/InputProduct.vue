@@ -11,7 +11,7 @@
       </template>
     </Dropdown>
     <Button icon="pi pi-pencil" v-if="editable && value" @click="$refs.form.show($root.getProduct(value))"
-            v-tooltip="'Edit Product'"/>
+            v-tooltip="'Edit Product'" class="flex-shrink-0"/>
   </div>
 
   <ProductForm ref="form" @created="$emit('update:modelValue', $event.id)"></ProductForm>

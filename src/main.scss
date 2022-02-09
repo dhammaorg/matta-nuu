@@ -80,6 +80,9 @@ td .p-inputnumber {
 .p-datatable-wrapper {
   @extend .custom-scroll-bar;
 }
+.p-dialog.p-confirm-dialog .p-confirm-dialog-message {
+  white-space: pre-line;
+}
 .custom-scroll-bar::-webkit-scrollbar-track {
   background-color: var(--surface-content);
   border: 1px solid var(--bluegray-100);

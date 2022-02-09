@@ -11,7 +11,7 @@
       </template>
     </Dropdown>
     <Button icon="pi pi-pencil" v-if="value" @click="$refs.form.show($root.getRecipie(value))"
-            v-tooltip="'Edit Recipie'"/>
+            v-tooltip="'Edit Recipie'" class="flex-shrink-0" />
   </div>
   <RecipieForm ref="form" @created="$emit('update:modelValue', $event.id)"></RecipieForm>
 </template>
