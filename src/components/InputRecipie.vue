@@ -10,7 +10,8 @@
         </div>
       </template>
     </Dropdown>
-    <Button icon="pi pi-pencil" v-if="value" @click="$refs.form.show($root.getRecipie(value))"/>
+    <Button icon="pi pi-pencil" v-if="value" @click="$refs.form.show($root.getRecipie(value))"
+            v-tooltip="'Edit Recipie'"/>
   </div>
   <RecipieForm ref="form" @created="$emit('update:modelValue', $event.id)"></RecipieForm>
 </template>

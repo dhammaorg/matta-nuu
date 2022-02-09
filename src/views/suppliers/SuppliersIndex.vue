@@ -18,7 +18,7 @@
       <Column class="text-end">
         <template #body="{data}">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                  @click="$refs.form.show(data)" />
+                  @click="$refs.form.show(data)" v-tooltip="'Edit'"/>
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
                   @click="deleteSupplier(data)" />
         </template>
