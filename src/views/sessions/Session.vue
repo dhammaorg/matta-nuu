@@ -64,23 +64,8 @@ export default {
     },
   },
   async mounted() {
-    if (this.$root.isSessionFullyLoaded()) return // if already loaded do nothing
-
-    const { data } = await this.$db.from('sessions').select().match({ id: this.$route.params.id }).single()
-    data.events ||= []
-    data.events.forEach((e) => { e.start_date = new Date(e.start_date) })
-    data.rows ||= []
-    this.$root.session = data
-    this.$root.fullyLoadedSessions.push(data.id)
+    this.$root.fetchSession()
     this.initDaysValuesForEachRow()
-
-    this.$db.from('orders').select().match({ session_id: this.$route.params.id }).then((result) => {
-      result.data.forEach((order) => {
-        if (!this.$root.orders[order.id]) {
-          this.$root.orders[order.id] = order
-        }
-      })
-    })
   },
   methods: {
     initDaysValuesForEachRow() {

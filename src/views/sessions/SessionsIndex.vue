@@ -16,7 +16,7 @@
       </span>
     </div>
 
-    <DataTable :value="Object.values($root.sessions)" dataKey="id"
+    <DataTable :value="$root.sessionsArray" dataKey="id"
       :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>
@@ -63,11 +63,7 @@ export default {
       })
     },
     async duplicateSession(session) {
-      // Fully Load the session
-      if (!this.$root.isSessionFullyLoaded(session.id)) {
-        const { data } = await this.$db.from('sessions').select().match({ id: session.id }).single()
-        session = data
-      }
+      session = await this.$root.fetchSession(session.id)
       const newSession = { ...session, ...{ realStocks: {}, buys: {} } }
       delete newSession.id
       newSession.name = `${session.name} (COPY)`

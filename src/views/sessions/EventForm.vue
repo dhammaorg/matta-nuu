@@ -68,18 +68,17 @@ export default {
     },
     async save() {
       if (this.event.name && this.event.start_date) {
+        // Fill new event with chosen template
         if (this.isNew && this.template.id) {
-          if (!this.template.rows) {
-            const { data } = await this.$db.from('templates').select().match({ id: this.template.id }).single()
-            this.$root.templates[this.template.id] = data
-            this.template = data
-          }
-          this.event = { ...this.template, ...this.event }
-          this.event.days = this.template.days
+          this.template = await this.$root.fetchSession(this.template.id)
+          const eventTemplate = { ...this.template.events.at(0) }
+          this.event = { ...eventTemplate, ...this.event, ...{ id: null } }
+          this.event.days = [...eventTemplate.days]
           this.event.templateRows = this.template.rows.map((row) => {
-            const newRow = { ...row }
-            newRow.values.filter((v) => v.amount).forEach((v) => {
-              v.amount = Math.round((v.amount * this.event.people_count) / this.template.people_count) || null
+            const newRow = { ...row, values: {} }
+            Object.entries(row.values).forEach(([day, v]) => {
+              const newValue = Math.round((v.amount * this.event.people_count) / eventTemplate.people_count) || null
+              newRow.values[day] = { amount: newValue }
             })
             return newRow
           })

@@ -1,7 +1,8 @@
 <template>
   <div class="submenu px-3 d-flex align-items-center d-print-none">
 
-    <div class="d-flex justify-content-center">
+    <h2 class="flex-grow-1 py-2" v-if="session.is_template">Event Template</h2>
+    <div class="d-flex justify-content-center" v-if="!session.is_template">
       <Inplace :closable="true">
         <template #display>
           <h2 class="m-0 me-3" title="Edit">
@@ -13,9 +14,8 @@
           <InputText v-model="session.name" autoFocus />
         </template>
       </Inplace>
-
     </div>
-    <div class="flex-grow-1 flex-shrink-0 text-center">
+    <div class="flex-grow-1 flex-shrink-0 text-center" v-if="!session.is_template">
       <TabMenu :model="items" class="d-inline-flex"/>
     </div>
     <div class="d-flex">
@@ -79,6 +79,8 @@ export default {
   methods: {
     async save() {
       this.saving = true
+      // For template, session name is the event template name
+      if (this.session.is_template) this.session.name = this.session.events.at(0).name
       const { error } = await this.$db.from('sessions')
         .update(this.session)
         .match({ id: this.$route.params.id })

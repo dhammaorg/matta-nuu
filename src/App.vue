@@ -25,7 +25,6 @@ export default {
       suppliers: {},
       recipies: {},
       sessions: {},
-      templates: {},
       orders: {},
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
@@ -55,8 +54,11 @@ export default {
     suppliersArray() {
       return Object.values(this.suppliers).slice().sort((a, b) => (a.id < b.id ? 1 : -1))
     },
+    sessionsArray() {
+      return Object.values(this.sessions).filter((s) => !s.is_template)
+    },
     templatesArray() {
-      return Object.values(this.templates)
+      return Object.values(this.sessions).filter((s) => s.is_template)
     },
   },
   watch: {
@@ -79,7 +81,6 @@ export default {
   methods: {
     resetData() {
       this.recipies = {}
-      this.templates = {}
       this.sessions = {}
       this.userData = {}
       this.products = {}
@@ -104,12 +105,7 @@ export default {
           this.suppliers[supplier.id] = supplier
         })
       })
-      this.$db.from('templates').select('id, name').order('id', { ascending: false }).then((result) => {
-        result.data.forEach((template) => {
-          this.templates[template.id] = template
-        })
-      })
-      this.$db.from('sessions').select('id, name').order('id', { ascending: false }).then((result) => {
+      this.$db.from('sessions').select('id, name, is_template').order('id', { ascending: false }).then((result) => {
         result.data.forEach((session) => {
           if (!this.sessions[session.id]) {
             this.sessions[session.id] = { ...session, ...emptySession }
@@ -119,6 +115,35 @@ export default {
       this.$db.from('users').select().single().then((result) => {
         this.userData = result.data || {}
       })
+    },
+    // Inially we load only the session name in order to make smaller requests
+    // so we need to fetch again the full session individually
+    async fetchSession(sessionId = parseInt(this.$route.params.id, 10)) {
+      if (this.isSessionFullyLoaded(sessionId)) return this.sessions[sessionId]
+      const { error, data } = await this.$db.from('sessions').select().match({ id: sessionId }).single()
+      if (error) return this.toastError(error)
+      // Adds default values
+      const session = {
+        ...{
+          realStocks: {}, rows: [], events: [], buys: {},
+        },
+        ...data,
+      }
+      session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
+
+      // Loads associated orders
+      if (!session.is_template) {
+        this.$db.from('orders').select().match({ session_id: this.$route.params.id }).then((result) => {
+          result.data.forEach((order) => {
+            if (!this.$root.orders[order.id]) {
+              this.$root.orders[order.id] = order
+            }
+          })
+        })
+      }
+      this.sessions[sessionId] = session
+      this.fullyLoadedSessions.push(sessionId)
+      return session
     },
     setPrintMode(mode) {
       // @page can be declared only once. As vuejs use same page for every page

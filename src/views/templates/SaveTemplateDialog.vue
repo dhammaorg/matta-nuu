@@ -18,9 +18,9 @@
 
     <hr>
 
-    <DataTable :value="Object.values($root.templates)" dataKey="id" class="table-clickable mt-3"
-               :paginator="Object.values($root.templates).length > 10" :rows="10"
-               v-if="Object.values($root.templates).length > 0"
+    <DataTable :value="$root.templatesArray" dataKey="id" class="table-clickable mt-3"
+               :paginator="$root.templatesArray.length > 10" :rows="10"
+               v-if="$root.templatesArray.length > 0"
                @row-click="overrideTemplate($event)">
       <Column field="name" header="Or override existing template" />
     </Datatable>
@@ -33,33 +33,21 @@ export default {
     return {
       visible: false,
       template: {},
-      event: {},
     }
-  },
-  computed: {
-    isNew() {
-      return this.event.id === undefined
-    },
   },
   methods: {
     show(event = {}) {
-      this.event = { ...event }
-      this.template = {
-        name: event.name,
-        people_count: event.people_count,
-        rows: this.getEventRows(event),
-        days: event.days,
-      }
+      this.template = { ...event }
       this.visible = true
     },
     save() {
-      const existingTemplate = Object.values(this.$root.templates).find((t) => t.name == this.template.name)
+      const existingTemplate = this.$root.templatesArray.find((t) => t.name == this.template.name)
       if (existingTemplate) {
         this.template.id = existingTemplate.id
         this.confirmOveride('A template with that name already exists, would you like to override it?')
       } else {
         delete this.template.id // ensure id is null
-        this.dbCreate('templates', this.template, () => { this.visible = false })
+        this.dbCreate('sessions', this.template, () => { this.visible = false })
       }
     },
     overrideTemplate(e) {
@@ -73,10 +61,18 @@ export default {
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
-          this.dbUpdate('templates', this.template, () => { this.visible = false })
+          // We encapsulate the eventTemplate inside a session in order to facilitate storage and usage
+          const sessionTemplate = {
+            name: this.template.name,
+            events: [this.template],
+            rows: this.getEventRows(this.template),
+          }
+          this.dbUpdate('sessions', sessionTemplate, () => { this.visible = false })
         },
       })
     },
+    // When we save a template from a standard session where there are multiple events,
+    // we filter the session rows associated with this particular event
     getEventRows(event) {
       const result = []
       const eventId = `Event${event.id}_`

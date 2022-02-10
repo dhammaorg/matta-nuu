@@ -1,5 +1,6 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" header="New Session"
+  <Dialog v-model:visible="visible" :style="{width: '600px'}"
+          :header="`New ${session.is_template ? 'Template' : 'Session'}`"
           :modal="true" class="p-fluid">
 
     <div class="p-field">
@@ -24,12 +25,18 @@ export default {
     }
   },
   methods: {
-    open() {
-      this.session = {}
+    open(session = {}) {
+      this.session = session
       this.visible = true
     },
     async save() {
       if (this.session.name) {
+        if (this.session.is_template) {
+          // create event with same name
+          this.session.events = [{
+            id: 1, name: this.session.name, days: ['Day 0', 'Day 1'], people_count: 10,
+          }]
+        }
         this.dbCreate('sessions', this.session, (session) => {
           this.visible = false
           this.$router.push({ name: 'session_schedule', params: { id: session.id } })

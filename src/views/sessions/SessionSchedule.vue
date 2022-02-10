@@ -22,7 +22,7 @@
             <div class="d-flex flex-column ms-4">
               <NewRowButton @add-row="addRow"/>
               <Button type="button" icon="pi pi-plus" label="Event" class="mt-2 p-button-sm p-button-outlined"
-                      @click="$refs.eventForm.show()" />
+                      @click="$refs.eventForm.show()" v-if="!session.is_template" />
 
             </div>
           </template>
@@ -42,11 +42,11 @@
               <span class="d-print-none btn-on-hover">
                 <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
                         class="p-button-sm p-button-success p-button-text"
-                        v-tooltip.top="'Save as template'" />
+                        v-tooltip.top="'Save as template'" v-if="!session.is_template" />
                 <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
                         class="p-button-sm p-button-text" />
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
-                        class="p-button-sm p-button-danger p-button-text" />
+                        class="p-button-sm p-button-danger p-button-text" v-if="!session.is_template" />
                 <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
                         @click="event.days.push(`Day ${event.days.length}`)"
                         :disabled="disableAddDayFor(event)" />
@@ -60,11 +60,6 @@
         <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, 'day-date']">
           <template #header>
             <span>{{ day.dateHeader }}</span>
-            <div class="btn-on-hover w-100 justify-content-center">
-              <Button icon="pi pi-trash" class="p-button-danger p-button-text p-0"
-                      v-if="day.class.includes('event-end') && day.event.days.length > 1"
-                      @click="day.event.days.pop()" />
-            </div>
           </template>
         </Column>
       </Row>
@@ -73,6 +68,9 @@
         <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class" class="day-label">
           <template #header>
             <InputText :value="day.label" @change="day.event.days[day.index] = $event.target.value" class="day-input" />
+            <Button icon="pi pi-trash" class="btn-on-hover p-button-danger p-button-text p-0"
+                    v-if="day.class.includes('event-end') && day.event.days.length > 1"
+                    @click="day.event.days.pop()" />
           </template>
         </Column>
       </Row>
@@ -175,11 +173,6 @@ export default {
     PrintButton,
     SaveTemplate,
   },
-  data() {
-    return {
-      displayDates: true,
-    }
-  },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show()
     this.$root.setPrintMode('landscape')
@@ -187,6 +180,9 @@ export default {
   computed: {
     session() {
       return this.$root.session
+    },
+    displayDates() {
+      return !this.session.is_template
     },
   },
   methods: {
@@ -233,23 +229,10 @@ export default {
         // update existing
         this.session.events[index] = event
       } else {
-        // createNew
+        // create New
         const newEventId = this.newId(this.session.events)
         if (event.templateRows) {
-          event.templateRows.forEach((templateRow) => {
-            const existingRow = this.session.rows.find((r) => ['label', 'product', 'type', 'unit'].every((prop) => r[prop] === templateRow[prop]))
-            if (existingRow) {
-              templateRow.values.forEach((rowValue, rowIndex) => {
-                existingRow.values[`Event${newEventId}_${rowIndex}`] = rowValue
-              })
-            } else {
-              const values = {}
-              templateRow.values.forEach((rowValue, rowIndex) => {
-                values[`Event${newEventId}_${rowIndex}`] = rowValue
-              })
-              this.session.rows.push({ ...templateRow, ...{ id: this.newId(this.session.rows), values } })
-            }
-          })
+          this.fillSessionWithEventTemplateRows(event.templateRows, newEventId)
           delete event.templateRows
         }
         this.session.events.push({ ...event, ...{ id: newEventId } })
@@ -259,6 +242,23 @@ export default {
     newId(values) {
       if (values.length === 0) return 1
       return Math.max(...values.map((r) => r.id)) + 1
+    },
+    fillSessionWithEventTemplateRows(templateRows, eventId = '') {
+      templateRows.forEach((templateRow) => {
+        const existingRow = this.session.rows
+          .find((r) => ['label', 'product_id', 'recipie_id', 'type'].every((prop) => r[prop] === templateRow[prop]))
+        if (existingRow) {
+          Object.values(templateRow.values).forEach((rowValue, rowIndex) => {
+            existingRow.values[`Event${eventId}_${rowIndex}`] = rowValue
+          })
+        } else {
+          const values = {}
+          Object.values(templateRow.values).forEach((rowValue, rowIndex) => {
+            values[`Event${eventId}_${rowIndex}`] = rowValue
+          })
+          this.session.rows.push({ ...{ ...templateRow }, ...{ id: this.newId(this.session.rows), values } })
+        }
+      })
     },
     // If the event is for 100 people, and a recipie is cooked for 120 people, this method will adjust
     // recipie so that it will now be cooked for 100

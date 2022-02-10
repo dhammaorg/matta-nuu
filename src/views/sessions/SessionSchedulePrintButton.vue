@@ -19,7 +19,7 @@
         <label for="amount" class="ms-2">Hide Amounts</label>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-3" v-if="!$root.session.is_template">
         <Checkbox id="dates" v-model="hide.dates" :binary="true" />
         <label for="dates" class="ms-2">Hide Dates</label>
       </div>
