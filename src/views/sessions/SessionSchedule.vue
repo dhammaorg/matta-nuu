@@ -40,9 +40,9 @@
                 </span>
               </span>
               <span class="d-print-none btn-on-hover">
-                <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
+                <!--<Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
                         class="p-button-sm p-button-success p-button-text"
-                        v-tooltip.top="'Save as template'" v-if="!session.is_template" />
+                        v-tooltip.top="'Save as template'" v-if="!session.is_template" />-->
                 <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
                         class="p-button-sm p-button-text" />
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"

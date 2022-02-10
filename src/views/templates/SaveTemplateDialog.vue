@@ -35,6 +35,17 @@ export default {
       template: {},
     }
   },
+  computed: {
+    // We encapsulate the eventTemplate inside a session in order to facilitate storage and usage
+    sessionTemplate() {
+      return {
+        name: this.template.name,
+        events: [this.template],
+        rows: this.getEventRows(this.template),
+        is_template: true,
+      }
+    },
+  },
   methods: {
     show(event = {}) {
       this.template = { ...event }
@@ -47,7 +58,7 @@ export default {
         this.confirmOveride('A template with that name already exists, would you like to override it?')
       } else {
         delete this.template.id // ensure id is null
-        this.dbCreate('sessions', this.template, () => { this.visible = false })
+        this.dbCreate('sessions', this.sessionTemplate, () => { this.visible = false })
       }
     },
     overrideTemplate(e) {
@@ -61,13 +72,7 @@ export default {
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
-          // We encapsulate the eventTemplate inside a session in order to facilitate storage and usage
-          const sessionTemplate = {
-            name: this.template.name,
-            events: [this.template],
-            rows: this.getEventRows(this.template),
-          }
-          this.dbUpdate('sessions', sessionTemplate, () => { this.visible = false })
+          this.dbUpdate('sessions', this.sessionTemplate, () => { this.visible = false })
         },
       })
     },
