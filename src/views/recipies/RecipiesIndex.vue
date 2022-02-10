@@ -6,9 +6,11 @@
   </HelpMessage>
 
   <div class="page-content">
-    <div class="mb-3">
-      <Button label="New Recipie" icon="pi pi-plus" class="me-2" @click="$refs.form.show()" />
-      <span class="p-input-icon-left float-end">
+    <div class="table-header">
+      <Button v-tooltip.top="'New Recipie'" icon="pi pi-plus" class="p-button-rounded"
+              @click="$refs.form.show()" />
+      <h2>Recipies</h2>
+      <span class="p-input-icon-left search">
         <i class="pi pi-search" />
         <InputText v-model="filters['global'].value" placeholder="Search..." />
       </span>

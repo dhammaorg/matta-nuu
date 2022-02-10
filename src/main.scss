@@ -191,3 +191,14 @@ hr {
 .p-divider.p-divider-horizontal .p-divider-content {
   padding: 0 1rem;
 }
+
+.table-header {
+  display: flex;
+  margin-bottom: 1.5rem;
+  align-items: center;
+
+  h2 {
+    flex-grow: 1;
+    margin: 0 1rem;
+  }
+}

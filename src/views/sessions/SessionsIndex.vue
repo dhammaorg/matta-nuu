@@ -7,10 +7,11 @@
   </HelpMessage>
 
   <div class="page-content">
-    <div class="mb-3">
-      <Button label="New Session" icon="pi pi-plus" class="me-2"
+    <div class="table-header">
+      <Button v-tooltip.top="'New Session'" icon="pi pi-plus" class="p-button-rounded"
               @click="$refs.newSessionModal.open()" />
-      <span class="p-input-icon-left float-end">
+      <h2>Sessions</h2>
+      <span class="p-input-icon-left search">
         <i class="pi pi-search" />
         <InputText v-model="filters['global'].value" placeholder="Search..." />
       </span>

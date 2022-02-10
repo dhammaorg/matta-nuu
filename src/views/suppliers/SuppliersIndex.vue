@@ -3,9 +3,11 @@
   <img class="page-background" style="opacity: .2" src="@/assets/undraw_shop.svg"/>
 
   <div class="page-content">
-    <div class="mb-3">
-      <Button label="Add Supplier" icon="pi pi-plus" class="me-2" @click="$refs.form.show()" />
-      <span class="p-input-icon-left float-end">
+    <div class="table-header">
+      <Button v-tooltip.top="'Add Supplier'" icon="pi pi-plus" class="p-button-rounded"
+              @click="$refs.form.show()" />
+      <h2>Suppliers</h2>
+      <span class="p-input-icon-left search">
         <i class="pi pi-search" />
         <InputText v-model="filters['global'].value" placeholder="Search..." />
       </span>
