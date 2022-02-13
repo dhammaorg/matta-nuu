@@ -183,6 +183,10 @@ export default {
     @media screen { background-color:var(--surface-ground); }
     color-adjust: exact;
     -webkit-print-color-adjust: exact;
+    @media print {
+      overflow-y: visible !important;
+      height: auto !important;
+    }
   }
   .page-content {
     width: 100%;
