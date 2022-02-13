@@ -150,7 +150,7 @@ hr {
     left: 0 !important;
   }
   .p-dialog-mask {
-    display: none;
+    display: none !important;
   }
   ::-webkit-input-placeholder { /* WebKit browsers */
       color: transparent;
@@ -166,7 +166,7 @@ hr {
   }
 }
 
-.p-inputgroup .p-inputgroup {
+.p-inputgroup .p-inputgroup, .p-fluid .p-inputgroup .p-inputwrapper {
   flex: 1 1 auto;
   width: 1%;
 }
