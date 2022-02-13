@@ -14,7 +14,7 @@
             <InputText v-model="order.name" autofocus/>
           </template>
         </Inplace>
-        <p class="mb-0 d-print-none">{{ order.supplier.name }}</p>
+        <p class="mb-0 d-print-none">{{ supplier.name }}</p>
       </div>
       <div class="d-print-none">
         <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy"/>
@@ -24,7 +24,7 @@
     </div>
 
     <p class="d-print-none">
-      {{ order.supplier.description }}
+      {{ supplier.description }}
     </p>
 
     <hr class="d-print-none">
@@ -55,8 +55,8 @@
           {{ $root.userData.org_details }}
         </div>
         <div class="supplier w-50">
-          <div class="mb-2"><b>{{ order.supplier.name }}</b></div>
-          {{ order.supplier.contact_details }}
+          <div class="mb-2"><b>{{ supplier.name }}</b></div>
+          {{ supplier.contact_details }}
         </div>
       </div>
 
@@ -121,7 +121,6 @@ export default {
     return {
       order: {
         values: {},
-        supplier: {},
       },
       newProduct: '',
       loading: false,
@@ -135,6 +134,9 @@ export default {
     this.fetchOrder(to.params.order_id)
   },
   computed: {
+    supplier() {
+      return this.$root.getSupplier(this.order.supplier_id)
+    },
     values() {
       let values = this.order.values || {}
       // Sort by key == product
@@ -154,14 +156,13 @@ export default {
         const { data } = await this.$db.from('orders').select().match({ id: orderId }).single()
         if (data === null) {
           this.toastError('Could not find the order')
-          this.order = { supplier: {}, values: {} }
+          this.order = { values: {} }
           this.$router.push({ name: 'session_orders', params: { id: this.$route.params.id } })
           return
         }
         order = this.fixData(data)
         order.values ||= {}
       }
-      order.supplier = this.$root.getSupplier(order.supplier_id)
       this.order = order
 
       const firstInit = Object.values(this.order.values || {}).length === 0
