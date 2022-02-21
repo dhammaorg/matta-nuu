@@ -30,6 +30,15 @@
         </template>
       </Column>
 
+      <!-- Recipies -->
+      <Column field="recipies" header="Used by">
+        <template #body="{ data }">
+          <Chip v-for="recipie in recipiesUsingProduct(data)" :key="`${data.id}_${recipie.id}`"
+                :label="recipie.name" icon="pi pi-pencil" class="edit-recipie-chip"
+                @click="$refs.recipieForm.show(recipie)" v-tooltip="'Edit this recipie'"/>
+        </template>
+      </Column>
+
       <!-- Packaging Name -->
       <Column field="packaging_reference">
         <template #body="{ data }">
@@ -63,19 +72,22 @@
     </DataTable>
 
     <ProductForm ref="form"></ProductForm>
+    <RecipieForm ref="recipieForm"></RecipieForm>
   </div>
 </template>
 
 <script>
 import { FilterMatchMode } from 'primevue/api'
 import InputNumber from 'primevue/inputnumber'
+import Chip from 'primevue/chip'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputUnit from '@/components/InputUnit.vue'
+import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, InputSupplier, InputUnit, InputNumber,
+    ProductForm, RecipieForm, InputSupplier, InputUnit, InputNumber, Chip,
   },
   data() {
     return {
@@ -120,6 +132,9 @@ export default {
       }
       this.loading = false
     },
+    recipiesUsingProduct(product) {
+      return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
+    },
   },
 }
 </script>
@@ -134,6 +149,13 @@ export default {
       }
       input, .p-dropdown {
         border: none !important;
+      }
+    }
+    .edit-recipie-chip {
+      cursor: pointer;
+      font-size: .8rem;
+      .pi {
+        font-size: inherit;
       }
     }
   }
