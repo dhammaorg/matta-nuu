@@ -8,7 +8,7 @@
   </HelpMessage>
 
   <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
-             :scrollable="true" scrollHeight="flex"
+             :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
              :class="{'hide-dates': !displayDates}"
              @rowReorder="session.rows = $event.value"
              editMode="cell" class="editable-cells-table session-table schedule-table" @cell-edit-complete="onCellEditComplete"

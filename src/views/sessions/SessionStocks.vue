@@ -14,7 +14,7 @@
   </HelpMessage>
 
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
-             :scrollable="true" scrollHeight="flex"
+             :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
              editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
