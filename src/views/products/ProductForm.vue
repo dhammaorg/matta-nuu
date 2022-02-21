@@ -87,10 +87,10 @@ export default {
     flex-wrap: wrap;
     .p-field {
       width: calc(50% - .5rem);
-      margin: 0 0 1rem 0;
+      margin: 0 0 1rem 0 !important;
       &:nth-child(even) {
         width: calc(50% - .5rem);
-        margin-left: 1rem;
+        margin-left: 1rem !important;
       }
     }
   }
