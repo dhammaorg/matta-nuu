@@ -15,6 +15,7 @@
 
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
              :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
+             rowGroupMode="subheader" groupRowsBy="category.name" sortField="category.name" :sortOrder="1"
              editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
@@ -83,6 +84,10 @@
       </template>
     </Column>
 
+    <template #groupheader="{ data }">
+      {{ data.category.name || "Others" }}
+    </template>
+
   </DataTable>
 
   <OrderNewDialog ref="orderForm" :days="sessionDays" />
@@ -142,5 +147,17 @@ export default {
         }
       }
     }
+  }
+  .p-rowgroup-header {
+    z-index: 500 !important;
+  }
+  .p-rowgroup-header td {
+    justify-content: flex-start;
+    background-color: var(--surface-ground);
+    border: none !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding-top: 1.5rem !important;
+    color: var(--bluegray-500);
   }
 </style>

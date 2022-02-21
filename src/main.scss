@@ -88,6 +88,10 @@ td .p-inputnumber {
   border: 1px solid var(--bluegray-100);
 }
 
+.p-column-filter-overlay-menu .p-column-filter-constraint {
+  padding-bottom: 0;
+}
+
 .custom-scroll-bar::-webkit-scrollbar {
   width: 10px;
   height: 10px;

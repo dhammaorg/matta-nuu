@@ -9,12 +9,13 @@
       <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save" :loading="loading" />
     </div>
 
-    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="flex"
-               class="editable-cells-table session-table products-table" :filters="filters"
-               style="height: calc(100vh - 10.5rem);">
+    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
+               class="editable-cells-table session-table products-table" v-model:filters="filters"
+               sortField="name" :sortOrder="1"
+               filterDisplay="menu">
 
       <!-- Name -->
-      <Column field="name" header="Name" class="product-column w-auto">
+      <Column field="name" header="Name" class="product-column w-auto" :sortable="true">
         <template #body="{ data }">
           <InputText v-model="data.name" />
         </template>
@@ -28,9 +29,26 @@
       </Column>
 
       <!-- Supplier -->
-      <Column field="supplier_id" header="Supplier">
+      <Column field="supplier_id" header="Supplier" :sortable="true"
+              filterField="supplier_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
         <template #body="{ data }">
           <InputSupplier v-model="data.supplier_id" placeholder="" />
+        </template>
+        <template #filter="{filterModel}">
+          <InputSupplier v-model="filterModel.value" class="p-column-filter"
+                        :btnAdd="false" :showClear="false"/>
+        </template>
+      </Column>
+
+      <!-- Category -->
+      <Column field="category_id" header="Category" :sortable="true"
+              filterField="category_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
+        <template #body="{ data }">
+          <InputCategory type="products" v-model="data.category_id" placeholder="" />
+        </template>
+        <template #filter="{filterModel}">
+          <InputCategory type="products" v-model="filterModel.value" class="p-column-filter"
+                         :btnAdd="false" :showClear="false" />
         </template>
       </Column>
 
@@ -86,12 +104,13 @@ import InputNumber from 'primevue/inputnumber'
 import Chip from 'primevue/chip'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
+import InputCategory from '@/components/InputCategory.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputUnit, InputNumber, Chip,
+    ProductForm, RecipieForm, InputSupplier, InputUnit, InputNumber, InputCategory, Chip,
   },
   data() {
     return {
@@ -119,6 +138,8 @@ export default {
     initFilters() {
       this.filters = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        supplier_id: { value: null, matchMode: FilterMatchMode.EQUALS },
+        category_id: { value: null, matchMode: FilterMatchMode.EQUALS },
       }
     },
     onCellEditComplete(event) {

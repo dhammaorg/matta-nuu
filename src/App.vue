@@ -26,6 +26,7 @@ export default {
       recipies: {},
       sessions: {},
       orders: {},
+      categories: {},
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
       userData: {}, // users preferences
@@ -85,6 +86,7 @@ export default {
       this.userData = {}
       this.products = {}
       this.suppliers = {}
+      this.categories = {}
     },
     fetchData() {
       this.resetData()
@@ -98,6 +100,11 @@ export default {
       this.$db.from('products').select().order('id', { ascending: false }).then((result) => {
         result.data.forEach((product) => {
           this.products[product.id] = product
+        })
+      })
+      this.$db.from('categories').select().order('id', { ascending: false }).then((result) => {
+        result.data.forEach((category) => {
+          this.categories[category.id] = category
         })
       })
       this.$db.from('suppliers').select().order('id', { ascending: false }).then((result) => {
@@ -158,6 +165,9 @@ export default {
     },
     getRecipie(id) {
       return this.recipies[id] || {}
+    },
+    getCategory(id) {
+      return this.categories[id] || {}
     },
     getSupplier(id) {
       return this.suppliers[id] || {}

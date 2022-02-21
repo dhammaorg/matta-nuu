@@ -45,7 +45,8 @@ export default {
           }
           previousStock = value
         })
-        return { product_id: productId, values }
+        const product = this.$root.getProduct(productId)
+        return { product_id: productId, category: this.$root.getCategory(product.category_id), values }
       })
     },
     orders() {
