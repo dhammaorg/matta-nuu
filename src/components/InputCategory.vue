@@ -1,10 +1,10 @@
 <template>
-  <Dropdown :options="Object.values($root.categories)" optionLabel="name" optionValue="id" :showClear="true"
+  <Dropdown :options="categories" optionLabel="name" optionValue="id" :showClear="true"
             placeholder="Category" :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
             @filter="filterValue = $event.value" >
     <template #footer v-if="btnAdd">
       <div class="p-dropdown-header">
-        <Button icon="pi pi-plus" label="Category" class="p-button-sm"
+        <Button icon="pi pi-plus" :label="`${type} Category`" class="p-button-sm"
                 @click="$refs.form.show({ name: filterValue, type })" />
       </div>
     </template>
@@ -32,6 +32,11 @@ export default {
     return {
       filterValue: '',
     }
+  },
+  computed: {
+    categories() {
+      return Object.values(this.$root.categories).filter((c) => c.type === this.type)
+    },
   },
 }
 </script>

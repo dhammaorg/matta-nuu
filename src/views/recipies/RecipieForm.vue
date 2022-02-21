@@ -5,6 +5,10 @@
       <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus/>
     </div>
 
+    <div class="p-field">
+      <InputCategory v-model="recipie.category_id" type="Recipie" />
+    </div>
+
     <div class="ingredients my-4 py-2">
       <div class="fw-bold mb-3">
         <span>Ingredients for</span>
@@ -45,9 +49,12 @@
 import InputNumber from 'primevue/inputnumber'
 import Checkbox from 'primevue/checkbox'
 import InputProduct from '@/components/InputProduct.vue'
+import InputCategory from '@/components/InputCategory.vue'
 
 export default {
-  components: { InputNumber, InputProduct, Checkbox },
+  components: {
+    InputNumber, InputProduct, Checkbox, InputCategory,
+  },
   data() {
     return {
       visible: false,

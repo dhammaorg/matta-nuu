@@ -43,10 +43,10 @@
       <Column field="category_id" header="Category" :sortable="true"
               filterField="category_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
         <template #body="{ data }">
-          <InputCategory type="products" v-model="data.category_id" placeholder="" />
+          <InputCategory type="Product" v-model="data.category_id" placeholder="" />
         </template>
         <template #filter="{filterModel}">
-          <InputCategory type="products" v-model="filterModel.value" class="p-column-filter"
+          <InputCategory type="Product" v-model="filterModel.value" class="p-column-filter"
                          :btnAdd="false" :showClear="false" />
         </template>
       </Column>

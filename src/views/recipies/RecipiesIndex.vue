@@ -17,9 +17,22 @@
     </div>
 
     <DataTable :value="$root.recipiesArray" dataKey="id"
-      :paginator="true" :rows="20" :filters="filters">
+      :paginator="true" :rows="20" v-model:filters="filters" filterDisplay="menu">
 
       <Column field="name" header="Name" :sortable="true"></Column>
+
+      <!-- Category -->
+      <Column field="category_id" header="Category" :sortable="true"
+              filterField="category_id" :showFilterMatchModes="false">
+        <template #body="{ data }">
+          <Chip :label="$root.getCategory(data.category_id).name"/>
+        </template>
+        <template #filter="{filterModel}">
+          <InputCategory type="Recipie" v-model="filterModel.value" class="p-column-filter"
+                         :btnAdd="false" :showClear="false" />
+        </template>
+      </Column>
+
       <Column class="text-end">
         <template #body="{data}">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
@@ -36,10 +49,12 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api'
+import Chip from 'primevue/chip'
 import RecipieForm from './RecipieForm.vue'
+import InputCategory from '@/components/InputCategory.vue'
 
 export default {
-  components: { RecipieForm },
+  components: { RecipieForm, InputCategory, Chip },
   data() {
     return {
       filters: {},
@@ -62,6 +77,7 @@ export default {
     initFilters() {
       this.filters = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        category_id: { value: null, matchMode: FilterMatchMode.EQUALS },
       }
     },
   },

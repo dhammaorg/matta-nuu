@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" header="Category"
+  <Dialog v-model:visible="visible" :style="{width: '600px'}" :header="`${category.type} Category`"
           :modal="true" class="p-fluid category-dialog">
 
     <div class="p-field">
