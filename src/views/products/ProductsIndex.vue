@@ -11,8 +11,7 @@
 
     <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
                class="editable-cells-table session-table products-table" v-model:filters="filters"
-               sortField="name" :sortOrder="1"
-               filterDisplay="menu">
+               sortField="name" :sortOrder="1" filterDisplay="menu">
 
       <!-- Name -->
       <Column field="name" header="Name" class="product-column w-auto" :sortable="true">

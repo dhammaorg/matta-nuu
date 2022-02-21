@@ -9,14 +9,26 @@
   </div>
 
   <DataTable :value="orders" dataKey="id"
-             :paginator="true" :rows="20" :filters="filters">
+             :paginator="true" :rows="20"
+             v-model:filters="filters" filterDisplay="menu">
 
-    <Column field="name" header="Name" :sortable="true" header-class="text-start"></Column>
-    <Column field="supplier_id" header="Supplier" :sortable="true">
+    <Column field="delivery_day" header="Delivery Date" bodyClass="text-capitalize" >
+      <template #body="{data}">
+        {{ (stockDays.find(d => d.id == data.delivery_day) || {}).dateHeader }}
+      </template>
+    </Column>
+
+    <Column field="name" header="Name" header-class="text-start"></Column>
+    <Column field="supplier_id" header="Supplier" :sortable="true" :showFilterMatchModes="false">
       <template #body="{data}">
         {{ $root.getSupplier(data.supplier_id).name }}
       </template>
+      <template #filter="{filterModel}">
+        <InputSupplier v-model="filterModel.value" class="p-column-filter"
+                       :btnAdd="false" :showClear="false"/>
+      </template>
     </Column>
+
     <Column class="text-end">
       <template #body="{data}">
         <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id }}">
@@ -32,10 +44,11 @@
 <script>
 import { FilterMatchMode } from 'primevue/api'
 import OrderNewDialog from './OrderNewDialog.vue'
+import InputSupplier from '@/components/InputSupplier.vue'
 
 export default {
-  inject: ['sessionDays'],
-  components: { OrderNewDialog },
+  inject: ['sessionDays', 'stockDays'],
+  components: { OrderNewDialog, InputSupplier },
   data() {
     return {
       filters: {},
@@ -54,6 +67,7 @@ export default {
     initFilters() {
       this.filters = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        supplier_id: { value: null, matchMode: FilterMatchMode.EQUALS },
       }
     },
     destroy(order) {
