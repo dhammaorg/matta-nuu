@@ -14,7 +14,11 @@
                style="height: calc(100vh - 10.5rem);">
 
       <!-- Name -->
-      <Column field="name" header="Name" class="product-column w-auto" />
+      <Column field="name" header="Name" class="product-column w-auto">
+        <template #body="{ data }">
+          <InputText v-model="data.name" />
+        </template>
+      </Column>
 
       <!-- Unit -->
       <Column field="unit" header="Unit" style="max-width: 8rem">
@@ -143,9 +147,10 @@ export default {
   .products-table {
     td {
       padding: 0 !important;
-      &.product-column {
-        padding: 0 .7rem !important;
-        justify-content: flex-start;
+      &.product-column input {
+        background-color: transparent;
+        color: inherit;
+        text-align: left;
       }
       input, .p-dropdown {
         border: none !important;
@@ -154,6 +159,7 @@ export default {
     .edit-recipie-chip {
       cursor: pointer;
       font-size: .8rem;
+      margin: 4px 4px 0 0;
       .pi {
         font-size: inherit;
       }
