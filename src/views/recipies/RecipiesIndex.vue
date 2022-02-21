@@ -22,10 +22,11 @@
       <Column field="name" header="Name" :sortable="true"></Column>
 
       <!-- Category -->
-      <Column field="category_id" header="Category" :sortable="true"
-              filterField="category_id" :showFilterMatchModes="false">
+      <Column field="category_ids" header="Categories" :sortable="true"
+              filterField="category_ids" :showFilterMatchModes="false">
         <template #body="{ data }">
-          <Chip :label="$root.getCategory(data.category_id).name"/>
+          <Chip v-for="catId in data.category_ids" :key="catId" class="me-2"
+                :label="$root.getCategory(catId).name"/>
         </template>
         <template #filter="{filterModel}">
           <InputCategory type="Recipie" v-model="filterModel.value" class="p-column-filter"
@@ -77,7 +78,7 @@ export default {
     initFilters() {
       this.filters = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        category_id: { value: null, matchMode: FilterMatchMode.EQUALS },
+        category_ids: { value: null, matchMode: FilterMatchMode.CONTAINS },
       }
     },
   },

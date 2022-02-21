@@ -6,7 +6,7 @@
     </div>
 
     <div class="p-field">
-      <InputCategory v-model="recipie.category_id" type="Recipie" />
+      <InputCategory v-model="recipie.category_ids" type="Recipie" :multiple="true" />
     </div>
 
     <div class="ingredients my-4 py-2">
