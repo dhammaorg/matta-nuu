@@ -66,10 +66,7 @@ export default {
     products: {
       deep: true,
       handler() {
-        (this.productsArray || []).forEach((p) => {
-          this.session.realStocks[p.id] ||= {}
-          this.session.buys[p.id] ||= {}
-        })
+        this.initProductsForSession()
       },
     },
     user() {
@@ -87,6 +84,13 @@ export default {
       this.products = {}
       this.suppliers = {}
       this.categories = {}
+    },
+    initProductsForSession() {
+      if (!this.productsArray) return
+      this.productsArray.forEach((p) => {
+        this.session.realStocks[p.id] ||= {}
+        this.session.buys[p.id] ||= {}
+      })
     },
     fetchData() {
       this.resetData()
@@ -149,6 +153,7 @@ export default {
         })
       }
       this.sessions[sessionId] = session
+      this.initProductsForSession()
       this.fullyLoadedSessions.push(sessionId)
       return session
     },
