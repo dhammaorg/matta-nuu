@@ -10,6 +10,10 @@
     </div>
 
     <div class="p-field">
+      <InputCategory type="Product" v-model="product.category_id" placeholder="Category" />
+    </div>
+
+    <div class="p-field">
       <InputSupplier v-model="product.supplier_id" />
     </div>
 
@@ -34,9 +38,12 @@
 import InputNumber from 'primevue/inputnumber'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
+import InputCategory from '@/components/InputCategory.vue'
 
 export default {
-  components: { InputUnit, InputSupplier, InputNumber },
+  components: {
+    InputUnit, InputSupplier, InputNumber, InputCategory,
+  },
   data() {
     return {
       visible: false,

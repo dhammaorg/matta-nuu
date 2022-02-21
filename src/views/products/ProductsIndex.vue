@@ -14,33 +14,15 @@
                sortField="name" :sortOrder="1" filterDisplay="menu">
 
       <!-- Name -->
-      <Column field="name" header="Name" class="product-column w-auto" :sortable="true">
+      <Column field="name" header="Name" class="product-column w-auto justify-content-start"
+              :sortable="true" style="max-width: 20rem">
         <template #body="{ data }">
-          <InputText v-model="data.name" />
-        </template>
-      </Column>
-
-      <!-- Unit -->
-      <Column field="unit" header="Unit" style="max-width: 8rem">
-        <template #body="{ data }">
-          <InputUnit v-model="data.unit" />
-        </template>
-      </Column>
-
-      <!-- Supplier -->
-      <Column field="supplier_id" header="Supplier" :sortable="true"
-              filterField="supplier_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
-        <template #body="{ data }">
-          <InputSupplier v-model="data.supplier_id" placeholder="" />
-        </template>
-        <template #filter="{filterModel}">
-          <InputSupplier v-model="filterModel.value" class="p-column-filter"
-                        :btnAdd="false" :showClear="false"/>
+          {{ data.name }} ({{ data.unit }})
         </template>
       </Column>
 
       <!-- Category -->
-      <Column field="category_id" header="Category" :sortable="true"
+      <Column field="category_id" header="Category" :sortable="true" style="max-width: 15rem"
               filterField="category_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
         <template #body="{ data }">
           <InputCategory type="Product" v-model="data.category_id" placeholder="" />
@@ -51,8 +33,20 @@
         </template>
       </Column>
 
+      <!-- Supplier -->
+      <Column field="supplier_id" header="Supplier" :sortable="true" style="max-width: 15rem"
+              filterField="supplier_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
+        <template #body="{ data }">
+          <InputSupplier v-model="data.supplier_id" placeholder="" />
+        </template>
+        <template #filter="{filterModel}">
+          <InputSupplier v-model="filterModel.value" class="p-column-filter"
+                        :btnAdd="false" :showClear="false"/>
+        </template>
+      </Column>
+
       <!-- Recipies -->
-      <Column field="recipies" header="Used by">
+      <Column field="recipies" header="Used by" class="recipies">
         <template #body="{ data }">
           <Chip v-for="recipie in recipiesUsingProduct(data)" :key="`${data.id}_${recipie.id}`"
                 :label="recipie.name" icon="pi pi-pencil" class="edit-recipie-chip"
@@ -60,33 +54,10 @@
         </template>
       </Column>
 
-      <!-- Packaging Name -->
-      <Column field="packaging_reference">
-        <template #body="{ data }">
-          <input class="p-inputtext p-component" v-model="data.packaging_reference" :placeholder="data.name" />
-        </template>
-        <template #header>
-          <span v-tooltip.top="'Change the name of a product for this supplier. Example : Sugar -> Raw Organic Sugar'">
-            Packaging Name
-          </span>
-        </template>
-      </Column>
-
-      <!-- Conditioning -->
-      <Column field="packaging_conditioning" style="max-width: 8rem">
-        <template #body="{ data }">
-          <InputNumber v-model="data.packaging_conditioning" :suffix="' ' + data.unit" />
-        </template>
-        <template #header>
-          <span v-tooltip.top="'Example : if you buy Rice in 5kg bag, then enter 5 in this column. The order will be adjusted so if you need 24kg it will order 5 bag of 5kg'">
-            Conditioning
-          </span>
-        </template>
-      </Column>
-
       <!-- Actions -->
       <Column class="text-end" style="max-width: 40px">
         <template #body="{data}">
+          <Button icon="pi pi-pencil" class="p-button-text" @click="$refs.form.show(data)" />
           <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteProduct(data)" />
         </template>
       </Column>
@@ -99,17 +70,15 @@
 
 <script>
 import { FilterMatchMode } from 'primevue/api'
-import InputNumber from 'primevue/inputnumber'
 import Chip from 'primevue/chip'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
-import InputUnit from '@/components/InputUnit.vue'
 import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputUnit, InputNumber, InputCategory, Chip,
+    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip,
   },
   data() {
     return {
@@ -166,7 +135,9 @@ export default {
 <style lang="scss">
   .products-table {
     td {
-      padding: 0 !important;
+      &:not(.product-column) {
+        padding: 0 !important;
+      }
       &.product-column input {
         background-color: transparent;
         color: inherit;
@@ -174,6 +145,10 @@ export default {
       }
       input, .p-dropdown {
         border: none !important;
+      }
+      &.recipies {
+        justify-content: flex-start;
+        padding-left: .5rem !important;
       }
     }
     .edit-recipie-chip {
