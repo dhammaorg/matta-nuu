@@ -9,21 +9,29 @@
       <InputUnit v-model="product.unit" required="true" />
     </div>
 
-    <div class="p-field">
-      <InputCategory type="Product" v-model="product.category_id" placeholder="Category" />
-    </div>
+    <Divider/>
 
-    <div class="p-field">
-      <InputSupplier v-model="product.supplier_id" />
-    </div>
+    <div class="product-form">
+      <div class="p-field">
+        <label>Category</label>
+        <InputCategory type="Product" v-model="product.category_id" placeholder="Category" />
+      </div>
 
-    <div class="p-field">
-      <InputText v-model="product.packaging_reference" placeholder="Packaging Name / Reference"/>
-    </div>
+      <div class="p-field">
+        <label>Supplier</label>
+        <InputSupplier v-model="product.supplier_id" />
+      </div>
 
-    <div class="p-field">
-      <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
-                   :suffix="' ' + product.unit" />
+      <div class="p-field">
+        <label>Packaging Name / Reference</label>
+        <InputText v-model="product.packaging_reference" placeholder="Packaging Name / Reference"/>
+      </div>
+
+      <div class="p-field">
+        <label>Packaging Conditioning</label>
+        <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
+                    :suffix="' ' + product.unit" />
+      </div>
     </div>
 
     <template #footer>
@@ -36,13 +44,14 @@
 <script>
 
 import InputNumber from 'primevue/inputnumber'
+import Divider from 'primevue/divider'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   components: {
-    InputUnit, InputSupplier, InputNumber, InputCategory,
+    InputUnit, InputSupplier, InputNumber, InputCategory, Divider,
   },
   data() {
     return {
@@ -72,6 +81,17 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
+<style lang='scss'>
+  .product-form {
+    display: flex;
+    flex-wrap: wrap;
+    .p-field {
+      width: calc(50% - .5rem);
+      margin: 0 0 1rem 0;
+      &:nth-child(even) {
+        width: calc(50% - .5rem);
+        margin-left: 1rem;
+      }
+    }
+  }
 </style>
