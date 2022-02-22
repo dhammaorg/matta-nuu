@@ -96,36 +96,43 @@ export default {
       this.resetData()
       if (!this.user) return
 
-      this.$db.from('recipies').select().order('id', { ascending: false }).then((result) => {
-        result.data.forEach((recipie) => {
-          this.recipies[recipie.id] = recipie
+      this.$db.from('recipies').select().match({ user_id: this.user.id }).order('id', { ascending: false })
+        .then((result) => {
+          result.data.forEach((recipie) => {
+            this.recipies[recipie.id] = recipie
+          })
         })
-      })
-      this.$db.from('products').select().order('id', { ascending: false }).then((result) => {
-        result.data.forEach((product) => {
-          this.products[product.id] = product
+      this.$db.from('products').select().match({ user_id: this.user.id }).order('id', { ascending: false })
+        .then((result) => {
+          result.data.forEach((product) => {
+            this.products[product.id] = product
+          })
         })
-      })
-      this.$db.from('categories').select().order('id', { ascending: false }).then((result) => {
-        result.data.forEach((category) => {
-          this.categories[category.id] = category
+      this.$db.from('categories').select().match({ user_id: this.user.id }).order('id', { ascending: false })
+        .then((result) => {
+          result.data.forEach((category) => {
+            this.categories[category.id] = category
+          })
         })
-      })
-      this.$db.from('suppliers').select().order('id', { ascending: false }).then((result) => {
-        result.data.forEach((supplier) => {
-          this.suppliers[supplier.id] = supplier
+      this.$db.from('suppliers').select().match({ user_id: this.user.id }).order('id', { ascending: false })
+        .then((result) => {
+          result.data.forEach((supplier) => {
+            this.suppliers[supplier.id] = supplier
+          })
         })
-      })
-      this.$db.from('sessions').select('id, name, is_template').order('id', { ascending: false }).then((result) => {
-        result.data.forEach((session) => {
-          if (!this.sessions[session.id]) {
-            this.sessions[session.id] = { ...session, ...emptySession }
-          }
+      this.$db.from('sessions').select('id, name, is_template')
+        .match({ user_id: this.user.id }).order('id', { ascending: false })
+        .then((result) => {
+          result.data.forEach((session) => {
+            if (!this.sessions[session.id]) {
+              this.sessions[session.id] = { ...session, ...emptySession }
+            }
+          })
         })
-      })
-      this.$db.from('users').select().single().then((result) => {
-        this.userData = result.data || {}
-      })
+      this.$db.from('users').select().match({ user_id: this.user.id }).single()
+        .then((result) => {
+          this.userData = result.data || {}
+        })
     },
     // Inially we load only the session name in order to make smaller requests
     // so we need to fetch again the full session individually

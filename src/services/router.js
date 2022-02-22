@@ -12,6 +12,7 @@ import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
 import Profile from '@/views/auth/Profile.vue'
+import Import from '@/views/import/Import.vue'
 
 const routes = [
   {
@@ -80,6 +81,11 @@ const routes = [
     path: '/templates',
     name: 'templates',
     component: TemplatesIndex,
+  },
+  {
+    path: '/import',
+    name: 'import',
+    component: Import,
   },
 ]
 

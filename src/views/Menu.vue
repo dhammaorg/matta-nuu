@@ -35,6 +35,7 @@ export default {
       ],
       userItems: [
         { label: 'Settings', to: { name: 'profile' }, icon: 'pi pi-cog' },
+        { label: 'Import Data', to: { name: 'import' }, icon: 'pi pi-cloud-download' },
         { label: 'Logout', command: () => { this.logout() }, icon: 'pi pi-sign-out' },
       ],
     }
