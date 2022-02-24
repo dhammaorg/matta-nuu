@@ -50,7 +50,7 @@ export default {
       visible: false,
       template: {},
       event: {},
-      updateAmounts: false,
+      updateAmounts: true,
       previousPeopleCount: null,
     }
   },
