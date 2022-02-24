@@ -43,7 +43,7 @@
                 <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
                         class="p-button-sm p-button-success p-button-text"
                         v-tooltip.top="'Save as template'" v-if="!session.is_template" />
-                <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event)"
+                <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event, session.is_template)"
                         class="p-button-sm p-button-text" />
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
                         class="p-button-sm p-button-danger p-button-text" v-if="!session.is_template" />
@@ -176,7 +176,7 @@ export default {
     SaveTemplate,
   },
   mounted() {
-    if (this.session.events.length === 0) this.$refs.eventForm.show()
+    if (this.session.events.length === 0) this.$refs.eventForm.show({}, this.session.is_template)
     this.$root.setPrintMode('landscape')
   },
   computed: {

@@ -15,8 +15,8 @@
     <div class="p-field">
       <label>Number of People</label>
       <div class="p-inputgroup">
-        <InputNumber v-model="event.people_count" class="w-auto" />
-        <span class="p-inputgroup-addon" v-if="!isNew && event.people_count"
+        <InputNumber v-model="event.people_count" class="w-auto" @input="amountChanged = true" />
+        <span class="p-inputgroup-addon" v-if="!isNew && event.people_count && amountChanged"
               v-tooltip.top="'Example : if you change number of people from 20 to 40, all amounts will be multiplied by 2'">
           <Checkbox v-model="updateAmounts" :binary="true" />
           <label class="m-0 ms-2">Proportionally update amounts</label>
@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <div class="p-field">
+    <div class="p-field" v-if="!isTemplate">
       <label>Start Date</label>
       <Calendar v-model="event.start_date" required="true" dateFormat="d MM yy" icon="pi pi-calendar"
                 :disabledDates="disabledDates" />
@@ -48,9 +48,11 @@ export default {
   data() {
     return {
       visible: false,
+      isTemplate: false,
       template: {},
       event: {},
       updateAmounts: true,
+      amountChanged: false,
       previousPeopleCount: null,
     }
   },
@@ -60,7 +62,9 @@ export default {
     },
   },
   methods: {
-    show(object = {}) {
+    show(object = {}, isTemplate = false) {
+      this.isTemplate = isTemplate
+      this.amountChanged = false
       this.event = { ...object }
       this.previousPeopleCount = this.event.people_count
       if (!this.event.start_date) this.event.start_date = this.defaultDate
