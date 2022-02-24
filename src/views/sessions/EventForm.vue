@@ -78,7 +78,7 @@ export default {
             const newRow = { ...row, values: {} }
             Object.entries(row.values).forEach(([day, v]) => {
               const newValue = Math.round((v.amount * this.event.people_count) / eventTemplate.people_count) || null
-              newRow.values[day] = { amount: newValue }
+              newRow.values[day] = { ...v, ...{ amount: newValue } }
             })
             return newRow
           })
