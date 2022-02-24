@@ -34,6 +34,7 @@
         </template>
       </Column>
 
+      <!-- Actions -->
       <Column class="text-end">
         <template #body="{data}">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary"

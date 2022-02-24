@@ -116,7 +116,9 @@
             <span class="pi pi-clock d-print-none" v-tooltip="'Needed to be prepared the day before'" style="font-size: 0.7rem"
                   v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"></span>
           </label>
-          <div class="amount">{{ data.values[field].amount }}</div>
+          <div class="amount" v-if="data.type == 'recipies' && data.values[field].recipie_id || data.type == 'products' && data.values[field].product_id || ['recipie', 'product'].includes(data.type)">
+            {{ data.values[field].amount }}
+          </div>
         </template>
       </template>
       <!-- Cell Edit -->
@@ -210,7 +212,11 @@ export default {
       const row = {
         id: this.newId(this.session.rows), type, label: '', values: {}, printable: true,
       }
-      this.sessionDays.forEach((day) => { row.values[day.id] = {} })
+      this.sessionDays.forEach((day) => {
+        // init amouns with event people_count
+        const amount = ['recipie', 'recipies'].includes(type) ? day.event.people_count : null
+        row.values[day.id] = { amount }
+      })
       this.session.rows.push(row)
       this.$nextTick(() => {
         setTimeout(() => {
