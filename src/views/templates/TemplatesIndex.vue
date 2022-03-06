@@ -26,6 +26,8 @@
           <router-link :to="{ name: 'session_schedule', params: { id: data.id }}">
             <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'"/>
           </router-link>
+          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
+                  @click="duplicateTemplate(data)"/>
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
                   @click="deleteTemplate(data)" />
         </template>
@@ -62,6 +64,13 @@ export default {
           this.dbDestroy('sessions', template)
         },
       })
+    },
+    async duplicateTemplate(session) {
+      session = await this.$root.fetchSession(session.id)
+      const newSession = { ...session }
+      delete newSession.id
+      newSession.name = `${session.name} (COPY)`
+      this.dbCreate('sessions', newSession)
     },
   },
 }
