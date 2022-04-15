@@ -42,11 +42,21 @@ td.w-auto, th.w-auto {
   }
   &.editor-sm, .editor-sm {
     font-size: .9rem;
+    z-index: 5;
     input, .p-dropdown-label, .p-autocomplete-dropdown {
       padding: .5rem;
       font-size: .9rem;
     }
   }
+}
+.p-dropdown .p-dropdown-clear-icon {
+  position: relative;
+  right: -5px !important;
+  font-size: .9rem;
+  display: flex;
+  top: 0;
+  margin: 0;
+  align-items: center;
 }
 th.text-center .p-column-header-content {
   justify-content: center;

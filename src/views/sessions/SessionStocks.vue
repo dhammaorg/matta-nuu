@@ -112,7 +112,7 @@ export default {
 
 <style lang="scss">
   .stocks-table td:not(.product-column), .stocks-table th {
-    min-width: 70px !important;
+    // min-width: 70px !important;
   }
   th.top-left-cell {
     width: 200px;
