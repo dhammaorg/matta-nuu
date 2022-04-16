@@ -62,7 +62,7 @@
 
       <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header" class="w-100 mb-3"/>
 
-      <DataTable :value="values" class="mb-3 border border-bottom-0">
+      <DataTable :value="values" class="mb-3 border border-bottom-0" sortField="name" :sortOrder="1">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
             <InputText v-model="data.name" class="text-start" />
