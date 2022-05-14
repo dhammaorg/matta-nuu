@@ -39,7 +39,11 @@ export default {
           const consumption = this.consumption(productId, day)
           const real = (this.session.realStocks[productId] || {})[day.id]
           const theoric = previousStock - consumption + bought
-          const value = real != null ? real : theoric
+          let value = 0
+          // for initial stock, even if we supply a realStock we still want to take into account
+          // the bought value
+          if (day.id === 'initial') value = (real || 0) + bought
+          else value = real != null ? real : theoric
           values[day.id] = {
             real, bought, consumption, theoric, value, ordered,
           }
