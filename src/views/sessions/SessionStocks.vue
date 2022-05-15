@@ -57,18 +57,22 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class" class="cell-stock editor-sm">
+    <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id" :class="`cell-stock editor-sm ${day.class} ${day.id}`">
       <template #body="{ data, field }">
         <div class="cell-content" :class="{'negative-value': data.values[field].value.round() < 0 }">
-          <span class="stock-value">
-            <span class="consumption" v-if="data.values[field].consumption > 0">-{{ data.values[field].consumption.round() }}</span>
+          <span class="stock-value-container d-flex flex-column align-items-center">
+            <span class="stock-value consumption" v-if="data.values[field].consumption > 0">
+              -{{ data.values[field].consumption.round() }}
+            </span>
+            <span class="stock-value bought" v-if="data.values[field].bought > 0">
+              +{{ data.values[field].bought.round() }}
+            </span>
           </span>
-          <span class="stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
-            {{ data.values[field].value.round() }}
+          <span class="stock-value-container stock-value" style="width: 60%" :class="{'fw-bold text-primary': data.values[field].real != null }">
+            <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round() }}</template>
+            <template v-else>{{ data.values[field].value.round() }}</template>
           </span>
-          <span class="stock-value">
-            <span class="bought" v-if="data.values[field].bought > 0">+{{ data.values[field].bought.round() }}</span>
-          </span>
+          <span class="stock-value-container"></span>
         </div>
       </template>
       <template #editor="{ data, field }">
@@ -129,23 +133,29 @@ export default {
         color: white;
         background-color: var(--bluegray-700);
       }
-
+      .stock-value-container {
+        width: 33%;
+        order: 1;
+      }
       .stock-value {
         display: flex;
-        width: 33%;
         height: 100%;
         align-items: center;
         justify-content: center;
-        .bought {
+        &.bought {
           color: #22C55E;
           font-size: .8rem;
           font-weight: bold;
         }
-        .consumption {
+        &.consumption {
           opacity: .6;
           font-size: .7rem;
         }
       }
+    }
+    &.initial .stock-value-container {
+      &:first-child { order: 3 }
+      &:last-child { order: 0 }
     }
   }
   .p-rowgroup-header {
