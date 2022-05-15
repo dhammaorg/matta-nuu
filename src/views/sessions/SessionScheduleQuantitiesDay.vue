@@ -40,6 +40,7 @@ export default {
       // Recipie to be prepare for this day (not need for dayIndex == -1)
       if (this.dayIndex >= 0) {
         this.$root.session.rows.forEach((row) => {
+          if (row.printable === false) return
           const dayValue = row.values[`Event${this.event.id}_${this.dayIndex}`] || {}
           const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
           if (dayRecipie.id && dayValue.amount && !dayRecipie.prepare_day_before) {
@@ -50,6 +51,7 @@ export default {
 
       // Add recipie to be prepare for the next day
       this.$root.session.rows.forEach((row) => {
+        if (row.printable === false) return
         const dayAfterValue = row.values[`Event${this.event.id}_${this.dayIndex + 1}`] || {}
         const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
         if (dayAfterRecipie.id && dayAfterValue.amount && dayAfterRecipie.prepare_day_before) {
