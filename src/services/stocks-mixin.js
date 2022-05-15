@@ -85,7 +85,7 @@ export default {
         // Check recipie planned for next day that need to be prepared on the day before
         const dayAfterValue = row.values[`Event${day.event.id}_${day.index + 1}`] || {}
         const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
-        if (dayRecipie.id && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
+        if (dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
           (dayAfterRecipie.products || []).forEach((recipieProduct) => {
             if (recipieProduct.id === productId) {
               result += (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
