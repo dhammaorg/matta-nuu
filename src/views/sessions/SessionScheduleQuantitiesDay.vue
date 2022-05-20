@@ -1,33 +1,45 @@
 <template>
-  <div class="day-quantities" v-if="products.length > 0">
+  <div class="day-quantities" v-if="recipies.length > 0">
     <h1 class="text-center">{{ event.name }} - {{ day }}</h1>
 
-    <DataTable :value="products" showGridlines rowGroupMode="subheader" groupRowsBy="recipie.name"
-               class="p-datatable-sm">
-      <template #groupheader="{ data }">
-        <h3 class="recipie-name">
-          {{ data.recipie.name }}
-          <span class="fw-normal" v-if="data.recipie.prepare_day_before"> ({{ event.days[dayIndex + 1] }})</span>
-          <span class="p-chip fw-normal fs-6 ms-2" v-if="data.recipie.row.label">{{ data.recipie.row.label}}</span>
-        </h3>
-      </template>
-      <Column field="recipie.name" header="Recipie"></Column>
-      <Column header="People Count">
-        <template #body="{ data }">
-          {{ $root.getProduct(data.id).name }}
-        </template>
-      </Column>
-      <Column v-for="number in numbers" :header="number" :key="`column-${number}`">
-        <template #body="{ data }">
-          {{ (data.amount * number / data.recipie.people_count).round(3) }}
-        </template>
-      </Column>
-      <Column header="Unit">
-        <template #body="{ data }">
-          <span style="font-weight: 500">{{ $root.getProduct(data.id).unit }}</span>
-        </template>
-      </Column>
-    </DataTable>
+    <div class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
+      <div class="p-datatable-wrapper">
+        <table class="p-datatable-table" v-for="(recipie, index) in recipies" :key="`recipie-${recipie.id}`">
+          <thead class="p-datatable-thead" role="rowgroup" v-if="index == 0">
+            <tr>
+              <th class="first-column">People Count</th>
+              <th v-for="number in numbers" :key="`column-${number}`">
+                <div class="p-column-header-content">{{ number }}</div>
+              </th>
+              <th>
+                <div class="p-column-header-content">Unit</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="p-datatable-tbody">
+            <tr class="p-rowgroup-header">
+              <td :colspan="numbers.length + 2">
+                <h3 class="recipie-name">
+                  {{ recipie.name }}
+                  <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex + 1] }})</span>
+                  <span class="p-chip fw-normal fs-6 ms-2" v-if="recipie.row.label">{{ recipie.row.label}}</span>
+                </h3>
+              </td>
+            </tr>
+            <tr v-for="data in recipie.products" :key="data.id">
+              <td class="first-column">{{ $root.getProduct(data.id).name }}</td>
+              <td v-for="number in numbers" :key="`cell-${recipie.id}-${data.id}-${number}`">
+                {{ (data.amount * number / recipie.people_count).round(3) }}
+              </td>
+              <td>
+                <span style="font-weight: 500">{{ $root.getProduct(data.id).unit }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -60,23 +72,29 @@ export default {
       })
       return result
     },
-    products() {
-      const result = []
-      this.recipies.forEach((recipie) => {
-        recipie.products.forEach((product) => {
-          result.push({ ...product, ...{ recipie } })
-        })
-      })
-      return result
-    },
   },
 }
 </script>
 
 <style lang="scss">
   .day-quantities {
-    // page-break-after: always;
     page-break-inside: avoid;
+    table {
+      page-break-inside: avoid;
+      td, tr {
+        $width: 3rem;
+        min-width: $width !important;
+        max-width: $width !important;
+        width: $width !important;
+        &.first-column {
+          $width: 150px;
+          min-width: $width !important;
+          max-width: $width !important;
+          width: $width !important;
+        }
+      }
+    }
+
     padding-top: 2rem;
     &:first-child {
       padding-top: 0;
@@ -90,7 +108,7 @@ export default {
     tr > td:nth-child(even) {
       background-color: var(--bluegray-50);
     }
-    tr > th:nth-child(odd) {
+    tr > th:nth-child(odd):not(:last-child) {
       background-color: var(--surface-0) !important;
     }
     td:not(:first-child) {

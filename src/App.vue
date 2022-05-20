@@ -193,20 +193,28 @@ export default {
     // Hide header and footer added while printed with website url and date
     @page { margin: 0; }
     body { padding: 30px !important; }
+
+    // Adjust color for more contrast
+    .p-datatable .p-datatable-tbody > tr {
+      color: black !important;
+    }
+    .p-rowgroup-header td {
+      color: var(--bluegray-700);
+    }
   }
   #app, body, html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    font-size: 15px;
+    font-size: 14px;
     overflow-x: hidden;
     color: var(--text-color);
     @media screen { background-color:var(--surface-ground); }
     color-adjust: exact;
     -webkit-print-color-adjust: exact;
     @media print {
-      overflow-y: visible !important;
+      overflow: visible !important;
       height: auto !important;
     }
   }
