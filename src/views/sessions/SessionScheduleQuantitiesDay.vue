@@ -22,7 +22,7 @@
                 <h3 class="recipie-name">
                   {{ recipie.name }}
                   <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex + 1] }})</span>
-                  <span class="p-chip fw-normal fs-6 ms-2" v-if="recipie.row.label">{{ recipie.row.label}}</span>
+                  <span class="p-chip fw-normal ms-2" v-if="recipie.row.label">{{ recipie.row.label}}</span>
                 </h3>
               </td>
             </tr>
@@ -122,12 +122,15 @@ export default {
     }
     .recipie-name {
       margin-bottom: 0;
-      font-size: 1.1rem;
-      margin: 1rem 0 .25rem 0;
+      font-size: 1rem;
+      margin: .5rem 0 .25rem 0;
     }
     .p-rowgroup-header > td {
       border: none !important;
       background-color: var(--surface-0) !important;
+      .p-chip {
+        font-size: .9rem;
+      }
     }
   }
 </style>
