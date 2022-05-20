@@ -3,10 +3,13 @@
 
   <div class="page-content" style="max-width: 400px">
     <h2 class="text-center mt-0">Register</h2>
-
-    <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3"/>
-    <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"/>
-    <Button label="Create my account" class="w-100" @click="signUp"/>
+    <form>
+      <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3"
+                autocomplete="email" name="email"/>
+      <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
+                autocomplete="new-password" name="password"/>
+      <Button label="Create my account" class="w-100" @click.prevent="signUp" type="submit"/>
+    </form>
   </div>
 </template>
 

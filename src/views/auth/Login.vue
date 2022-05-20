@@ -8,11 +8,13 @@
       <span class="">Don't have an account?</span>
       <router-link :to="{ name: 'register' }" class="ms-1">Create now!</router-link>
     </div>
-
-    <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3"/>
-    <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
-               @keyup.enter="signIn" />
-    <Button label="Sign In" class="w-100" @click="signIn"/>
+    <form>
+      <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3" name="email"
+                 autocomplete="email"/>
+      <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
+                 @keyup.enter="signIn" autocomplete="current-password"/>
+      <Button label="Sign In" type="submit" class="w-100" @click.prevent="signIn"/>
+    </form>
   </div>
 </template>
 
