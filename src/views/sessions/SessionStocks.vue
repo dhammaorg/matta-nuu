@@ -13,7 +13,11 @@
     </p>
   </HelpMessage>
 
-  <DataTable :value="stocks" showGridlines v-if="session.events.length > 0"
+  <div v-if="!isMounted" :style="{height: 'calc(100vh - 10.5rem)'}">
+    <Spinner/>
+  </div>
+
+  <DataTable :value="stocks" showGridlines v-if="session.events.length > 0 && isMounted"
              :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
              rowGroupMode="subheader" groupRowsBy="category.name" sortField="category.name" :sortOrder="1"
              editMode="cell" class="editable-cells-table stocks-table session-table">
@@ -104,12 +108,21 @@ import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
 import OrderNewDialog from './OrderNewDialog.vue'
 import StockMixin from '@/services/stocks-mixin'
+import Spinner from '@/components/Spinner.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    ColumnGroup, Row, InputNumber, OrderNewDialog,
+    ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner,
+  },
+  data() {
+    return {
+      isMounted: false,
+    }
+  },
+  mounted() {
+    setTimeout(() => { this.isMounted = true }, 0)
   },
 }
 </script>

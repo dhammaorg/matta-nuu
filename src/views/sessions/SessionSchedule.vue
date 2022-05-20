@@ -7,7 +7,11 @@
     </ol>
   </HelpMessage>
 
-  <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0"
+  <div v-if="!isMounted" :style="{height: 'calc(100vh - 10.5rem)'}">
+    <Spinner/>
+  </div>
+
+  <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0 && isMounted"
              :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
              :class="{'hide-dates': !displayDates}"
              @rowReorder="session.rows = $event.value"
@@ -160,6 +164,7 @@ import EventForm from './EventForm.vue'
 import NewRowButton from './SessionScheduleNewRowButton.vue'
 import PrintButton from './SessionSchedulePrintButton.vue'
 import SaveTemplate from '@/views/templates/SaveTemplateDialog.vue'
+import Spinner from '@/components/Spinner.vue'
 
 export default {
   inject: ['sessionDays'],
@@ -174,10 +179,17 @@ export default {
     ToggleButton,
     PrintButton,
     SaveTemplate,
+    Spinner,
+  },
+  data() {
+    return {
+      isMounted: false,
+    }
   },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show({}, this.session.is_template)
     this.$root.setPrintMode('landscape')
+    setTimeout(() => { this.isMounted = true }, 0)
   },
   computed: {
     session() {

@@ -1,10 +1,12 @@
 <template>
+  <template v-if="dataFetched">
+    <Menu />
+    <router-view/>
 
-  <Menu />
-  <router-view/>
-
-  <Toast position="top-center" />
-  <ConfirmDialog></ConfirmDialog>
+    <Toast position="top-center" />
+    <ConfirmDialog></ConfirmDialog>
+  </template>
+  <Spinner v-else/>
 
 </template>
 
@@ -13,14 +15,16 @@
 import Toast from 'primevue/toast'
 import supabase from '@/services/supabase'
 import Menu from '@/views/Menu.vue'
+import Spinner from '@/components/Spinner.vue'
 
 const emptySession = {
   rows: [], events: [], realStocks: {}, buys: {}, products: {},
 }
 export default {
-  components: { Toast, Menu },
+  components: { Toast, Menu, Spinner },
   data() {
     return {
+      dataFetchedCount: 0,
       products: {},
       suppliers: {},
       recipies: {},
@@ -60,6 +64,9 @@ export default {
     },
     templatesArray() {
       return Object.values(this.sessions).filter((s) => s.is_template)
+    },
+    dataFetched() {
+      return this.dataFetchedCount === 6
     },
   },
   watch: {
@@ -101,24 +108,28 @@ export default {
           result.data.forEach((recipie) => {
             this.recipies[recipie.id] = recipie
           })
+          this.handleDataFetched()
         })
       this.$db.from('products').select().match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
           result.data.forEach((product) => {
             this.products[product.id] = product
           })
+          this.handleDataFetched()
         })
       this.$db.from('categories').select().match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
           result.data.forEach((category) => {
             this.categories[category.id] = category
           })
+          this.handleDataFetched()
         })
       this.$db.from('suppliers').select().match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
           result.data.forEach((supplier) => {
             this.suppliers[supplier.id] = supplier
           })
+          this.handleDataFetched()
         })
       this.$db.from('sessions').select('id, name, is_template')
         .match({ user_id: this.user.id }).order('id', { ascending: false })
@@ -128,11 +139,16 @@ export default {
               this.sessions[session.id] = { ...session, ...emptySession }
             }
           })
+          this.handleDataFetched()
         })
       this.$db.from('users').select().match({ user_id: this.user.id }).single()
         .then((result) => {
           this.userData = result.data || {}
+          this.handleDataFetched()
         })
+    },
+    handleDataFetched() {
+      this.dataFetchedCount += 1
     },
     // Inially we load only the session name in order to make smaller requests
     // so we need to fetch again the full session individually
