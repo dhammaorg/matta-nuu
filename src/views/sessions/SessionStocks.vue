@@ -68,7 +68,7 @@
               +{{ data.values[field].bought.round() }}
             </span>
           </span>
-          <span class="stock-value-container stock-value" style="width: 60%" :class="{'fw-bold text-primary': data.values[field].real != null }">
+          <span class="stock-value-container stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
             <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round() }}</template>
             <template v-else>{{ data.values[field].value.round() }}</template>
           </span>
@@ -154,7 +154,10 @@ export default {
       }
     }
     &.initial .stock-value-container {
-      &:first-child { order: 3 }
+      &:first-child {
+        order: 3;
+        padding-right: .4rem;
+      }
       &:last-child { order: 0 }
     }
   }
