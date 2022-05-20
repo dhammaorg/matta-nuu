@@ -167,12 +167,12 @@ export default {
 
       // Loads associated orders
       if (!session.is_template) {
-        this.$db.from('orders').select().match({ session_id: this.$route.params.id }).then((result) => {
-          result.data.forEach((order) => {
-            if (!this.$root.orders[order.id]) {
-              this.$root.orders[order.id] = order
-            }
-          })
+        const result = await this.$db.from('orders').select().match({ session_id: this.$route.params.id })
+        if (result.error) return this.toastError(result.error)
+        result.data.forEach((order) => {
+          if (!this.$root.orders[order.id]) {
+            this.$root.orders[order.id] = order
+          }
         })
       }
       this.sessions[sessionId] = session

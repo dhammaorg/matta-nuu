@@ -63,8 +63,8 @@ export default {
       return this.$route.name !== 'session_orders'
     },
   },
-  async mounted() {
-    this.$root.fetchSession()
+  async created() {
+    await this.$root.fetchSession()
     this.initDaysValuesForEachRow()
   },
   methods: {
