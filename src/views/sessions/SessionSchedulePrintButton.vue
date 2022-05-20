@@ -66,8 +66,12 @@ export default {
         amounts: false,
         dates: true,
       },
-      numbersString: '10,20,40,60,80,100,120,140,150,160,180,200',
+      numbersString: '10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160',
     }
+  },
+  created() {
+    const value = window.localStorage.getItem('numbersString')
+    if (value) this.numbersString = value
   },
   mounted() {
     if (this.$root.session.events.length === 1) this.eventsToPrint = this.$root.session.events
@@ -108,6 +112,9 @@ export default {
       const pageClass = document.querySelector('.page-full-content').classList
       if (this.showQuantities) pageClass.add('d-none')
       else pageClass.remove('d-none')
+    },
+    numbersString() {
+      window.localStorage.setItem('numbersString', this.numbersString)
     },
   },
 }
