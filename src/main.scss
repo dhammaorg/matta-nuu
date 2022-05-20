@@ -85,7 +85,7 @@ td .p-inputnumber {
   font-weight: 600;
 }
 .p-datatable-scrollable .p-datatable-thead {
-  z-index: 500;
+  z-index: 500 !important;
 }
 .p-datatable-wrapper {
   @extend .custom-scroll-bar;
