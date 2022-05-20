@@ -16,7 +16,7 @@
       </Inplace>
     </div>
     <div class="flex-grow-1 flex-shrink-0 text-center" v-if="!session.is_template">
-      <TabMenu :model="items" class="d-inline-flex"/>
+      <TabMenu :model="items" class="d-flex justify-content-center"/>
     </div>
     <div class="d-flex">
       <template v-if="['session_orders', 'session_order'].includes($route.name)">
