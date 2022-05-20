@@ -8,6 +8,7 @@
   <div class="page-content">
     <h1 class="m-0">Your Profile</h1>
     <div class="mb-4 pb-2 mt-2" v-if="$root.user">{{ $root.user.email }}</div>
+    <Divider align="center" class="mt-4">Informations to prefill Orders</Divider>
     <div class="p-field">
       <label>Organisation Name</label>
       <InputText v-model="$root.userData.org_name" class="w-100 "/>
@@ -25,9 +26,10 @@
 <script>
 import Message from 'primevue/message'
 import Textarea from 'primevue/textarea'
+import Divider from 'primevue/divider'
 
 export default {
-  components: { Textarea, Message },
+  components: { Textarea, Message, Divider },
   data() {
     return {
       loading: false,
@@ -36,7 +38,7 @@ export default {
   methods: {
     async submit() {
       this.loading = true
-      const { data, error } = await this.$db.from('users').upsert({
+      const { error } = await this.$db.from('users').upsert({
         ...this.$root.userData,
         ...{ user_id: this.$root.user.id },
       }).single()
