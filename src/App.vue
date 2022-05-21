@@ -1,5 +1,5 @@
 <template>
-  <template v-if="dataFetched">
+  <template v-if="dataFetched || !user">
     <Menu />
     <router-view/>
 
@@ -76,8 +76,12 @@ export default {
         this.initProductsForSession()
       },
     },
-    user() {
-      this.fetchData()
+    user(newUser, oldUser) {
+      // New login
+      if (newUser && !oldUser) {
+        this.resetData()
+        setTimeout(() => this.fetchData(), 0)
+      }
     },
     help() {
       localStorage.setItem('help', this.help)
@@ -85,6 +89,7 @@ export default {
   },
   methods: {
     resetData() {
+      this.dataFetchedCount = 0
       this.recipies = {}
       this.sessions = {}
       this.userData = {}
@@ -100,7 +105,6 @@ export default {
       })
     },
     fetchData() {
-      this.resetData()
       if (!this.user) return
 
       this.$db.from('recipies').select().match({ user_id: this.user.id }).order('id', { ascending: false })
