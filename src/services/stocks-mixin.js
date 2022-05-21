@@ -1,9 +1,28 @@
 export default {
+  data() {
+    return {
+      stocks: [],
+    }
+  },
+  mounted() {
+    this.calculateSessionProducts().forEach((productId) => {
+      this.stocks.push(this.calculateStockFor(productId))
+    })
+  },
   computed: {
     session() {
       return this.$root.session
     },
-    sessionProducts() {
+    orders() {
+      return Object.values(this.$root.orders)
+        .filter((order) => order.report_values_in_stocks
+          && order.values
+          && order.session_id === this.session.id
+          && order.id != this.$route.params.order_id /* We exclude current edited order so we can recalculate */)
+    },
+  },
+  methods: {
+    calculateSessionProducts() {
       const result = new Set()
       this.session.rows.forEach((row) => {
         if (row.type === 'product') {
@@ -22,12 +41,24 @@ export default {
       })
       return Array.from(result).filter((r) => !!r).sort()
     },
-    stocks() {
-      return this.sessionProducts.map((productId) => {
-        const values = {}
-        let previousStock = 0
-        this.stockDays.forEach((day) => {
-          let bought = (this.session.buys[productId] || {})[day.id] || 0
+    reCalculateStockFor(productId, fromDayId) {
+      const index = this.stocks.findIndex((s) => s.product_id === productId)
+      this.stocks.splice(index, 1, this.calculateStockFor(productId, fromDayId))
+    },
+    calculateStockFor(productId, fromDayId) {
+      let previousStock = 0
+      let doCalculation = fromDayId === undefined
+      const row = this.stocks.find((s) => s.product_id === productId) || {}
+      const values = row.values || {}
+      const product = this.$root.getProduct(productId)
+
+      this.stockDays.forEach((day) => {
+        // Prevent recalculating from the beginning when a change occurs not at the beggining
+        if (!doCalculation && day.id === fromDayId) doCalculation = true
+
+        if (doCalculation || !values[day.id]) {
+          const manuallyBought = (this.session.buys[productId] || {})[day.id]
+          let bought = manuallyBought || 0
           const ordered = []
           this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
             if (order.values[productId]) {
@@ -36,7 +67,8 @@ export default {
               ordered.push({ value, id: order.id, name: order.name })
             }
           })
-          const consumption = this.consumption(productId, day)
+          // consumùption is always the same, so reusing previously calculated value if exists
+          const consumption = (values[day.id] || {}).consumption || this.consumption(productId, day)
           const real = (this.session.realStocks[productId] || {})[day.id]
           const theoric = previousStock - consumption + bought
           let value = 0
@@ -45,23 +77,16 @@ export default {
           if (day.id === 'initial') value = (real || 0) + bought
           else value = real != null ? real : theoric
           values[day.id] = {
-            real, bought, consumption, theoric, value, ordered,
+            real, manuallyBought, bought, consumption, theoric, value, ordered,
           }
           previousStock = value
-        })
-        const product = this.$root.getProduct(productId)
-        return { product_id: productId, category: this.$root.getCategory(product.category_id), values }
+        } else {
+          previousStock = values[day.id].value
+        }
       })
+
+      return { product_id: productId, category: this.$root.getCategory(product.category_id), values }
     },
-    orders() {
-      return Object.values(this.$root.orders)
-        .filter((order) => order.report_values_in_stocks
-          && order.values
-          && order.session_id === this.session.id
-          && order.id != this.$route.params.order_id /* We exclude current edited order so we can recalculate */)
-    },
-  },
-  methods: {
     consumption(productId, day) {
       let result = 0
       if (day.initial) return 0

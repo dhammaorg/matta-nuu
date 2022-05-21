@@ -19,6 +19,7 @@
 
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0 && isMounted"
              :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
+             @cell-edit-complete="onCellEditComplete"
              rowGroupMode="subheader" groupRowsBy="category.name" sortField="category.name" :sortOrder="1"
              editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
@@ -80,8 +81,8 @@
         </div>
       </template>
       <template #editor="{ data, field }">
-        <InputNumber v-model="session.realStocks[data.product_id][field]" placeholder="Stock" :maxFractionDigits="2" />
-        <InputNumber v-model="session.buys[data.product_id][field]" placeholder="Bought" :maxFractionDigits="2" />
+        <InputNumber v-model="data.values[field].real" placeholder="Stock" :maxFractionDigits="2" />
+        <InputNumber v-model="data.values[field].manuallyBought" placeholder="Bought" :maxFractionDigits="2" />
         <div v-for="order in data.values[field].ordered" :key="day + field + order.id"
              :title="`Ordered Amount from ${order.name}`" class="p-2">
           <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: order.id }}">
@@ -115,6 +116,22 @@ export default {
   mixins: [StockMixin],
   components: {
     ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner,
+  },
+  methods: {
+    onCellEditComplete(event) {
+      const { data, field: day } = event
+      const newReal = data.values[day].real
+      const newBought = data.values[day].manuallyBought
+      // recalculate only the data we need
+      /* eslint-disable eqeqeq */
+      if (this.session.realStocks[data.product_id][day] != newReal
+       || this.session.buys[data.product_id][day] != newBought) {
+        this.session.realStocks[data.product_id][day] = newReal
+        this.session.buys[data.product_id][day] = newBought
+        this.reCalculateStockFor(data.product_id, day)
+      }
+      /* eslint-enable eqeqeq */
+    },
   },
   data() {
     return {
