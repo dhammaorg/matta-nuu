@@ -141,7 +141,8 @@ export default {
       let values = this.order.values || {}
       // Sort by key == product
       values = Object.keys(values).sort().reduce((result, key) => {
-        result[key] = values[key]
+        // Fix missing id bug, so adding it in case it was not there
+        result[key] = { ...values[key], ...{ id: key } }
         return result
       }, {})
       return Object.values(values)
@@ -206,7 +207,11 @@ export default {
           severity: 'error', summary: 'Error', detail: `"${this.newProduct.name}" is already in the order`, life: 4000,
         })
       } else {
-        this.order.values[this.newProduct.id] = { name: this.newProduct.name, unit: this.newProduct.unit }
+        this.order.values[this.newProduct.id] = {
+          id: this.newProduct.id,
+          name: this.newProduct.name,
+          unit: this.newProduct.unit,
+        }
       }
       this.newProduct = ''
     },
