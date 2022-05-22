@@ -26,13 +26,13 @@
                 </h3>
               </td>
             </tr>
-            <tr v-for="data in recipie.products" :key="data.id">
-              <td class="first-column">{{ $root.getProduct(data.id).name }}</td>
-              <td v-for="number in numbers" :key="`cell-${recipie.id}-${data.id}-${number}`">
-                {{ (data.amount * number / recipie.people_count).round(3) }}
+            <tr v-for="product in recipie.products" :key="product.id">
+              <td class="first-column">{{ product.name }}</td>
+              <td v-for="number in numbers" :key="`cell-${recipie.id}-${product.id}-${number}`">
+                {{ product.values[number].round(3) }}
               </td>
               <td>
-                <span style="font-weight: 500">{{ $root.getProduct(data.id).unit }}</span>
+                <span style="font-weight: 500">{{ product.unit }}</span>
               </td>
             </tr>
           </tbody>
@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { unitChild, unitParent } from '@/services/units'
+
 export default {
   props: ['event', 'day', 'dayIndex', 'numbers'],
   computed: {
@@ -69,6 +71,31 @@ export default {
         if (dayAfterRecipie.id && dayAfterValue.amount && dayAfterRecipie.prepare_day_before) {
           result.push({ ...dayAfterRecipie, ...{ row } })
         }
+      })
+
+      result.forEach((recipie) => {
+        recipie.products = recipie.products.map((p) => {
+          const product = { ...p, ...this.$root.getProduct(p.id) }
+          product.values = {}
+          // Pre calculate values for each number
+          this.numbers.forEach((number) => {
+            product.values[number] = number * (product.amount / recipie.people_count)
+          })
+
+          // Adjust the values by changing the unit if all values are small or big
+          const smallValuesCount = Object.values(product.values).filter((v) => v < 1).length
+          const bigValuesCount = Object.values(product.values).filter((v) => v > 1000).length
+          const threshold = this.numbers.length / 2
+          if (['kg', 'L'].includes(product.unit) && smallValuesCount > threshold) {
+            product.unit = unitChild(product.unit)
+            this.numbers.forEach((number) => { product.values[number] *= 1000 })
+          } else if (['g', 'mL'].includes(product.unit) && bigValuesCount > threshold) {
+            product.unit = unitParent(product.unit)
+            this.numbers.forEach((number) => { product.values[number] /= 1000 })
+          }
+          return product
+        })
+        return recipie
       })
       return result
     },
