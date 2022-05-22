@@ -94,7 +94,12 @@ export default {
           const factor = this.event.people_count / this.previousPeopleCount
           this.$root.session.rows.forEach((row) => {
             Object.entries(row.values).forEach(([day, value]) => {
-              if (day.includes(eventId) && value.amount) value.amount = Math.round(value.amount * factor)
+              if (day.includes(eventId) && value.amount) {
+                let amount = Math.round(value.amount * factor)
+                if (amount > 80) amount = Math.round(amount / 10) * 10
+                else if (amount > 30) amount = Math.round(amount / 5) * 5
+                value.amount = amount
+              }
             })
           })
         }
