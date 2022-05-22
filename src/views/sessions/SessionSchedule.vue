@@ -165,9 +165,11 @@ import NewRowButton from './SessionScheduleNewRowButton.vue'
 import PrintButton from './SessionSchedulePrintButton.vue'
 import SaveTemplate from '@/views/templates/SaveTemplateDialog.vue'
 import Spinner from '@/components/Spinner.vue'
+import CalendarMixin from '@/services/calendar-mixin'
 
 export default {
   inject: ['sessionDays'],
+  mixins: [CalendarMixin],
   components: {
     ColumnGroup,
     Row,
@@ -181,15 +183,9 @@ export default {
     SaveTemplate,
     Spinner,
   },
-  data() {
-    return {
-      isMounted: false,
-    }
-  },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show({}, this.session.is_template)
     this.$root.setPrintMode('landscape')
-    setTimeout(() => { this.isMounted = true }, 0)
   },
   computed: {
     session() {

@@ -109,11 +109,12 @@ import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
 import OrderNewDialog from './OrderNewDialog.vue'
 import StockMixin from '@/services/stocks-mixin'
+import CalendarMixin from '@/services/calendar-mixin'
 import Spinner from '@/components/Spinner.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  mixins: [StockMixin],
+  mixins: [StockMixin, CalendarMixin],
   components: {
     ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner,
   },
@@ -132,14 +133,6 @@ export default {
       }
       /* eslint-enable eqeqeq */
     },
-  },
-  data() {
-    return {
-      isMounted: false,
-    }
-  },
-  mounted() {
-    setTimeout(() => { this.isMounted = true }, 0)
   },
 }
 </script>

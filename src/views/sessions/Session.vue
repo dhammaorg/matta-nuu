@@ -39,6 +39,7 @@ export default {
           if (index === 0) classes.push('event-start')
           if (index === (event.days.length - 1)) classes.push('event-end')
           const date = event.start_date.addDays(index)
+          if (date.isToday()) classes.push('today')
           const dateHeader = date.toLocaleDateString([], { weekday: 'short', month: 'numeric', day: 'numeric' })
           days.push({
             id: `Event${event.id}_${index}`, label: day, event, index, date, class: classes.join(' '), dateHeader,
