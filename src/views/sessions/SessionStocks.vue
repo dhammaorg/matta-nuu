@@ -27,8 +27,12 @@
         <!-- Top Left Cell -->
         <Column class="top-left-cell transparent" frozen :rowspan="3">
           <template #header>
-            <Button type="button" icon="pi pi-plus" label="Order" class="p-button-sm"
-                      @click="$refs.orderForm.show()" />
+            <div class="d-flex flex-column gap-2">
+              <Button type="button" icon="pi pi-plus" label="Order" class="p-button-sm"
+                        @click="$refs.orderForm.show()" />
+              <Button type="button" icon="pi pi-plus" label="Inventory" class="p-button-sm"
+                        @click="$refs.inventoryForm.show()" />
+            </div>
           </template>
         </Column>
         <!-- Initial Stocks -->
@@ -99,7 +103,9 @@
 
   </DataTable>
 
-  <OrderNewDialog ref="orderForm" :days="sessionDays" />
+  <OrderNewDialog ref="orderForm" />
+
+  <InventoryDialog ref="inventoryForm" :products="sessionProducts" />
 
 </template>
 
@@ -111,12 +117,13 @@ import OrderNewDialog from './OrderNewDialog.vue'
 import StockMixin from '@/services/stocks-mixin'
 import CalendarMixin from '@/services/calendar-mixin'
 import Spinner from '@/components/Spinner.vue'
+import InventoryDialog from './InventoryDialog.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin, CalendarMixin],
   components: {
-    ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner,
+    ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner, InventoryDialog,
   },
   methods: {
     onCellEditComplete(event) {

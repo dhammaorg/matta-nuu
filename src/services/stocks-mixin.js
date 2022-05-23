@@ -2,10 +2,12 @@ export default {
   data() {
     return {
       stocks: [],
+      sessionProducts: [],
     }
   },
   mounted() {
-    this.calculateSessionProducts().forEach((productId) => {
+    this.calculateSessionProducts()
+    this.sessionProducts.forEach((productId) => {
       this.stocks.push(this.calculateStockFor(productId))
     })
   },
@@ -39,7 +41,7 @@ export default {
           })
         }
       })
-      return Array.from(result).filter((r) => !!r).sort()
+      this.sessionProducts = Array.from(result).filter((r) => !!r).sort()
     },
     reCalculateStockFor(productId, fromDayId) {
       const index = this.stocks.findIndex((s) => s.product_id === productId)

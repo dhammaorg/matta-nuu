@@ -1,10 +1,10 @@
 <template>
   <div class="p-inputgroup">
-    <Dropdown :options="$root.productsArray" optionLabel="name" optionValue="id" :showClear="true"
+    <Dropdown :options="options" optionLabel="name" optionValue="id" :showClear="true"
               placeholder="Choose a Product" :filter="true" filterPlaceholder="" v-bind="$attrs"
-              @filter="filterValue = $event.value" >
+              @filter="filterValue = $event.value">
       <template #footer>
-        <div class="p-dropdown-header">
+        <div class="p-dropdown-header" v-if="showCreateButton">
           <Button icon="pi pi-plus" label="Product" class="p-button-sm"
                   @click="$refs.form.show({ name: filterValue })" />
         </div>
@@ -27,6 +27,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    showCreateButton: {
+      type: Boolean,
+      default: true,
+    },
+    filterProducts: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {
@@ -34,6 +42,9 @@ export default {
     }
   },
   computed: {
+    options() {
+      return this.$root.productsArray.filter((p) => this.filterProducts === null || this.filterProducts.includes(p.id))
+    },
     value() {
       return this.$attrs.modelValue
     },
