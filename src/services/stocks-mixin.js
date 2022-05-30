@@ -63,7 +63,7 @@ export default {
           let bought = manuallyBought || 0
           const ordered = []
           this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
-            if (order.values[productId]) {
+            if (order.values[productId] && order.values[productId].value) {
               const { value } = order.values[productId]
               bought += value
               ordered.push({ value, id: order.id, name: order.name })
