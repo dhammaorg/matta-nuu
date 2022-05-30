@@ -141,8 +141,9 @@ export default {
       let values = this.order.values || {}
       // Sort by key == product
       values = Object.keys(values).sort().reduce((result, key) => {
+        result[key] = values[key]
         // Fix missing id bug, so adding it in case it was not there
-        result[key] = { ...values[key], ...{ id: key } }
+        if (!result[key].id) result[key].id = key
         return result
       }, {})
       return Object.values(values)
