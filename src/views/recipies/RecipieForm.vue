@@ -92,6 +92,9 @@ export default {
 
 <style lang="scss">
   .ingredients {
+    .input-product-wrapper {
+      width: 20% !important;
+    }
     .p-inputgroup {
       &:hover > .btn-edit-product {
         border-color: var(--primary-color);

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-inputgroup">
+  <div class="p-inputgroup input-product-wrapper">
     <Dropdown :options="options" optionLabel="name" optionValue="id" :showClear="true"
               placeholder="Choose a Product" :filter="true" filterPlaceholder="" v-bind="$attrs"
               @filter="filterValue = $event.value" class="input-product">
