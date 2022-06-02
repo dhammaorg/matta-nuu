@@ -78,12 +78,14 @@ export default {
       this.$db.from('products').select('id, name, unit').match({ user_id: this.targetUserId }).then((result) => {
         this.target.products = result.data
       })
-      this.$db.from('recipies').select().match({ user_id: this.targetUserId }).then((result) => {
-        this.target.recipies = result.data
-      })
-      this.$db.from('sessions').select().match({ is_template: true, user_id: this.targetUserId }).then((result) => {
-        this.target.templates = result.data
-      })
+      this.$db.from('recipies').select().match({ user_id: this.targetUserId }).order('name')
+        .then((result) => {
+          this.target.recipies = result.data
+        })
+      this.$db.from('sessions').select().match({ is_template: true, user_id: this.targetUserId }).order('name')
+        .then((result) => {
+          this.target.templates = result.data
+        })
     },
     async importData() {
       ['imported', 'existing', 'prepared'].forEach((prop) => {
