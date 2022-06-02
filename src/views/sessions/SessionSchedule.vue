@@ -289,7 +289,7 @@ export default {
           recipie.products.forEach((p) => {
             // preserve number of decimals
             const decimals = p.amount.decimalsCount()
-            p.amount = (p.amount * ratio).round(decimals)
+            p.amount = (p.amount * ratio).round(decimals + 1)
           })
           dayValue.amount = targetAmount
           this.dbUpdate('recipies', recipie)
