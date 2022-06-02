@@ -278,15 +278,18 @@ export default {
     // recipie so that it will now be cooked for 100
     updateRecipieAmounts(dayValue, targetAmount) {
       const recipie = this.$root.getRecipie(dayValue.recipie_id)
+      const ratio = (dayValue.amount / targetAmount)
       this.$confirm.require({
         message: `This will modify the recipie amounts to fit with the event people count.
-                  All recipies ingredient will be multiplied by ${dayValue.amount / targetAmount}
+                  All recipies ingredient will be multiplied by ${ratio.round(3)}
                   Are you sure to continue ?`,
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
           recipie.products.forEach((p) => {
-            p.amount = (p.amount * dayValue.amount) / targetAmount
+            // preserve number of decimals
+            const decimals = p.amount.decimalsCount()
+            p.amount = (p.amount * ratio).round(decimals)
           })
           dayValue.amount = targetAmount
           this.dbUpdate('recipies', recipie)

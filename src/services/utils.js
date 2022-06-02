@@ -19,4 +19,9 @@ export function utils() {
   Number.prototype.round = function (decimals = 2) {
     return Number(`${Math.round(`${this}e${decimals}`)}e-${decimals}`)
   }
+
+  Number.prototype.decimalsCount = function () {
+    if (Math.floor(this) !== this) return this.toString().split('.')[1].length || 0
+    return 0
+  }
 }
