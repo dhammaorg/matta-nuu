@@ -18,10 +18,10 @@
       </div>
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
         <div class="p-inputgroup">
-          <InputProduct v-model="product.id" :showClear="false" :editable="false"
-                       style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
+          <InputProduct v-model="product.id" :showClear="false" :editable="true"
+                        style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
           <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
-                        inputClass="border-start-0" />
+                        inputClass="border-start-0 input-amount" />
           <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
         </div>
         <Button icon="pi pi-times" class="p-button-text p-button-danger"
@@ -90,6 +90,34 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss">
+  .ingredients {
+    .p-inputgroup {
+      &:hover > .btn-edit-product {
+        border-color: var(--primary-color);
+      }
+      .btn-edit-product {
+        border-radius: 0 !important;
+        background-color: transparent;
+        border-color: #ced4da;
+        border-left: none !important;
+        width: 2.5rem !important;
+        justify-content: flex-start;
+        padding-left: .25rem !important;
+        color: var(--text-color);
+        .pi {
+          font-size: .9rem;
+        }
+        &:hover {
+          background-color: transparent !important;
+          color: var(--primary-color);
+          border-color: #ced4da;
+        }
+      }
+    }
 
+    .input-product {
+      border-right: none;
+    }
+  }
 </style>
