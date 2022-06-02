@@ -94,8 +94,8 @@ td .p-inputnumber {
   white-space: pre-line;
 }
 .custom-scroll-bar::-webkit-scrollbar-track {
-  background-color: var(--surface-content);
-  border: 1px solid var(--bluegray-100);
+  background-color: var(--surface-ground);
+  border: none;
 }
 
 .p-column-filter-overlay-menu .p-column-filter-constraint {
@@ -103,14 +103,16 @@ td .p-inputnumber {
 }
 
 .custom-scroll-bar::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
 }
 
 .custom-scroll-bar::-webkit-scrollbar-thumb {
-  background-color: var(--bluegray-200);
+  background-color: var(--indigo-500);
   min-height: 40px;
   min-width: 40px;
+  border-top: 3px solid var(--surface-ground);
+  border-left: 3px solid var(--surface-ground);
 }
 
 .p-field + .p-field {

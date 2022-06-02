@@ -9,7 +9,7 @@
       <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save" :loading="loading" />
     </div>
 
-    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
+    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="calc(100vh - 11rem)"
                class="editable-cells-table session-table products-table" v-model:filters="filters"
                sortField="name" :sortOrder="1" filterDisplay="menu">
 

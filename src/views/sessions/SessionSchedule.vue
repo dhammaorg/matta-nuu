@@ -7,12 +7,12 @@
     </ol>
   </HelpMessage>
 
-  <div v-if="!isMounted" :style="{height: 'calc(100vh - 10.5rem)'}">
+  <div v-if="!isMounted" :style="{height: 'calc(100vh - 11rem)'}">
     <Spinner/>
   </div>
 
   <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0 && isMounted"
-             :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
+             :scrollable="true" scrollHeight="calc(100vh - 11rem)"
              :class="{'hide-dates': !displayDates}"
              @rowReorder="session.rows = $event.value"
              editMode="cell" class="editable-cells-table session-table schedule-table" @cell-edit-complete="onCellEditComplete"

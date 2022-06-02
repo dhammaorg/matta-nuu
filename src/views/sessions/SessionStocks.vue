@@ -13,12 +13,12 @@
     </p>
   </HelpMessage>
 
-  <div v-if="!isMounted" :style="{height: 'calc(100vh - 10.5rem)'}">
+  <div v-if="!isMounted" :style="{height: 'calc(100vh - 11rem)'}">
     <Spinner/>
   </div>
 
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0 && isMounted"
-             :scrollable="true" scrollHeight="calc(100vh - 10.5rem)"
+             :scrollable="true" scrollHeight="calc(100vh - 11rem)"
              @cell-edit-complete="onCellEditComplete"
              rowGroupMode="subheader" groupRowsBy="category.name" sortField="category.name" :sortOrder="1"
              editMode="cell" class="editable-cells-table stocks-table session-table">
