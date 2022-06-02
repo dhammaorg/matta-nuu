@@ -29,8 +29,11 @@
 
       <div class="p-field">
         <label>Packaging Conditioning</label>
-        <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
-                    :suffix="' ' + product.unit" />
+        <div class="p-inputgroup">
+          <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
+                       :maxFractionDigits="5"/>
+          <span class="p-inputgroup-addon" style="width: 4rem;">{{ product.unit }}</span>
+        </div>
       </div>
     </div>
 
