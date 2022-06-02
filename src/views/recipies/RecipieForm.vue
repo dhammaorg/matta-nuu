@@ -15,9 +15,6 @@
         <InputNumber v-model="recipie.people_count" class="d-inline-block w-auto mx-2"
                     inputStyle="width: 4rem" inputClass="text-center"/>
         <span>People</span>
-
-        <Button icon="pi pi-plus" class="p-button-rounded p-button-primary p-button-sm float-end"
-              @click="recipie.products.push({})"></Button>
       </div>
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
         <div class="p-inputgroup">
@@ -30,6 +27,8 @@
         <Button icon="pi pi-times" class="p-button-text p-button-danger"
                 @click="removeProduct(product)"/>
       </div>
+      <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto mt-2" label="Ingredient"
+              @click="recipie.products.push({})"></Button>
     </div>
 
     <div class="field-checkbox">
