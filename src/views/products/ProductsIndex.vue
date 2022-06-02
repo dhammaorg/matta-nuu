@@ -45,20 +45,20 @@
         </template>
       </Column>
 
+      <!-- Actions -->
+      <Column class="text-end" style="max-width: 40px" header="Actions">
+        <template #body="{data}">
+          <Button icon="pi pi-pencil" class="p-button-text" @click="$refs.form.show(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteProduct(data)" />
+        </template>
+      </Column>
+
       <!-- Recipies -->
       <Column field="recipies" header="Used by" class="recipies">
         <template #body="{ data }">
           <Chip v-for="recipie in recipiesUsingProduct(data)" :key="`${data.id}_${recipie.id}`"
                 :label="recipie.name" icon="pi pi-pencil" class="edit-recipie-chip"
                 @click="$refs.recipieForm.show(recipie)" v-tooltip="'Edit this recipie'"/>
-        </template>
-      </Column>
-
-      <!-- Actions -->
-      <Column class="text-end" style="max-width: 40px">
-        <template #body="{data}">
-          <Button icon="pi pi-pencil" class="p-button-text" @click="$refs.form.show(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteProduct(data)" />
         </template>
       </Column>
     </DataTable>
