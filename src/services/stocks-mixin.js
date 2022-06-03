@@ -7,9 +7,7 @@ export default {
   },
   mounted() {
     this.calculateSessionProducts()
-    this.sessionProducts.forEach((productId) => {
-      this.stocks.push(this.calculateStockFor(productId))
-    })
+    this.calculateAllStocks()
   },
   computed: {
     session() {
@@ -20,7 +18,7 @@ export default {
         .filter((order) => order.report_values_in_stocks
           && order.values
           && order.session_id === this.session.id
-          && order.id != this.$route.params.order_id /* We exclude current edited order so we can recalculate */)
+          && this.order && order.id != this.order.id /* We exclude current edited order so we can recalculate */)
     },
   },
   methods: {
@@ -42,6 +40,11 @@ export default {
         }
       })
       this.sessionProducts = Array.from(result).filter((r) => !!r).sort()
+    },
+    calculateAllStocks() {
+      this.sessionProducts.forEach((productId) => {
+        this.stocks.push(this.calculateStockFor(productId))
+      })
     },
     reCalculateStockFor(productId, fromDayId) {
       const index = this.stocks.findIndex((s) => s.product_id === productId)

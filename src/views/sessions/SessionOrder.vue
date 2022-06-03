@@ -131,7 +131,9 @@ export default {
     this.$root.setPrintMode('portrait')
   },
   async beforeRouteUpdate(to, from) {
-    this.fetchOrder(to.params.order_id)
+    await this.fetchOrder(to.params.order_id)
+    // Fix calculate stock when creating another order without going back to index
+    this.calculateAllStocks()
   },
   computed: {
     supplier() {
