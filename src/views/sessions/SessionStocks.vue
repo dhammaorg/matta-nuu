@@ -17,17 +17,21 @@
     <Spinner/>
   </div>
 
+  <!-- Search outside of the table so it's not refresh when table is refresh -->
+  <InputText :value="filters['product_name'].value" @change="filters['product_name'].value = $event.target.value"
+             v-debounce="250" class="stocks-search-input" placeholder="Search Product..." />
+
   <DataTable :value="stocks" showGridlines v-if="session.events.length > 0 && isMounted"
              :scrollable="true" scrollHeight="calc(100vh - 11rem)"
-             @cell-edit-complete="onCellEditComplete"
+             @cell-edit-complete="onCellEditComplete"  v-model:filters="filters"
              rowGroupMode="subheader" groupRowsBy="category.name" sortField="category.name" :sortOrder="1"
              editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell transparent" frozen :rowspan="3">
+        <Column class="top-left-cell transparent align-top" frozen :rowspan="3">
           <template #header>
-            <div class="d-flex flex-column gap-2">
+            <div class="d-flex flex-column gap-1">
               <Button type="button" icon="pi pi-plus" label="Order" class="p-button-sm"
                         @click="$refs.orderForm.show()" />
               <Button type="button" icon="pi pi-plus" label="Inventory" class="p-button-sm"
@@ -60,8 +64,8 @@
     <!-- First Column : Product -->
     <Column frozen class="product-column">
       <template #body="{ data }">
-        {{ $root.getProduct(data.product_id).name }}
-        <span v-show="$root.getProduct(data.product_id).unit" class="ms-1 fw-normal">({{ $root.getProduct(data.product_id).unit }})</span>
+        {{ data.product_name }}
+        <span v-show="data.product_unit" class="ms-1 fw-normal">({{ data.product_unit }})</span>
       </template>
     </Column>
 
@@ -125,6 +129,11 @@ export default {
   components: {
     ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner, InventoryDialog,
   },
+  data() {
+    return {
+      filters: { product_name: { value: null, matchMode: 'contains' } },
+    }
+  },
   methods: {
     onCellEditComplete(event) {
       const { data, field: day } = event
@@ -148,10 +157,20 @@ export default {
   .stocks-table td:not(.product-column), .stocks-table th {
     // min-width: 70px !important;
   }
+  .stocks-search-input {
+    position: absolute;
+    left: 2rem;
+    z-index: 1000;
+    width: 201px;
+    margin-top: 81px !important;
+    border-radius: 0 !important;
+  }
   th.top-left-cell {
     width: 200px;
     min-width: 200px !important;
     max-width: 200px !important;
+    height: 120px;
+    padding: 0 !important;
   }
   .stocks-table .cell-stock {
     padding: 0 !important;

@@ -87,7 +87,9 @@ export default {
         }
       })
 
-      return { product_id: productId, category: this.$root.getCategory(product.category_id), values }
+      return {
+        product_id: productId, product_name: product.name, product_unit: product.unit, category: this.$root.getCategory(product.category_id), values,
+      }
     },
     consumption(productId, day) {
       let result = 0

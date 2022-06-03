@@ -19,6 +19,7 @@ import router from '@/services/router'
 import db from '@/services/db-plugin'
 import supabase from '@/services/supabase'
 import { utils } from '@/services/utils'
+import { debounceDirective } from './services/debounce'
 
 import 'bootstrap/dist/css/bootstrap-utilities.css'
 import 'primeicons/primeicons.css'
@@ -35,6 +36,7 @@ const app = createApp(App)
   .use(ConfirmationService)
   .use(ToastService)
   .directive('tooltip', Tooltip)
+  .directive('debounce', debounceDirective)
   .component('Dialog', Dialog)
   .component('Button', Button)
   .component('DataTable', DataTable)
