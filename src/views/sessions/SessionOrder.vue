@@ -41,7 +41,7 @@
       <div class="p-inputgroup mb-3 d-print-none">
         <span class="p-inputgroup-addon">Quantities until</span>
         <InputDay v-model="order.target_day" :days="sessionDays" />
-        <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" />
+        <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" :loading="isCalculating" />
       </div>
     </div>
 
@@ -124,6 +124,7 @@ export default {
       },
       newProduct: '',
       loading: false,
+      isCalculating: false,
     }
   },
   async mounted() {
@@ -132,8 +133,6 @@ export default {
   },
   async beforeRouteUpdate(to, from) {
     await this.fetchOrder(to.params.order_id)
-    // Fix calculate stock when creating another order without going back to index
-    this.calculateAllStocks()
   },
   computed: {
     supplier() {
@@ -168,27 +167,32 @@ export default {
         order.values ||= {}
       }
       this.order = order
-
       const firstInit = Object.values(this.order.values || {}).length === 0
+
       if (firstInit && this.order.target_day) this.calculate()
     },
     calculate() {
-      this.order.values = {}
-      this.stocks.forEach(({ product_id, values }) => {
-        const product = this.$root.getProduct(product_id)
-        if (this.order.supplier_id && product.supplier_id !== this.order.supplier_id) return
-        const needed = 0 - (values[this.order.target_day] || {}).value
-        const conditioning = product.packaging_conditioning || 1
-        if (needed > 0) {
-          this.order.values[product_id] = {
-            id: product.id,
-            name: product.packaging_reference || product.name,
-            value: Math.ceil(needed / conditioning) * conditioning,
-            unit: product.unit,
-            needed: `${needed.toFixed(3)} ${product.unit}`,
+      this.isCalculating = true
+      setTimeout(() => {
+        this.calculateAllStocks()
+        this.order.values = {}
+        this.stocks.forEach(({ product_id, values }) => {
+          const product = this.$root.getProduct(product_id)
+          if (this.order.supplier_id && product.supplier_id !== this.order.supplier_id) return
+          const needed = 0 - (values[this.order.target_day] || {}).value
+          const conditioning = product.packaging_conditioning || 1
+          if (needed > 0) {
+            this.order.values[product_id] = {
+              id: product.id,
+              name: product.packaging_reference || product.name,
+              value: Math.ceil(needed / conditioning) * conditioning,
+              unit: product.unit,
+              needed: `${needed.toFixed(3)} ${product.unit}`,
+            }
           }
-        }
-      })
+        })
+        this.isCalculating = false
+      }, 10)
     },
     async save() {
       this.dbUpdate('orders', this.order)

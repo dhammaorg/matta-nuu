@@ -14,11 +14,13 @@ export default {
       return this.$root.session
     },
     orders() {
+      /* We exclude current edited order */
+      const orderIdToIgnore = this.order && this.order.id ? this.order.id : this.$route.params.order_id
       return Object.values(this.$root.orders)
         .filter((order) => order.report_values_in_stocks
           && order.values
           && order.session_id === this.session.id
-          && this.order && order.id != this.order.id /* We exclude current edited order so we can recalculate */)
+          && order.id != orderIdToIgnore)
     },
   },
   methods: {
