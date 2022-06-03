@@ -82,13 +82,9 @@ export default {
       const eventId = `Event${event.id}_`
       this.$root.session.rows.forEach((row) => {
         const values = {}
-        let dayIndex = 0
         // filters values associated to this event
         Object.entries(row.values).forEach(([key, value]) => {
-          if (key.includes(eventId)) {
-            values[`Event1_${dayIndex}`] = value
-            dayIndex += 1
-          }
+          if (key.includes(eventId)) values[key] = value
         })
         // If this row is used by the event (i.e. there is at least one value for this row in this event)
         if (Object.values(values).find((v) => Object.values(v).length > 0)) result.push({ ...row, ...{ values } })
