@@ -1,6 +1,6 @@
 <template>
   <div class="day-quantities" v-if="recipies.length > 0">
-    <h1 class="text-center">{{ event.name }} - {{ day }}</h1>
+    <h1 class="text-center">{{ event.name }}<span v-if="day"> - {{ day }}</span></h1>
 
     <div class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
       <div class="p-datatable-wrapper">
@@ -132,8 +132,11 @@ export default {
     th, td {
       min-width: 0 !important;
     }
-    tr > td:nth-child(even) {
+    tr > td:nth-child(even), .p-datatable .p-datatable-thead > tr > th:nth-child(even) {
       background-color: var(--bluegray-50);
+      @media print {
+        background-color: var(--gray-200);
+      }
     }
     tr > th:nth-child(odd):not(:last-child) {
       background-color: var(--surface-0) !important;
@@ -143,6 +146,9 @@ export default {
     }
     td:last-child, th:last-child {
       background-color: var(--bluegray-100) !important;
+      @media print {
+        background-color: var(--gray-400) !important;
+      }
     }
     th:not(:first-child) .p-column-header-content {
       justify-content: center;
@@ -151,6 +157,9 @@ export default {
       margin-bottom: 0;
       font-size: 1rem;
       margin: .5rem 0 .25rem 0;
+      @media print {
+        color: black !important;
+      }
     }
     .p-rowgroup-header > td {
       border: none !important;

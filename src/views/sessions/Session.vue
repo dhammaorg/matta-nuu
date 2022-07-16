@@ -120,6 +120,12 @@ export default {
     min-width: 200px !important;
     max-width: 200px !important;
     @media screen { justify-content: flex-start !important; }
+    @media print {
+      text-align: center !important;
+      width: 160px;
+      min-width: 160px !important;
+      max-width: 160px !important;
+    }
   }
   td.product-column {
     @media screen {

@@ -30,6 +30,9 @@ export default {
     padding: 0 2rem;
   }
   @media print {
-    .quantities-container { padding: 0; }
+    .quantities-container {
+      padding: 0;
+      overflow: visible;
+    }
   }
 </style>

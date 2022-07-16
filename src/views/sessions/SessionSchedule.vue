@@ -310,9 +310,9 @@ export default {
     }
     @media print {
       // Product width
-      width: 200px;
-      min-width: 200px !important;
-      max-width: 200px !important;
+      width: 160px;
+      min-width: 160px !important;
+      max-width: 160px !important;
     }
   }
   .schedule-table th.event-editor {

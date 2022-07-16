@@ -215,12 +215,18 @@ export default {
     body { padding: 30px !important; }
 
     // Adjust color for more contrast
+    .p-datatable .p-datatable-thead > tr > th,
     .p-datatable .p-datatable-tbody > tr {
       color: black !important;
     }
     .p-rowgroup-header td {
       color: var(--bluegray-700);
     }
+    .p-datatable .p-datatable-thead > tr > th,
+    .p-datatable .p-datatable-tbody > tr > td {
+      border-color: var(--gray-400) !important;
+    }
+
   }
   #app, body, html {
     margin: 0;
