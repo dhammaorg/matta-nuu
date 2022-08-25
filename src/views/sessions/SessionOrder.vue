@@ -1,11 +1,11 @@
 <template>
   <div class="session-order mx-auto">
 
-    <div class="mb-3 d-flex">
+    <div class="mb-3 d-flex align-items-center">
       <div class="flex-grow-1">
-        <Inplace :closable="true" class="mb-2">
+        <Inplace :closable="true">
           <template #display>
-            <h2 class="m-0 me-3" title="Edit">
+            <h2 class="m-0 me-3 d-inline-flex align-items-center" title="Edit">
               {{ order.name }}
               <span class="ms-2 pi pi-pencil xs d-print-none"></span>
             </h2>
@@ -14,7 +14,6 @@
             <InputText v-model="order.name" autofocus/>
           </template>
         </Inplace>
-        <p class="mb-0 d-print-none">{{ supplier.name }}</p>
       </div>
       <div class="d-print-none">
         <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy"/>

@@ -2,10 +2,6 @@
   <Dialog v-model:visible="visible" :style="{width: '600px'}" :modal="true" class="p-fluid"
           header="New Order">
 
-    <div class="p-field">
-      <InputText v-model="order.name" placeholder="Order Name"/>
-    </div>
-
     <div class="p-field" v-if="suppliers.length > 0">
       <Dropdown v-model="order.supplier_id" :options="suppliers" placeholder="Supplier"
                 optionLabel="name" optionValue="id" />
@@ -56,6 +52,8 @@ export default {
     async createOrder() {
       if (this.order.supplier_id || this.suppliers.length === 0) {
         const supplier = this.$root.getSupplier(this.order.supplier_id)
+        const otherOrdersForSupplier = Object.values(this.$root.orders).filter((o) => o.supplier_id == this.order.supplier_id)
+      this.order.name = `${supplier.name || 'Order'} #${otherOrdersForSupplier.length + 1}`
         this.order.header = supplier.order_header
         this.order.footer = supplier.order_footer
         this.dbCreate('orders', this.order, (order) => {
