@@ -102,7 +102,7 @@
     </Column>
 
     <template #groupheader="{ data }">
-      {{ data.category.name || "Others" }}
+      <span style="position: sticky; left: .7rem">{{ data.category.name || "Others" }}</span>
     </template>
 
   </DataTable>
