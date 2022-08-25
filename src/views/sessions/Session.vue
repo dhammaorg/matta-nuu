@@ -93,8 +93,10 @@ export default {
   beforeRouteLeave(to, from, next) {
     if (this.$refs.menu.unsavedChangesWarning) {
       this.$confirm.require({
-        message: 'You have unsaved changes, are you sure you want to quit?',
-        header: 'Confirmation',
+        message: 'You have unsaved changes !',
+        acceptLabel: 'Quit without saving',
+        rejectLabel: 'Cancel',
+        header: 'Warning',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           // Cancel changes (next time it will be reloaded)
