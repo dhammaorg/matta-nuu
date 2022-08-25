@@ -181,7 +181,8 @@ export default {
         this.order.values = {}
         this.stocks.forEach(({ product_id, values }) => {
           const product = this.$root.getProduct(product_id)
-          if (this.order.supplier_id && product.supplier_id !== this.order.supplier_id) return
+
+          if (product.supplier_id !== this.order.supplier_id) return
           const needed = 0 - (values[this.order.target_day] || {}).value
           const conditioning = product.packaging_conditioning || 1
           if (needed > 0) {

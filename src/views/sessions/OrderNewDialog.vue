@@ -50,18 +50,16 @@ export default {
       this.visible = true
     },
     async createOrder() {
-      if (this.order.supplier_id || this.suppliers.length === 0) {
-        const supplier = this.$root.getSupplier(this.order.supplier_id)
-        const otherOrdersForSupplier = Object.values(this.$root.orders).filter((o) => o.supplier_id == this.order.supplier_id)
+      const supplier = this.$root.getSupplier(this.order.supplier_id)
+      const otherOrdersForSupplier = Object.values(this.$root.orders).filter((o) => o.supplier_id == this.order.supplier_id)
       this.order.name = `${supplier.name || 'Order'} #${otherOrdersForSupplier.length + 1}`
-        this.order.header = supplier.order_header
-        this.order.footer = supplier.order_footer
-        this.dbCreate('orders', this.order, (order) => {
-          this.visible = false
-          this.$router.push({ name: 'session_order', params: { id: this.$route.params.id, order_id: order.id } })
-          this.order = {}
-        })
-      }
+      this.order.header = supplier.order_header
+      this.order.footer = supplier.order_footer
+      this.dbCreate('orders', this.order, (order) => {
+        this.visible = false
+        this.$router.push({ name: 'session_order', params: { id: this.$route.params.id, order_id: order.id } })
+        this.order = {}
+      })
     },
   },
 }
