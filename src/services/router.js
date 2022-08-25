@@ -11,6 +11,7 @@ import SuppliersIndex from '@/views/suppliers/SuppliersIndex.vue'
 import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 import Profile from '@/views/auth/Profile.vue'
 import Import from '@/views/import/Import.vue'
 
@@ -24,6 +25,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: Register,
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: ResetPassword,
   },
   {
     path: '/profile',

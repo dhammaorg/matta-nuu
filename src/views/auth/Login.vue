@@ -14,6 +14,9 @@
       <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
                  @keyup.enter="signIn" autocomplete="current-password"/>
       <Button label="Sign In" type="submit" class="w-100" @click.prevent="signIn"/>
+      <div class="mt-3 text-center">
+        <router-link :to="{ name: 'reset-password' }">Forgot your password?</router-link>
+      </div>
     </form>
   </div>
 </template>
@@ -29,6 +32,10 @@ export default {
   },
   methods: {
     async signIn() {
+      if (!this.user.email || !this.user.password) {
+        this.toastError('Please provide both email and password')
+        return
+      }
       const { user, error } = await supabase.auth.signIn({
         email: this.user.email,
         password: this.user.password,

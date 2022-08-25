@@ -46,9 +46,19 @@ const app = createApp(App)
   .component('Dropdown', Dropdown)
   .component('HelpMessage', HelpMessage)
 
-router.beforeEach((to, from) => {
-  const user = supabase.auth.user()
-  if (!user && !['login', 'register'].includes(to.name)) return { name: 'login' }
+router.beforeEach(async (to) => {
+  let user = supabase.auth.user()
+
+  if (to.path.includes('type=magiclink')) {
+    // wait for the user to be signed in in the backend
+    while (user == null) {
+      await new Promise((r) => setTimeout(r, 400))
+      user = supabase.auth.user()
+    }
+    app._instance.data.user = user
+    return { name: 'profile' }
+  }
+  if (!user && !['login', 'register', 'reset-password'].includes(to.name)) return { name: 'login' }
 })
 
 app.config.unwrapInjectedRef = true
