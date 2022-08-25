@@ -34,6 +34,8 @@ export default {
         { label: 'Event Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
       ],
       userItems: [
+        { label: this.$root.userData.account_name, disabled: true },
+        { separator: true },
         { label: 'Settings', to: { name: 'profile' }, icon: 'pi pi-cog' },
         { label: 'Import Data', to: { name: 'import' }, icon: 'pi pi-cloud-download' },
         { label: 'Logout', command: () => { this.logout() }, icon: 'pi pi-sign-out' },

@@ -2,7 +2,7 @@
   <div class="page-content">
     <h1 class="mt-0">Import data from another account</h1>
     <div class="p-field">
-      <Dropdown :options="accounts" optionLabel="org_name" optionValue="user_id" v-model="targetUserId"
+      <Dropdown :options="accounts" optionLabel="account_name" optionValue="user_id" v-model="targetUserId"
             placeholder="Select account" :filter="true" filterPlaceholder="" class="w-100" />
     </div>
 
@@ -65,8 +65,8 @@ export default {
     }
   },
   mounted() {
-    this.$db.from('users').select().order('org_name', { ascending: false }).then((result) => {
-      this.accounts = result.data
+    this.$db.from('users').select().then((result) => {
+      this.accounts = result.data.sort((a, b) => a.account_name.localeCompare(b.account_name))
     })
   },
   methods: {

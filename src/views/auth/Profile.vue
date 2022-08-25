@@ -5,9 +5,13 @@
     <p>You can toggle HELP any time from main menu</p>
   </Message>
 
-  <div class="page-content">
+  <div class="page-content" v-if="$root.user">
     <h1 class="mt-0">Your Profile</h1>
     <div class="p-field mb-4">{{ $root.user.email }}</div>
+    <div class="p-field">
+      <label>Account Name</label>
+      <InputText v-model="$root.userData.account_name" class="w-100 "/>
+    </div>
     <div class="p-field">
       <label>Change your password</label>
       <InputText v-model="newPassword" placeholder="New Password" type="password" class="w-100 "/>
