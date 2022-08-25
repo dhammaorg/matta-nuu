@@ -103,6 +103,13 @@ export default {
       })
       style += '}'
       document.getElementById('print-event-filtering').innerHTML = style
+
+      let title = this.$root.session.name
+      if (this.eventsToPrint.length > 1) title += ` (${this.eventsToPrint.map((e) => e.name).join(', ')})`
+      title += ` - ${this.printOption.replace(/^\w/, (c) => c.toUpperCase())}`
+      if (this.printOption == 'schedule' && this.hide.amounts) title += ' Without Amounts'
+      this.$root.setPageTitle(title)
+
       window.print()
     },
   },

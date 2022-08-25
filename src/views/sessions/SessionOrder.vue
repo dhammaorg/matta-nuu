@@ -18,7 +18,7 @@
       </div>
       <div class="d-print-none">
         <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy"/>
-        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print" onclick="print()" />
+        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print" @click="print()" />
         <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save" :loading="loading"/>
       </div>
     </div>
@@ -151,6 +151,10 @@ export default {
     },
   },
   methods: {
+    print() {
+      this.$root.setPageTitle(this.order.name)
+      window.print()
+    },
     async fetchOrder(orderId) {
       let order = {}
       if (this.$root.orders[orderId]) {

@@ -184,6 +184,9 @@ export default {
       this.fullyLoadedSessions.push(sessionId)
       return session
     },
+    setPageTitle(title) {
+      document.getElementById('title').innerHTML = title
+    },
     setPrintMode(mode) {
       // @page can be declared only once. As vuejs use same page for every page
       // We do this trick of changing directly the DOM
