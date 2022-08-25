@@ -226,6 +226,7 @@ export default {
     .p-datatable .p-datatable-tbody > tr > td {
       border-color: var(--gray-400) !important;
     }
+    .p-toast { display: none; }
 
   }
   #app, body, html {
