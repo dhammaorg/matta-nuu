@@ -154,6 +154,11 @@ export default {
     font-size: .8rem;
     color: var(--bluegray-700) !important;
     font-weight: 600 !important;
+    &.today {
+      background-color: var(--orange-500) !important;
+      color: white !important;
+      font-weight: bold !important;
+    }
   }
   th.day-date:not(.p-0), th.day-label {
     padding: .7rem !important;
