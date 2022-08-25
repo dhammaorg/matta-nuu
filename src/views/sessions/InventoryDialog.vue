@@ -9,7 +9,7 @@
     </div>
 
     <div class="fw-bold mb-3 mt-4">Products Stocks at the end of the day</div>
-    <div v-for="stock in stocks" class="d-flex mb-2" :key="stock" ref="rows">
+    <div v-for="stock in inventory" class="d-flex mb-2" :key="stock" ref="rows">
       <div class="p-inputgroup">
         <InputProduct v-model="stock.product_id" :showClear="false" :editable="false"
                       :showCreateButton="false" class="product-input"
@@ -17,6 +17,9 @@
                       style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
         <InputNumber v-model="stock.value" :maxFractionDigits="5" placeholder="Stock"
                       inputClass="border-start-0" />
+        <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day" v-tooltip.top="'Theoretical stock'">
+          {{ stockValueFor(stock.product_id) }}
+        </span>
         <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(stock.product_id).unit }}</span>
       </div>
       <Button icon="pi pi-times" class="p-button-text p-button-danger"
@@ -38,13 +41,13 @@ import InputDay from '@/components/InputDay.vue'
 import InputProduct from '@/components/InputProduct.vue'
 
 export default {
-  props: ['products'],
+  props: ['products', 'stocks'],
   inject: ['stockDays'],
   components: { InputDay, InputNumber, InputProduct },
   data() {
     return {
       visible: false,
-      stocks: [],
+      inventory: [],
       day: null,
     }
   },
@@ -54,13 +57,13 @@ export default {
   methods: {
     resetData() {
       this.day = (this.stockDays.find((d) => d.class.includes('today')) || {}).id
-      this.stocks = [{}]
+      this.inventory = [{}]
     },
     show() {
       this.visible = true
     },
     newRow(event) {
-      this.stocks.push({})
+      this.inventory.push({})
       this.$nextTick(() => {
         event.target.scrollIntoView()
         setTimeout(() => {
@@ -69,14 +72,14 @@ export default {
       })
     },
     removeRow(stock) {
-      this.stocks = this.stocks.filter((s) => s.product_id !== stock.product_id)
+      this.inventory = this.inventory.filter((s) => s.product_id !== stock.product_id)
     },
     save() {
       if (!this.day) {
         this.$toastError('You need to choose a day')
         return
       }
-      this.stocks.filter((s) => s.product_id).forEach((stock) => {
+      this.inventory.filter((s) => s.product_id).forEach((stock) => {
         this.$root.session.realStocks[stock.product_id][this.day] = stock.value
         this.$parent.reCalculateStockFor(stock.product_id, this.day)
       })
@@ -84,8 +87,13 @@ export default {
       this.visible = false
     },
     productsFor(stock) {
-      const alreadySet = this.stocks.map((s) => s.product_id)
+      const alreadySet = this.inventory.map((s) => s.product_id)
       return this.products.filter((p) => !alreadySet.includes(p) || p == stock.product_id)
+    },
+    stockValueFor(productId) {
+      if (!this.stocks || !this.day) return
+      const { values } = this.stocks.find((s) => s.product_id == productId) || {}
+      return values && values[this.day] ? values[this.day].value : 0
     },
   },
 }

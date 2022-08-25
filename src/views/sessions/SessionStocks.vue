@@ -109,7 +109,7 @@
 
   <OrderNewDialog ref="orderForm" />
 
-  <InventoryDialog ref="inventoryForm" :products="sessionProducts" />
+  <InventoryDialog ref="inventoryForm" :products="sessionProducts" :stocks="stocks" />
 
 </template>
 
