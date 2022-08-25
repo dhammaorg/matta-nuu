@@ -10,12 +10,11 @@
 
   <DataTable :value="orders" dataKey="id"
              :paginator="true" :rows="20"
+             sortField="delivery_day_date" :sortOrder="-1" removableSort
              v-model:filters="filters" filterDisplay="menu">
 
-    <Column field="delivery_day" header="Delivery Date" bodyClass="text-capitalize" >
-      <template #body="{data}">
-        {{ (stockDays.find(d => d.id == data.delivery_day) || {}).dateHeader }}
-      </template>
+    <Column field="delivery_day_label" header="Delivery Date" bodyClass="text-capitalize"
+            :sortable="true" sort-field="delivery_day_date">
     </Column>
 
     <Column field="name" header="Name" header-class="text-start"></Column>
@@ -61,6 +60,12 @@ export default {
     orders() {
       return Object.values(this.$root.orders).filter((order) => order.session_id === this.$root.session.id)
         .sort((a, b) => (a.id < b.id ? 1 : -1))
+        .map((o) => {
+          o.delivery_day_object = this.stockDays.find((d) => d.id == o.delivery_day) || {}
+          o.delivery_day_label = o.delivery_day_object.dateHeader
+          o.delivery_day_date = o.delivery_day_object.date
+          return o
+        })
     },
   },
   methods: {
