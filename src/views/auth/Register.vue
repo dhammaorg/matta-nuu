@@ -31,6 +31,7 @@ export default {
         this.toastError('Please complete all fields')
         return
       }
+      if (this.loading) return
       this.loading = true
       const { user, error } = await supabase.auth.signUp({
         email: this.user.email,

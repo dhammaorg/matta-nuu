@@ -13,7 +13,7 @@
                  autocomplete="email"/>
       <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
                  @keyup.enter="signIn" autocomplete="current-password"/>
-      <Button label="Sign In" type="submit" class="w-100" @click.prevent="signIn"/>
+      <Button label="Sign In" type="submit" :loading="loading" class="w-100" @click.prevent="signIn"/>
       <div class="mt-3 text-center">
         <router-link :to="{ name: 'reset-password' }">Forgot your password?</router-link>
       </div>
@@ -27,6 +27,7 @@ import supabase from '@/services/supabase'
 export default {
   data() {
     return {
+      loading: false,
       user: {},
     }
   },
@@ -36,10 +37,13 @@ export default {
         this.toastError('Please provide both email and password')
         return
       }
+      if (this.loading) return
+      this.loading = true
       const { user, error } = await supabase.auth.signIn({
         email: this.user.email,
         password: this.user.password,
       })
+      this.loading = false
       if (error) this.toastError(error)
       else {
         this.$root.user = user
