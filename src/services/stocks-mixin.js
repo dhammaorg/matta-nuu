@@ -74,7 +74,7 @@ export default {
               ordered.push({ value, id: order.id, name: order.name })
             }
           })
-          // consumùption is always the same, so reusing previously calculated value if exists
+          // consumption is always the same, so reusing previously calculated value if exists
           const consumption = (values[day.id] || {}).consumption || this.consumption(productId, day)
           const real = (this.session.realStocks[productId] || {})[day.id]
           const theoric = previousStock - consumption + bought
@@ -86,6 +86,7 @@ export default {
           values[day.id] = {
             real, manuallyBought, bought, consumption, theoric, value, ordered,
           }
+
           previousStock = value
         } else {
           previousStock = values[day.id].value
@@ -103,12 +104,13 @@ export default {
         const dayValue = row.values[day.id]
         const dayAmount = dayValue.amount || 0
         const dayProduct = row.product_id || dayValue.product_id
-        if (dayProduct && dayProduct === productId) {
+        if (row.type.includes('product') && dayProduct && dayProduct === productId) {
           result += dayAmount
           return
         }
+
         const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
-        if (dayRecipie.id && (!dayRecipie.prepare_day_before || day.index === 0)) {
+        if (row.type.includes('recipie') && dayRecipie.id && (!dayRecipie.prepare_day_before || day.index === 0)) {
           (dayRecipie.products || []).forEach((recipieProduct) => {
             if (recipieProduct.id === productId) {
               result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
@@ -119,7 +121,7 @@ export default {
         // Check recipie planned for next day that need to be prepared on the day before
         const dayAfterValue = row.values[`Event${day.event.id}_${day.index + 1}`] || {}
         const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
-        if (dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
+        if (row.type.includes('recipie') && dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
           (dayAfterRecipie.products || []).forEach((recipieProduct) => {
             if (recipieProduct.id === productId) {
               result += (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
