@@ -103,30 +103,37 @@ export default {
       this.session.rows.forEach((row) => {
         const dayValue = row.values[day.id]
         const dayAmount = dayValue.amount || 0
-        const dayProduct = row.product_id || dayValue.product_id
-        if (row.type.includes('product') && dayProduct && dayProduct === productId) {
-          result += dayAmount
-          return
+
+        if (['product', 'products'].includes(row.type)) {
+          const dayProductId = row.type === 'product' ? row.product_id : dayValue.product_id
+          if (dayProductId && dayProductId === productId) {
+            result += dayAmount
+            return
+          }
         }
 
-        const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
-        if (row.type.includes('recipie') && dayRecipie.id && (!dayRecipie.prepare_day_before || day.index === 0)) {
-          (dayRecipie.products || []).forEach((recipieProduct) => {
-            if (recipieProduct.id === productId) {
-              result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
-            }
-          })
-        }
+        if (['recipie', 'recipies'].includes(row.type)) {
+          const dayRecipieId = row.type === 'recipie' ? row.recipie_id : dayValue.recipie_id
+          const dayRecipie = this.$root.getRecipie(dayRecipieId)
+          if (row.type.includes('recipie') && dayRecipie.id && (!dayRecipie.prepare_day_before || day.index === 0)) {
+            (dayRecipie.products || []).forEach((recipieProduct) => {
+              if (recipieProduct.id === productId) {
+                result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
+              }
+            })
+          }
 
-        // Check recipie planned for next day that need to be prepared on the day before
-        const dayAfterValue = row.values[`Event${day.event.id}_${day.index + 1}`] || {}
-        const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
-        if (row.type.includes('recipie') && dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
-          (dayAfterRecipie.products || []).forEach((recipieProduct) => {
-            if (recipieProduct.id === productId) {
-              result += (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
-            }
-          })
+          // Check recipie planned for next day that need to be prepared on the day before
+          const dayAfterValue = row.values[`Event${day.event.id}_${day.index + 1}`] || {}
+          const dayAfterRecipieId = row.type == 'recipie' ? row.recipie_id : dayAfterValue.recipie_id
+          const dayAfterRecipie = this.$root.getRecipie(dayAfterRecipieId)
+          if (row.type.includes('recipie') && dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
+            (dayAfterRecipie.products || []).forEach((recipieProduct) => {
+              if (recipieProduct.id === productId) {
+                result += (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
+              }
+            })
+          }
         }
       })
       return result
