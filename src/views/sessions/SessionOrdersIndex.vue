@@ -61,10 +61,11 @@ export default {
       return Object.values(this.$root.orders).filter((order) => order.session_id === this.$root.session.id)
         .sort((a, b) => (a.id < b.id ? 1 : -1))
         .map((o) => {
-          o.delivery_day_object = this.stockDays.find((d) => d.id == o.delivery_day) || {}
-          o.delivery_day_label = o.delivery_day_object.dateHeader
-          o.delivery_day_date = o.delivery_day_object.date
-          return o
+          const result = { ...o }
+          result.delivery_day_object = this.stockDays.find((d) => d.id == result.delivery_day) || {}
+          result.delivery_day_label = result.delivery_day_object.dateHeader
+          result.delivery_day_date = result.delivery_day_object.date
+          return result
         })
     },
   },
