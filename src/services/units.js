@@ -1,8 +1,8 @@
 export const UNITS = {
   piece: { factor: 1 },
-  kg: { factor: 1, child: 'g' },
+  kg: { factor: 1000, child: 'g' },
   g: { factor: 1 / 1000, parent: 'kg' },
-  L: { factor: 1, child: 'mL' },
+  L: { factor: 1000, child: 'mL' },
   mL: { factor: 1 / 1000, parent: 'L' },
 }
 
@@ -16,4 +16,23 @@ export function unitParent(unit) {
 
 export function unitChild(unit) {
   return UNITS[unit] ? UNITS[unit].child || unit : unit
+}
+
+export function convertToBestUnit(unit, value) {
+  if (['kg', 'L'].includes(unit) && value < 0.1) {
+    return { unit: unitChild(unit), value: value * 1000 }
+  } if (['g', 'mL'].includes(unit) && value > 1000) {
+    return { unit: unitParent(unit), value: value / 1000 }
+  }
+  return { unit, value }
+}
+
+export function convertToUnit(value, fromUnit, toUnit) {
+  if (fromUnit == toUnit) return value
+
+  if (unitChild(fromUnit) == toUnit || unitParent(fromUnit) == toUnit) {
+    return value * unitFactor(fromUnit)
+  }
+  console.error(`Try to convert ${fromUnit} to ${toUnit} but that's not possible`)
+  return null
 }

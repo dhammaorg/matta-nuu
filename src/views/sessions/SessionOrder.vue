@@ -72,7 +72,11 @@
             <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
-        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell" />
+        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
+          <template #body="{ data }">
+            <InputUnit v-model="data.unit" :only-siblings="true" />
+          </template>
+        </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
         <Column field="id" class="d-print-none actions w-auto">
           <template #body="{ data }">
@@ -109,12 +113,14 @@ import Textarea from 'primevue/textarea'
 import InputDay from '@/components/InputDay.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
+import { convertToBestUnit } from '@/services/units'
+import InputUnit from '@/components/InputUnit.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea,
+    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea, InputUnit,
   },
   data() {
     return {
@@ -184,13 +190,16 @@ export default {
 
           if (product.supplier_id !== this.order.supplier_id) return
           const needed = 0 - (values[this.order.target_day] || {}).value
-          const conditioning = product.packaging_conditioning || 1
+
           if (needed > 0) {
+            let targetValue = needed
+            if (product.packaging_conditioning) targetValue = Math.ceil(needed / product.packaging_conditioning) * product.packaging_conditioning
+            const { unit, value } = convertToBestUnit(product.unit, targetValue)
             this.order.values[product_id] = {
               id: product.id,
               name: product.packaging_reference || product.name,
-              value: Math.ceil(needed / conditioning) * conditioning,
-              unit: product.unit,
+              value: Math.ceil(value),
+              unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
             }
           }
