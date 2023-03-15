@@ -49,6 +49,12 @@ td.w-auto, th.w-auto {
     }
   }
 }
+.p-datatable-sm .form-cell {
+  td, .p-inputtext, input {
+    padding: .35rem .7rem;
+  }
+}
+
 .p-dropdown .p-dropdown-clear-icon {
   position: relative;
   right: -5px !important;

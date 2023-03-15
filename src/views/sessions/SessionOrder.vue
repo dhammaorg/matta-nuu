@@ -48,7 +48,7 @@
 
     <div class="card">
 
-      <div class="d-flex mb-5" style="white-space: pre-line;">
+      <div class="d-flex mb-4" style="white-space: pre-line;">
         <div class="orderer w-50">
           <div class="mb-2"><b>{{ $root.userData.org_name }}</b></div>
           {{ $root.userData.org_details }}
@@ -61,7 +61,8 @@
 
       <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header" class="w-100 mb-3"/>
 
-      <DataTable :value="values" class="mb-3 border border-bottom-0" sortField="name" :sortOrder="1">
+      <DataTable :value="values" class="mb-3 border border-bottom-0" sortField="name" :sortOrder="1"
+                 :class="{ 'p-datatable-sm': values.length > 15 }">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
             <InputText v-model="data.name" class="text-start" />
@@ -74,7 +75,8 @@
         </Column>
         <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
           <template #body="{ data }">
-            <InputUnit v-model="data.unit" :only-siblings="true" />
+            <InputUnit v-model="data.unit" :only-siblings="true" class="d-print-none" />
+            <div class="text-center d-none d-print-block">{{ data.unit }}</div>
           </template>
         </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
@@ -274,6 +276,10 @@ export default {
   ::v-deep td, ::v-deep th {
     min-width: 100px !important;
   }
+  ::v-deep .form-cell.unit .p-inputtext {
+    justify-content: flex-end;
+  }
+
   @media print {
     .session-order {
       max-width: 600px;
