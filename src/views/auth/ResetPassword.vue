@@ -25,9 +25,13 @@ export default {
   methods: {
     async reset() {
       this.loading = true
-      const { error } = await supabase.auth.signIn({
-        email: this.email,
-      }, { redirect_to: 'http://localhost:8081/#/profile' })
+
+      // The fake update-password is catched by router, see router.beforeEach in main.js
+      const { error } = await supabase.auth.api.resetPasswordForEmail(
+        this.email,
+        { redirectTo: 'https://matta-nuu.netlify.app/#/update-password' },
+      )
+
       this.loading = false
       if (error) this.toastError(error)
       else {

@@ -48,8 +48,7 @@ const app = createApp(App)
 
 router.beforeEach(async (to) => {
   let user = supabase.auth.user()
-
-  if (to.path.includes('type=magiclink')) {
+  if (to.path.includes('update-password')) {
     // wait for the user to be signed in in the backend
     while (user == null) {
       await new Promise((r) => setTimeout(r, 400))
