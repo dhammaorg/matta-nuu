@@ -12,6 +12,11 @@
         <i class="pi pi-circle-fill"></i>
         <b>{{ arg.event.title }}</b>
       </template>
+      <!-- Alert -->
+      <template v-else-if="arg.event.extendedProps.alert">
+        <i class="pi pi-info-circle"></i>
+        <b>{{ arg.event.title }}</b>
+      </template>
       <!-- Other -->
       <template v-else>
         {{ arg.event.title }}
@@ -56,6 +61,9 @@ export default {
         firstDay: 1,
         dateClick: this.handleDateClick,
         eventClick: this.handleEventClick,
+        datesSet(dateInfo) {
+          console.log(dateInfo)
+        },
         customButtons: {
           addNote: { text: '+ Note', click: this.newEvent },
           addInventory: { text: '+ Inventory', click: this.newInventory },
@@ -110,10 +118,28 @@ export default {
           extendedProps: { note },
         }))
     },
+    convertedAlerts() {
+      const result = []
+      Object.entries(this.missingProductsPerDay).forEach(([dayId, productIds]) => {
+        let title = `${productIds.length} products missing`
+        if (productIds.length < 4) {
+          title = productIds.map((id) => this.$root.getProduct(id).name.crop(6)).join(', ')
+        }
+        result.push({
+          date: this.stockDays.find((d) => d.id == dayId).date,
+          title,
+          className: 'alert',
+          display: 'list-item',
+          extendedProps: { alert: productIds },
+        })
+      })
+      return result
+    },
     eventsToDisplay() {
       return this.convertedEvents
         .concat(this.convertedOrders)
         .concat(this.convertedNotes)
+        .concat(this.convertedAlerts)
     },
   },
   mounted() {
@@ -172,7 +198,7 @@ export default {
       margin-right: .5rem;
       background-color: var(--indigo-100);
       padding: 0 3px;
-      border-radius: .5rem;
+      border-radius: 4px;
       font-size: .9rem;
       color: var(--indigo-800);
     }
@@ -210,7 +236,7 @@ export default {
 
     &.event {
       padding-left: .5rem;
-      border-radius: .5rem;
+      border-radius: 4px;
     }
 
     &.order {
@@ -232,6 +258,13 @@ export default {
         transform: scale(.8);
       }
     }
+    &.alert {
+      color: var(--bluegray-500);
+      &:hover {
+        color: var(--bluegray-600) !important;
+        background-color: var(--bluegray-50) !important;
+      }
+    }
   }
   .fc-addNote-button {
     background-color: var(--blue-600) !important;
@@ -240,6 +273,10 @@ export default {
   .fc-addOrder-button {
     background-color: var(--purple-600) !important;
     border-color: var(--purple-600) !important;
+  }
+  .fc-addInventory-button {
+    background-color: var(--bluegray-600) !important;
+    border-color: var(--bluegray-600) !important;
   }
 
 </style>

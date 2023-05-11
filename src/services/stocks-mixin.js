@@ -24,6 +24,19 @@ export default {
           && order.session_id === this.session.id
           && order.id != orderIdToIgnore)
     },
+    missingProductsPerDay() {
+      const missingProducts = {}
+      console.log('calculate missingProducts')
+      this.stocks.forEach((productStock) => {
+        Object.entries(productStock.values).forEach(([dayId, dayStock]) => {
+          if (dayStock.value < 0) {
+            missingProducts[dayId] ||= []
+            missingProducts[dayId].push(productStock.product_id)
+          }
+        })
+      })
+      return missingProducts
+    },
   },
   methods: {
     calculateSessionProducts() {

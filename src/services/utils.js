@@ -24,4 +24,9 @@ export function utils() {
     if (Math.floor(this) !== this) return this.toString().split('.')[1].length || 0
     return 0
   }
+
+  String.prototype.crop = function (length) {
+    if (this.length <= length) return this
+    return `${this.slice(0, length)}.`
+  }
 }
