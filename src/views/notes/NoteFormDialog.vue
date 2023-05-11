@@ -1,5 +1,6 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" header="Note Details"
+  <Dialog v-model:visible="visible" :style="{width: '600px'}"
+          :header="note.id ? 'Update Note' : 'Add Note'"
           :modal="true" class="p-fluid recipie-dialog">
 
     <div class="p-field">
