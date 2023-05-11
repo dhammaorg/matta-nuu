@@ -23,7 +23,7 @@
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
         <template #body="{data}">
-          <router-link :to="{ name: 'session_schedule', params: { id: data.id }}">
+          <router-link :to="{ name: 'session_overview', params: { id: data.id }}">
             <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'"/>
           </router-link>
           <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"

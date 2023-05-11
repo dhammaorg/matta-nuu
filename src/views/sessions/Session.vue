@@ -25,6 +25,7 @@ export default {
     return {
       sessionDays: computed(() => this.sessionDays),
       stockDays: computed(() => this.stockDays),
+      sessionOrders: computed(() => this.sessionOrders),
     }
   },
   computed: {
@@ -59,6 +60,18 @@ export default {
         id: 'initial', class: 'event-start event-end', label: 'Initial Stocks', date, initial: true, dateHeader,
       })
       return days
+    },
+    sessionOrders() {
+      return Object.values(this.$root.orders)
+        .filter((order) => order.session_id === this.$root.session.id)
+        .sort((a, b) => (a.id < b.id ? 1 : -1))
+        .map((o) => {
+          const result = { ...o }
+          result.delivery_day_object = this.stockDays.find((d) => d.id == result.delivery_day) || {}
+          result.delivery_day_label = result.delivery_day_object.dateHeader
+          result.delivery_day_date = result.delivery_day_object.date
+          return result
+        })
     },
     contentFullPage() {
       return this.$route.name !== 'session_orders'

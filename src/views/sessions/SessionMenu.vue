@@ -46,6 +46,7 @@ export default {
   data() {
     return {
       items: [
+        { label: 'Overview', icon: 'pi pi-compass', to: { name: 'session_overview', params: { id: this.$route.params.id } } },
         { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id: this.$route.params.id } } },
         { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id: this.$route.params.id } } },
         { label: 'Orders', icon: 'pi pi-dollar', to: { name: 'session_orders', params: { id: this.$route.params.id } } },

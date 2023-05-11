@@ -36,9 +36,13 @@ export default {
         },
         async dbDestroy(dbName, object) {
           this.loading = true
+          console.log(object)
           if (dbName == 'sessions') {
+            // Delete related session object (could also configure cascade delete maybe?)
             const { error } = await this.$db.from('orders').delete().match({ session_id: object.id })
             if (error) this.toastError(error)
+            const { error2 } = await this.$db.from('notes').delete().match({ session_id: object.id })
+            if (error2) this.toastError(error2)
           }
           const { error } = await this.$db.from(dbName).delete().match({ id: object.id }).single()
 

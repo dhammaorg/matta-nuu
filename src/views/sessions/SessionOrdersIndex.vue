@@ -46,7 +46,7 @@ import OrderNewDialog from './OrderNewDialog.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 
 export default {
-  inject: ['sessionDays', 'stockDays'],
+  inject: ['sessionDays', 'stockDays', 'sessionOrders'],
   components: { OrderNewDialog, InputSupplier },
   data() {
     return {
@@ -58,15 +58,7 @@ export default {
   },
   computed: {
     orders() {
-      return Object.values(this.$root.orders).filter((order) => order.session_id === this.$root.session.id)
-        .sort((a, b) => (a.id < b.id ? 1 : -1))
-        .map((o) => {
-          const result = { ...o }
-          result.delivery_day_object = this.stockDays.find((d) => d.id == result.delivery_day) || {}
-          result.delivery_day_label = result.delivery_day_object.dateHeader
-          result.delivery_day_date = result.delivery_day_object.date
-          return result
-        })
+      return this.sessionOrders
     },
   },
   methods: {

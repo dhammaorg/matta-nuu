@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import SessionsIndex from '@/views/sessions/SessionsIndex.vue'
 import Session from '@/views/sessions/Session.vue'
+import SessionOverview from '@/views/sessions/SessionOverview.vue'
 import SessionSchedule from '@/views/sessions/SessionSchedule.vue'
 import SessionStocks from '@/views/sessions/SessionStocks.vue'
 import SessionOrdersIndex from '@/views/sessions/SessionOrdersIndex.vue'
@@ -47,6 +48,10 @@ const routes = [
     component: Session,
     children: [
       {
+        path: 'overview',
+        name: 'session_overview',
+        component: SessionOverview,
+      }, {
         path: 'schedule',
         name: 'session_schedule',
         component: SessionSchedule,

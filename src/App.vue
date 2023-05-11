@@ -30,6 +30,7 @@ export default {
       recipies: {},
       sessions: {},
       orders: {},
+      notes: {},
       categories: {},
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
@@ -96,6 +97,7 @@ export default {
       this.products = {}
       this.suppliers = {}
       this.categories = {}
+      this.notes = {}
     },
     initProductsForSession() {
       if (!this.productsArray) return
@@ -169,13 +171,21 @@ export default {
       }
       session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
 
-      // Loads associated orders
+      // Loads associated orders and notes
       if (!session.is_template) {
-        const result = await this.$db.from('orders').select().match({ session_id: this.$route.params.id })
+        let result = await this.$db.from('orders').select().match({ session_id: this.$route.params.id })
         if (result.error) return this.toastError(result.error)
         result.data.forEach((order) => {
           if (!this.$root.orders[order.id]) {
             this.$root.orders[order.id] = order
+          }
+        })
+
+        result = await this.$db.from('notes').select().match({ session_id: this.$route.params.id })
+        if (result.error) return this.toastError(result.error)
+        result.data.forEach((note) => {
+          if (!this.$root.notes[note.id]) {
+            this.$root.notes[note.id] = note
           }
         })
       }
