@@ -31,7 +31,7 @@
               @click="recipie.products.push({})"></Button>
     </div>
 
-    <div class="field-checkbox">
+    <div class="p-field-checkbox">
       <Checkbox id="day_before" v-model="recipie.prepare_day_before" :binary="true" />
       <label for="day_before" class="ms-2">Need to be prepared the day before</label>
     </div>
