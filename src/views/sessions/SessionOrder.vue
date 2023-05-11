@@ -196,7 +196,11 @@ export default {
           if (needed > 0) {
             let targetValue = needed
             if (product.packaging_conditioning) targetValue = Math.ceil(needed / product.packaging_conditioning) * product.packaging_conditioning
-            const { unit, value } = convertToBestUnit(product.unit, targetValue)
+            let { unit, value } = convertToBestUnit(product.unit, targetValue)
+            if (product.packaging_convert_to_piece) {
+              value = Math.ceil(needed / product.packaging_conditioning)
+              unit = 'piece'
+            }
             this.order.values[product_id] = {
               id: product.id,
               name: product.packaging_reference || product.name,

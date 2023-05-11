@@ -71,8 +71,8 @@ export default {
           const ordered = []
           this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
             if (order.values[productId] && order.values[productId].value) {
-              // in the order, 2500g is converted to 3kg, so need to convert it back here
-              const value = convertToUnit(order.values[productId].value, order.values[productId].unit, product.unit)
+              // in the order, 2500g is converted to 2.5kg, so need to convert it back here
+              const value = convertToUnit(order.values[productId].value, order.values[productId].unit, product)
               bought += value
               ordered.push({ value, id: order.id, name: order.name })
             }

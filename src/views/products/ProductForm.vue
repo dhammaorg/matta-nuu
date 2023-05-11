@@ -35,6 +35,11 @@
           <span class="p-inputgroup-addon" style="width: 4rem;">{{ product.unit }}</span>
         </div>
       </div>
+
+      <div class="p-field-checkbox" v-if="product.packaging_conditioning">
+        <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
+        <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit }}" to 1 piece in orders</label>
+      </div>
     </div>
 
     <template #footer>
@@ -48,13 +53,14 @@
 
 import InputNumber from 'primevue/inputnumber'
 import Divider from 'primevue/divider'
+import Checkbox from 'primevue/checkbox'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   components: {
-    InputUnit, InputSupplier, InputNumber, InputCategory, Divider,
+    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox,
   },
   data() {
     return {
