@@ -199,7 +199,8 @@ export default {
       background-color: var(--indigo-100);
       padding: 0 3px;
       border-radius: 4px;
-      font-size: .9rem;
+      margin-top: -1px;
+      font-size: 0.8rem;
       color: var(--indigo-800);
     }
   }
@@ -235,8 +236,11 @@ export default {
     }
 
     &.event {
-      padding-left: .5rem;
+      padding-left: 0.5rem;
       border-radius: 4px;
+      margin-top: -1px;
+      margin-bottom: 3px;
+      border: none !important;
     }
 
     &.order {
