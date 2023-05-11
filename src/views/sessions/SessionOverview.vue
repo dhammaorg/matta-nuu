@@ -101,7 +101,7 @@ export default {
     convertedOrders() {
       return this.sessionOrders.map((order) => ({
         title: order.name,
-        date: order.delivery_day_date.setHours(2),
+        date: new Date(order.delivery_day_date).setHours(2),
         className: 'order',
         display: 'list-item',
         extendedProps: { order },
@@ -126,7 +126,7 @@ export default {
           title = productIds.map((id) => this.$root.getProduct(id).name.crop(6)).join(', ')
         }
         result.push({
-          date: this.stockDays.find((d) => d.id == dayId).date.setHours(1),
+          date: new Date(this.stockDays.find((d) => d.id == dayId).date).setHours(1),
           title,
           className: 'alert',
           display: 'list-item',
