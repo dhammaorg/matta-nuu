@@ -93,7 +93,12 @@ export default {
           // consumption is always the same, so reusing previously calculated value if exists
           const consumption = (values[day.id] || {}).consumption || this.consumption(productId, day)
           const real = (this.session.realStocks[productId] || {})[day.id]
-          const theoric = previousStock - consumption + bought
+          let theoric = previousStock
+          // a negative previousStock is just theorical, as soon as we buy something, we consider
+          // this previous negative stock to be equal to 0
+          if (bought > 0) theoric = Math.max(theoric, 0)
+          theoric = theoric - consumption + bought
+
           let value = 0
           // for initial stock, even if we supply a realStock we still want to take into account
           // the bought value
