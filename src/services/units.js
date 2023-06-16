@@ -29,14 +29,17 @@ export function convertToBestUnit(unit, value) {
 
 export function convertToUnit(value, fromUnit, product) {
   const toUnit = product.unit
+
+  if (fromUnit == 'piece' && product.packaging_convert_to_piece && product.packaging_conditioning) {
+    return value * product.packaging_conditioning
+  }
+
   if (fromUnit == toUnit) return value
 
   if (unitChild(fromUnit) == toUnit || unitParent(fromUnit) == toUnit) {
     return value * unitFactor(fromUnit)
   }
-  if (fromUnit == 'piece' && product.packaging_convert_to_piece && product.packaging_conditioning) {
-    return value * product.packaging_conditioning
-  }
+
   console.error(`Try to convert ${fromUnit} to ${toUnit} but that's not possible`, product)
   return null
 }
