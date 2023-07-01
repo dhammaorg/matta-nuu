@@ -4,6 +4,8 @@ export const UNITS = {
   g: { factor: 1 / 1000, parent: 'kg' },
   L: { factor: 1000, child: 'mL' },
   mL: { factor: 1 / 1000, parent: 'L' },
+  oz: { factor: 1 / 16, parent: 'lb' },
+  lb: { factor: 16, child: 'oz' },
 }
 
 export function unitFactor(unit) {
@@ -19,10 +21,12 @@ export function unitChild(unit) {
 }
 
 export function convertToBestUnit(unit, value) {
-  if (['kg', 'L'].includes(unit) && value < 0.1) {
-    return { unit: unitChild(unit), value: value * 1000 }
-  } if (['g', 'mL'].includes(unit) && value > 1000) {
-    return { unit: unitParent(unit), value: value / 1000 }
+  const unitConfig = UNITS[unit] || {}
+  if (unitConfig.child && value < 1) {
+    return { unit: unitChild(unit), value: value * unitConfig.factor }
+  }
+  if (unitConfig.parent && (value * unitConfig.factor > 1)) {
+    return { unit: unitParent(unit), value: value * unitConfig.factor }
   }
   return { unit, value }
 }
