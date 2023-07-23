@@ -21,10 +21,13 @@
   <InputText :value="filters['product_name'].value" @change="filters['product_name'].value = $event.target.value"
              v-debounce="250" class="stocks-search-input" placeholder="Search Product..." />
 
-  <DataTable :value="stocks" showGridlines v-if="session.events.length > 0 && isMounted"
+  <DataTable :value="stocksToDisplay" showGridlines v-if="session.events.length > 0 && isMounted"
+              stateStorage="session" stateKey="datatable-stocks"
              :scrollable="true" scrollHeight="calc(100vh - 11rem)"
              @cell-edit-complete="onCellEditComplete"  v-model:filters="filters"
-             rowGroupMode="subheader" groupRowsBy="category.name" sortField="category.name" :sortOrder="1"
+             :rowGroupMode="groupByMode"
+             :groupRowsBy="groupByOption"
+             sortMode="multiple" :multiSortMeta="sortOptions"
              editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
@@ -32,10 +35,9 @@
         <Column class="top-left-cell transparent align-top" frozen :rowspan="3">
           <template #header>
             <div class="d-flex flex-column gap-1">
-              <Button type="button" icon="pi pi-plus" label="Order" class="p-button-sm"
-                        @click="$refs.orderForm.show()" />
               <Button type="button" icon="pi pi-plus" label="Inventory" class="p-button-sm"
                         @click="$refs.inventoryForm.show()" />
+              <SessionStocksDisplayOptions v-model="options"/>
             </div>
           </template>
         </Column>
@@ -102,12 +104,10 @@
     </Column>
 
     <template #groupheader="{ data }">
-      <span style="position: sticky; left: .7rem">{{ data.category.name || "Others" }}</span>
+      <span style="position: sticky; left: .7rem">{{ (data[options.groupBy] || {}).name || "Others" }}</span>
     </template>
 
   </DataTable>
-
-  <OrderNewDialog ref="orderForm" />
 
   <InventoryDialog ref="inventoryForm" :products="sessionProducts" :stocks="stocks" />
 
@@ -117,22 +117,50 @@
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
-import OrderNewDialog from './OrderNewDialog.vue'
 import StockMixin from '@/services/stocks-mixin'
 import CalendarMixin from '@/services/calendar-mixin'
 import Spinner from '@/components/Spinner.vue'
 import InventoryDialog from './InventoryDialog.vue'
+import SessionStocksDisplayOptions from './SessionStocksDisplayOptions.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin, CalendarMixin],
   components: {
-    ColumnGroup, Row, InputNumber, OrderNewDialog, Spinner, InventoryDialog,
+    ColumnGroup, Row, InputNumber, Spinner, InventoryDialog, SessionStocksDisplayOptions,
   },
   data() {
     return {
-      filters: { product_name: { value: null, matchMode: 'contains' } },
+      options: {
+        groupBy: 'category',
+        onlyProductsWithSupplier: false,
+        onlyMissingProducts: false,
+      },
+      filters: {
+        product_name: { value: null, matchMode: 'contains' },
+      },
     }
+  },
+  computed: {
+    stocksToDisplay() {
+      let result = this.stocks
+      if (this.options.onlyProductsWithSupplier) result = result.filter((s) => s.supplier.name)
+      if (this.options.onlyMissingProducts) result = result.filter((s) => s.missingDay !== false)
+      return result
+    },
+    sortOptions() {
+      const result = []
+      if (this.options.groupBy) result.push({ field: this.groupByOption, order: 1 })
+      if (this.options.onlyMissingProducts) result.push({ field: 'missingDay', order: 1 })
+      result.push({ field: 'product_name', order: 1 })
+      return result
+    },
+    groupByMode() {
+      return this.options.groupBy ? 'subheader' : null
+    },
+    groupByOption() {
+      return this.options.groupBy ? `${this.options.groupBy}.name` : null
+    },
   },
   methods: {
     onCellEditComplete(event) {

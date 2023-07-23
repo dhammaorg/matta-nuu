@@ -228,3 +228,7 @@ hr {
     margin: 0 1rem;
   }
 }
+
+label[for] {
+  cursor: pointer;
+}

@@ -26,7 +26,6 @@ export default {
     },
     missingProductsPerDay() {
       const missingProducts = {}
-      console.log('calculate missingProducts')
       this.stocks.forEach((productStock) => {
         Object.entries(productStock.values).forEach(([dayId, dayStock]) => {
           if (dayStock.value < 0) {
@@ -103,7 +102,7 @@ export default {
           // for initial stock, even if we supply a realStock we still want to take into account
           // the bought value
           if (day.id === 'initial') value = (real || 0) + bought
-          else value = real != null ? real : theoric
+          else value = (real != null) ? real : theoric
           values[day.id] = {
             real, manuallyBought, bought, consumption, theoric, value, ordered,
           }
@@ -114,8 +113,26 @@ export default {
         }
       })
 
+      // missingDay - the day from which the product is missing. If today real date is inside the session,
+      // we consider only days in the future
+      let missingDay = false
+      const today = new Date()
+      const todayInSession = this.stockDays[0].date >= today && this.stockDays.last().date <= today
+      Object.entries(values).forEach(([dayId, stock], index) => {
+        const day = this.stockDays.find((d) => d.id == dayId)
+        if (stock.value < 0 && !missingDay && (!todayInSession || day.date.isTodayOrAfter())) {
+          missingDay = index
+        }
+      })
+
       return {
-        product_id: productId, product_name: product.name, product_unit: product.unit, category: this.$root.getCategory(product.category_id), values,
+        product_id: productId,
+        product_name: product.name,
+        product_unit: product.unit,
+        category: this.$root.getCategory(product.category_id),
+        supplier: this.$root.getSupplier(product.supplier_id),
+        missingDay,
+        values,
       }
     },
     consumption(productId, day) {

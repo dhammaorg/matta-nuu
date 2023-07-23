@@ -15,6 +15,10 @@ export function utils() {
     && this.getMonth() === today.getMonth()
     && this.getFullYear() === today.getFullYear()
   }
+  Date.prototype.isTodayOrAfter = function () {
+    if (this.isToday()) return true
+    return this >= new Date()
+  }
 
   Number.prototype.round = function (decimals = 2) {
     return Number(`${Math.round(`${this}e${decimals}`)}e-${decimals}`)
@@ -28,5 +32,9 @@ export function utils() {
   String.prototype.crop = function (length) {
     if (this.length <= length) return this
     return `${this.slice(0, length)}.`
+  }
+
+  Array.prototype.last = function () {
+    return this[this.length - 1]
   }
 }
