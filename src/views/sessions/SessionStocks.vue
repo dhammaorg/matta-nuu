@@ -27,7 +27,6 @@
              @cell-edit-complete="onCellEditComplete"  v-model:filters="filters"
              :rowGroupMode="groupByMode"
              :groupRowsBy="groupByOption"
-             sortMode="multiple" :multiSortMeta="sortOptions"
              editMode="cell" class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
@@ -146,13 +145,14 @@ export default {
       let result = this.stocks
       if (this.options.onlyProductsWithSupplier) result = result.filter((s) => s.supplier.name)
       if (this.options.onlyMissingProducts) result = result.filter((s) => s.missingDay !== false)
-      return result
-    },
-    sortOptions() {
-      const result = []
-      if (this.options.groupBy) result.push({ field: this.groupByOption, order: 1 })
-      if (this.options.onlyMissingProducts) result.push({ field: 'missingDay', order: 1 })
-      result.push({ field: 'product_name', order: 1 })
+      result = result.sort((a, b) => {
+        const aValue = a[this.options.groupBy].name || 'xxxx'
+        const bValue = b[this.options.groupBy].name || 'xxxx'
+        if (!aValue || aValue === bValue) {
+          return a.product_name.localeCompare(b.product_name)
+        }
+        return aValue.localeCompare(bValue)
+      })
       return result
     },
     groupByMode() {
