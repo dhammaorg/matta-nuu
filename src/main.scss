@@ -47,11 +47,12 @@ td.w-auto, th.w-auto {
       padding: .5rem;
       font-size: .9rem;
     }
-    &.editor-floating {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+  }
+  .editor-floating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
   }
 }
 .p-datatable-sm .form-cell {

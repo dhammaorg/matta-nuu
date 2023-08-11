@@ -90,7 +90,7 @@
           <span v-if="$root.getProduct(data.product_id).unit">({{ $root.getProduct(data.product_id).unit }})</span>
         </span>
         <span v-else-if="data.type == 'recipie'">{{ $root.getRecipie(data.recipie_id).name }}</span>
-        <span v-else>{{ data.label }}</span>
+        <span v-else class="variable-row-label">{{ data.label }}</span>
         <span class="btn-on-hover d-print-none">
           <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash" @click.stop
                         title="Printable ?" class="p-button-sm"/>
@@ -127,7 +127,7 @@
       </template>
       <!-- Cell Edit -->
       <template #editor="{ data, field }">
-        <div :class="{'editor-sm editor-floating': ['products', 'recipies'].includes(data.type)}">
+        <div :class="inCellEditorClass(data)">
           <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id" class="w-100" />
           <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
           <div class="p-inputgroup">
@@ -215,6 +215,14 @@ export default {
     },
     rowClass(data) {
       return data.printable ? null : 'd-print-none'
+    },
+    inCellEditorClass(data) {
+      const result = []
+      if (['products', 'recipies'].includes(data.type)) {
+        result.push('editor-sm')
+        if (this.sessionDays.length > 5) result.push('editor-floating')
+      }
+      return result.join(' ')
     },
     addRow(type) {
       const row = {
@@ -330,6 +338,12 @@ export default {
         margin-right: 5px;
       }
     }
+  }
+
+  .variable-row-label {
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
   }
 
   .schedule-table .pi.pi-print.slash {
