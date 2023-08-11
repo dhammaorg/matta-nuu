@@ -75,7 +75,8 @@
       <template #body="{ data, field }">
         <div class="cell-content" :class="{'negative-value': data.values[field].value.round() < 0 }">
           <span class="stock-value-container d-flex flex-column align-items-center">
-            <span class="stock-value consumption" v-if="data.values[field].consumption > 0">
+            <span class="stock-value consumption" v-if="data.values[field].consumption > 0"
+                  :title="data.values[field].consumptionLabels.join(' | ')">
               -{{ data.values[field].consumption.round() }}
             </span>
             <span class="stock-value bought" v-if="data.values[field].bought > 0">

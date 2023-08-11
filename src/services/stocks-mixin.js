@@ -90,7 +90,11 @@ export default {
             }
           })
           // consumption is always the same, so reusing previously calculated value if exists
-          const consumption = (values[day.id] || {}).consumption || this.consumption(productId, day)
+          let { consumption } = values[day.id] || {}
+          let { consumptionLabels } = values[day.id] || {}
+          if (consumption === undefined) {
+            ({ consumption, consumptionLabels } = this.consumption(productId, day))
+          }
           const real = (this.session.realStocks[productId] || {})[day.id]
           let theoric = previousStock
           // a negative previousStock is just theorical, as soon as we buy something, we consider
@@ -107,7 +111,7 @@ export default {
           // inventoryWarning - the real stock is quite different from theoretical stock. Maybe a mistake?
           const inventoryWarning = day.id !== 'initial' && real && Math.abs(real - theoric) / theoric > 0.3
           values[day.id] = {
-            real, manuallyBought, bought, consumption, theoric, value, ordered, inventoryWarning,
+            real, manuallyBought, bought, consumption, consumptionLabels, theoric, value, ordered, inventoryWarning,
           }
 
           previousStock = value
@@ -140,6 +144,7 @@ export default {
     },
     consumption(productId, day) {
       let result = 0
+      const labels = []
       if (day.initial) return 0
       this.session.rows.forEach((row) => {
         const dayValue = row.values[day.id]
@@ -149,6 +154,8 @@ export default {
           const dayProductId = row.type === 'product' ? row.product_id : dayValue.product_id
           if (dayProductId && dayProductId === productId) {
             result += dayAmount
+            if (row.type == 'products') labels.push(`-${dayAmount} by ${row.label}`)
+            else labels.push(`-${dayAmount} by daily consumption`)
             return
           }
         }
@@ -159,7 +166,9 @@ export default {
           if (row.type.includes('recipie') && dayRecipie.id && (!dayRecipie.prepare_day_before || day.index === 0)) {
             (dayRecipie.products || []).forEach((recipieProduct) => {
               if (recipieProduct.id === productId) {
-                result += (dayAmount / dayRecipie.people_count) * recipieProduct.amount
+                const value = (dayAmount / dayRecipie.people_count) * recipieProduct.amount
+                labels.push(`-${value.round()} by ${dayRecipie.name}`)
+                result += value
               }
             })
           }
@@ -171,13 +180,15 @@ export default {
           if (row.type.includes('recipie') && dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
             (dayAfterRecipie.products || []).forEach((recipieProduct) => {
               if (recipieProduct.id === productId) {
-                result += (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
+                const value = (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
+                labels.push(`-${value.round()} by ${dayAfterRecipie.name}`)
+                result += value
               }
             })
           }
         }
       })
-      return result
+      return { consumption: result, consumptionLabels: labels }
     },
     recipieProducts(recipieId) {
       return this.$root.getRecipie(recipieId).products || []
