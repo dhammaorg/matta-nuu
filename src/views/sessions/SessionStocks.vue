@@ -82,7 +82,10 @@
               +{{ data.values[field].bought.round() }}
             </span>
           </span>
-          <span class="stock-value-container stock-value" :class="{'fw-bold text-primary': data.values[field].real != null }">
+          <span class="stock-value-container stock-value"
+               :class="{'fw-bold text-primary': data.values[field].real != null }"
+               :style="data.values[field].inventoryWarning && 'color: var(--orange-600) !important'"
+               :title="data.values[field].inventoryWarning ? `Theoric stock was ${data.values[field].theoric.round()} but the real is ${data.values[field].real.round()}` : null">
             <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round() }}</template>
             <template v-else>{{ data.values[field].value.round() }}</template>
           </span>

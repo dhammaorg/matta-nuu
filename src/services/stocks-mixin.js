@@ -103,8 +103,11 @@ export default {
           // the bought value
           if (day.id === 'initial') value = (real || 0) + bought
           else value = (real != null) ? real : theoric
+
+          // inventoryWarning - the real stock is quite different from theoretical stock. Maybe a mistake?
+          const inventoryWarning = day.id !== 'initial' && real && Math.abs(real - theoric) / theoric > 0.3
           values[day.id] = {
-            real, manuallyBought, bought, consumption, theoric, value, ordered,
+            real, manuallyBought, bought, consumption, theoric, value, ordered, inventoryWarning,
           }
 
           previousStock = value
