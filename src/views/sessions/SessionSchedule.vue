@@ -127,7 +127,7 @@
       </template>
       <!-- Cell Edit -->
       <template #editor="{ data, field }">
-        <div :class="{'editor-sm': ['products', 'recipies'].includes(data.type)}">
+        <div :class="{'editor-sm editor-floating': ['products', 'recipies'].includes(data.type)}">
           <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id" class="w-100" />
           <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
           <div class="p-inputgroup">
