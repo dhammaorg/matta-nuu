@@ -61,9 +61,10 @@ export default {
         firstDay: 1,
         dateClick: this.handleDateClick,
         eventClick: this.handleEventClick,
-        datesSet(dateInfo) {
-          console.log(dateInfo)
-        },
+        // datesSet(dateInfo) {
+        //   console.log(dateInfo)
+        //   // visible dates on calendar, maybe do to some calculation only on those dates
+        // },
         customButtons: {
           addNote: { text: '+ Note', click: this.newEvent },
           addInventory: { text: '+ Inventory', click: this.newInventory },
@@ -126,7 +127,7 @@ export default {
           title = productIds.map((id) => this.$root.getProduct(id).name.crop(6)).join(', ')
         }
         result.push({
-          date: new Date(this.stockDays.find((d) => d.id == dayId).date).setHours(1),
+          date: new Date(this.stockDays.find((d) => d.id == dayId)?.date).setHours(1),
           title,
           className: 'alert',
           display: 'list-item',
@@ -144,7 +145,13 @@ export default {
   },
   mounted() {
     if (this.session.events.length > 0) {
-      this.calendar.gotoDate(this.session.events[0].start_date)
+      // init calendar to today, or to session start / end date if today is outside session days
+      const today = new Date()
+      const sessionStartDay = this.session.events[0].start_date
+      const lastEvent = this.session.events.at(-1)
+      const sessionEndDay = lastEvent.start_date.addDays(lastEvent.days.length)
+      const initialDay = Math.max(sessionStartDay, Math.min(today, sessionEndDay))
+      this.calendar.gotoDate(initialDay)
       this.calendarOptions.events = this.eventsToDisplay
     }
   },
@@ -191,6 +198,10 @@ export default {
 </script>
 
 <style lang="scss">
+  .fc {
+    --fc-today-bg-color: rgba(255,220,40,.35);
+  }
+
   .fc .fc-daygrid-day-number {
     display: flex;
     align-items: center;
