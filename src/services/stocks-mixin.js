@@ -152,7 +152,7 @@ export default {
       // we consider only days in the future
       let missingDay = false
       const today = new Date()
-      const todayInSession = this.stockDays[0].date >= today && this.stockDays.last().date <= today
+      const todayInSession = this.stockDays[0].date <= today && this.stockDays.last().date >= today
       Object.entries(values).forEach(([dayId, stock], index) => {
         const day = this.stockDays.find((d) => d.id == dayId)
         if (stock.value < 0 && !missingDay && (!todayInSession || day.date.isTodayOrAfter())) {
