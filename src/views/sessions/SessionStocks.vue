@@ -136,9 +136,9 @@ export default {
   data() {
     return {
       options: {
-        groupBy: 'category',
+        groupBy: this.$route.query.groupBy === undefined ? 'category' : this.$route.query.groupBy,
         onlyProductsWithSupplier: false,
-        onlyMissingProducts: false,
+        onlyMissingProducts: this.$route.query.onlyMissing === undefined ? false : this.$route.query.onlyMissing == 'true',
       },
       filters: {
         product_name: { value: null, matchMode: 'contains' },

@@ -1,5 +1,6 @@
 <template>
   <Button type="button" icon="pi pi-sliders-h" class="p-button-sm p-button-secondary"
+          :class="{ 'p-button-warning': modelValue.onlyMissingProducts }"
           label="Display Options" @click="toggle" />
 
   <TieredMenu ref="menu" :model="[{}]" :popup="true">

@@ -125,7 +125,8 @@ export default {
       const result = []
       Object.entries(this.missingProductsPerDay).forEach(([dayId, productStocks]) => {
         let title = `${productStocks.length} products missing`
-        const tooltip = productStocks.map((stock) => `${stock.product_name} (${stock.values[dayId].value.round()}${stock.product_unit})`).join(', ')
+        let tooltip = 'Click to display more -> '
+        tooltip += productStocks.map((stock) => `${stock.product_name} (${stock.values[dayId].value.round()}${stock.product_unit})`).join(', ')
         if (productStocks.length < 4) {
           title = productStocks.map((stock) => stock.product_name.crop(6)).join(', ')
         }
@@ -176,6 +177,11 @@ export default {
             id: this.$route.params.id,
             order_id: info.event.extendedProps.order.id,
           },
+        })
+      } else if (info.event.extendedProps.alert) {
+        this.$router.push({
+          name: 'session_stocks',
+          query: { groupBy: 'supplier', onlyMissing: true },
         })
       }
     },
