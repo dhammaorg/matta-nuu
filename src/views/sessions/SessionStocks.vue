@@ -79,7 +79,8 @@
                   :title="data.values[field].consumptionLabels.join(' | ')">
               -{{ data.values[field].consumption.round() }}
             </span>
-            <span class="stock-value bought" v-if="data.values[field].bought > 0">
+            <span class="stock-value bought" v-if="data.values[field].bought > 0"
+                  :title="data.values[field].boughtLabels.join(' | ')">
               +{{ data.values[field].bought.round() }}
             </span>
           </span>

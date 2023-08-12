@@ -81,20 +81,25 @@ export default {
           const manuallyBought = (this.session.buys[productId] || {})[day.id]
           let bought = manuallyBought || 0
           const ordered = []
+          const boughtLabels = []
+          if (manuallyBought) boughtLabels.push(`+${manuallyBought} ${product.unit} manually bought`)
           this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
             if (order.values[productId] && order.values[productId].value) {
               // in the order, 2500g is converted to 2.5kg, so need to convert it back here
               const value = convertToUnit(order.values[productId].value, order.values[productId].unit, product)
               bought += value
               ordered.push({ value, id: order.id, name: order.name })
+              boughtLabels.push(`+${value} ${product.unit} from ${order.name}`)
             }
           })
+
           // consumption is always the same, so reusing previously calculated value if exists
           let { consumption } = values[day.id] || {}
           let { consumptionLabels } = values[day.id] || {}
           if (consumption === undefined) {
             ({ consumption, consumptionLabels } = this.consumption(productId, day))
           }
+
           const real = (this.session.realStocks[productId] || {})[day.id]
           let theoric = previousStock
           // a negative previousStock is just theorical, as soon as we buy something, we consider
@@ -125,7 +130,16 @@ export default {
           }
 
           values[day.id] = {
-            real, manuallyBought, bought, consumption, consumptionLabels, theoric, value, ordered, inventoryWarning,
+            real,
+            manuallyBought,
+            bought,
+            boughtLabels,
+            ordered,
+            consumption,
+            consumptionLabels,
+            theoric,
+            value,
+            inventoryWarning,
           }
 
           previousStock = value
