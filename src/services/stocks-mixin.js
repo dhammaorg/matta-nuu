@@ -30,7 +30,7 @@ export default {
         Object.entries(productStock.values).forEach(([dayId, dayStock]) => {
           if (dayStock.value < 0) {
             missingProducts[dayId] ||= []
-            missingProducts[dayId].push(productStock.product_id)
+            missingProducts[dayId].push(productStock)
           }
         })
       })

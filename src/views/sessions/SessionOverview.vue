@@ -14,8 +14,10 @@
       </template>
       <!-- Alert -->
       <template v-else-if="arg.event.extendedProps.alert">
-        <i class="pi pi-info-circle"></i>
-        <b>{{ arg.event.title }}</b>
+        <span :title="arg.event.extendedProps.tooltip">
+          <i class="pi pi-info-circle"></i>
+          <b>{{ arg.event.title }}</b>
+        </span>
       </template>
       <!-- Other -->
       <template v-else>
@@ -121,17 +123,18 @@ export default {
     },
     convertedAlerts() {
       const result = []
-      Object.entries(this.missingProductsPerDay).forEach(([dayId, productIds]) => {
-        let title = `${productIds.length} products missing`
-        if (productIds.length < 4) {
-          title = productIds.map((id) => this.$root.getProduct(id).name.crop(6)).join(', ')
+      Object.entries(this.missingProductsPerDay).forEach(([dayId, productStocks]) => {
+        let title = `${productStocks.length} products missing`
+        const tooltip = productStocks.map((stock) => `${stock.product_name} (${stock.values[dayId].value.round()}${stock.product_unit})`).join(', ')
+        if (productStocks.length < 4) {
+          title = productStocks.map((stock) => stock.product_name.crop(6)).join(', ')
         }
         result.push({
           date: new Date(this.stockDays.find((d) => d.id == dayId)?.date).setHours(1),
           title,
           className: 'alert',
           display: 'list-item',
-          extendedProps: { alert: productIds },
+          extendedProps: { alert: productStocks, tooltip },
         })
       })
       return result
