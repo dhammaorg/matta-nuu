@@ -108,8 +108,22 @@ export default {
           if (day.id === 'initial') value = (real || 0) + bought
           else value = (real != null) ? real : theoric
 
-          // inventoryWarning - the real stock is quite different from theoretical stock. Maybe a mistake?
-          const inventoryWarning = day.id !== 'initial' && real && Math.abs(real - theoric) / theoric > 0.3
+          // inventoryWarning - the real stock is quite different from theoretical stock.
+          // we use the total previous consumption since last inventory to determine the thresold
+          let inventoryWarning = false
+          if (day.id !== 'initial' && real) {
+            let totalConsFromLastInventory = 0
+            let inThePast = true
+            Object.entries(values).forEach(([iteratorDayId, iteratorValue]) => {
+              if (inThePast) {
+                totalConsFromLastInventory += iteratorValue.consumption
+                if (iteratorValue.real != null) totalConsFromLastInventory = 0
+                inThePast = iteratorDayId !== day.id
+              }
+            })
+            inventoryWarning = Math.abs(real - theoric) > (totalConsFromLastInventory * 0.2)
+          }
+
           values[day.id] = {
             real, manuallyBought, bought, consumption, consumptionLabels, theoric, value, ordered, inventoryWarning,
           }
