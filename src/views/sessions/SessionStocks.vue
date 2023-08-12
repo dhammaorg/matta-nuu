@@ -151,12 +151,17 @@ export default {
       if (this.options.onlyProductsWithSupplier) result = result.filter((s) => s.supplier.name)
       if (this.options.onlyMissingProducts) result = result.filter((s) => s.missingDay !== false)
       result = result.sort((a, b) => {
-        const aValue = a[this.options.groupBy].name || 'xxxx'
-        const bValue = b[this.options.groupBy].name || 'xxxx'
-        if (!aValue || aValue === bValue) {
-          return a.product_name.localeCompare(b.product_name)
+        if (this.options.groupBy) {
+          // sort first by gour option, then by name
+          const aValue = a[this.options.groupBy].name || 'xxxx'
+          const bValue = b[this.options.groupBy].name || 'xxxx'
+          if (!aValue || aValue === bValue) {
+            return a.product_name.localeCompare(b.product_name)
+          }
+          return aValue.localeCompare(bValue)
         }
-        return aValue.localeCompare(bValue)
+        // just sort by name
+        return a.product_name.localeCompare(b.product_name)
       })
       return result
     },
