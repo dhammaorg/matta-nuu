@@ -122,8 +122,8 @@ export default {
             Object.entries(values).forEach(([iteratorDayId, iteratorValue]) => {
               if (inThePast) {
                 if (iteratorValue.consumption) totalConsFromLastInventory += iteratorValue.consumption
-                if (iteratorValue.real != null) totalConsFromLastInventory = 0
                 inThePast = iteratorDayId !== day.id
+                if (iteratorValue.real != null && inThePast) totalConsFromLastInventory = 0
               }
             })
             inventoryWarning = Math.abs(real - theoric) > (totalConsFromLastInventory * 0.2)
