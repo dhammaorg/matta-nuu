@@ -121,7 +121,7 @@ export default {
             let inThePast = true
             Object.entries(values).forEach(([iteratorDayId, iteratorValue]) => {
               if (inThePast) {
-                totalConsFromLastInventory += iteratorValue.consumption
+                if (iteratorValue.consumption) totalConsFromLastInventory += iteratorValue.consumption
                 if (iteratorValue.real != null) totalConsFromLastInventory = 0
                 inThePast = iteratorDayId !== day.id
               }
