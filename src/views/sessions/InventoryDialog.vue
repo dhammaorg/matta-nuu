@@ -93,7 +93,7 @@ export default {
     stockValueFor(productId) {
       if (!this.stocks || !this.day) return
       const { values } = this.stocks.find((s) => s.product_id == productId) || {}
-      return values && values[this.day] ? values[this.day].value : 0
+      return values && values[this.day] ? values[this.day].value.round() : 0
     },
   },
 }
