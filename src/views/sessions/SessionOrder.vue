@@ -28,8 +28,8 @@
 
     <hr class="d-print-none">
 
-    <div class="order-options mb-4">
-      <div class="p-inputgroup mb-3 d-print-none">
+    <div class="order-options mb-4 d-print-none">
+      <div class="p-inputgroup mb-3">
         <span class="p-inputgroup-addon text-start">Delivery Date</span>
         <InputDay v-model="order.delivery_day" :days="stockDays" />
         <span class="p-inputgroup-addon w-auto">
@@ -37,10 +37,14 @@
           <label class="ms-2">Report values in Stocks</label>
         </span>
       </div>
-      <div class="p-inputgroup mb-3 d-print-none">
+      <div class="p-inputgroup mb-4">
         <span class="p-inputgroup-addon">Quantities until</span>
         <InputDay v-model="order.target_day" :days="sessionDays" />
         <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" :loading="isCalculating" />
+      </div>
+      <div class="p-inputgroup mb-3 justify-content-center">
+        <Checkbox v-model="order.group_by_category" :binary="true" />
+        <label class="ms-2">Group by category</label>
       </div>
     </div>
 
@@ -61,8 +65,10 @@
 
       <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header" class="w-100 mb-3"/>
 
-      <DataTable :value="values" class="mb-3 border border-bottom-0" sortField="name" :sortOrder="1"
-                 :class="{ 'p-datatable-sm': values.length > 15 }">
+      <DataTable :value="values" class="mb-3 border border-bottom-0"
+                 :class="{ 'p-datatable-sm': values.length > 15 }"
+                 :rowGroupMode="order.group_by_category ? 'subheader' : null"
+                 :groupRowsBy="order.group_by_category ? 'category' : null">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
             <InputText v-model="data.name" class="text-start" />
@@ -88,6 +94,10 @@
 
         <template #empty>
           No products in this order yet
+        </template>
+
+        <template #groupheader="{ data }">
+          <span>{{ data.category || "Autre" }}</span>
         </template>
       </DataTable>
 
@@ -154,7 +164,15 @@ export default {
         if (!result[key].id) result[key].id = key
         return result
       }, {})
-      return Object.values(values)
+      return Object.values(values).sort((a, b) => {
+        // sort first by category (if groupBy activated), then by name
+        const aValue = a.category || 'xxxx'
+        const bValue = b.category || 'xxxx'
+        if (!this.order.group_by_category || !aValue || aValue === bValue) {
+          return a.name.localeCompare(b.name)
+        }
+        return aValue.localeCompare(bValue)
+      })
     },
   },
   methods: {
@@ -201,9 +219,11 @@ export default {
               value = Math.ceil(needed / product.packaging_conditioning)
               unit = 'piece'
             }
+            const category = this.$root.getCategory(product.category_id)
             this.order.values[product_id] = {
               id: product.id,
               name: product.packaging_reference || product.name,
+              category: category.name,
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
@@ -282,6 +302,9 @@ export default {
   }
   ::v-deep .form-cell.unit .p-inputtext {
     justify-content: flex-end;
+  }
+  ::v-deep .p-rowgroup-header td {
+    background-color: transparent;
   }
 
   @media print {

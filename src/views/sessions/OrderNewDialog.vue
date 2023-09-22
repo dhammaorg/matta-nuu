@@ -44,6 +44,7 @@ export default {
         target_day: this.sessionDays.at(-1).id,
         session_id: this.$root.session.id,
         report_values_in_stocks: true,
+        group_by_category: true,
         delivery_day: this.stockDays.at(0).id,
       }
       if (this.suppliers.length === 1) this.order.supplier_id = this.suppliers.at(0).id
