@@ -1,14 +1,16 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" :header="`${category.type} Category`"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :header="`${category.type} Category`"
           :modal="true" class="p-fluid category-dialog">
 
     <div class="p-field">
-      <InputText id="name" v-model.trim="category.name" required="true" placeholder="Name" autofocus/>
+      <InputText id="name" v-model.trim="category.name" required="true" placeholder="Name"
+                 autofocus />
     </div>
 
     <template #footer>
-      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
-      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveCategory" />
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
+              @click="saveCategory" />
     </template>
   </Dialog>
 </template>
@@ -43,5 +45,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-</style>
+<style lang='scss' scoped></style>

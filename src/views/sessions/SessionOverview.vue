@@ -199,7 +199,7 @@ export default {
         })
       } else if (info.event.extendedProps.inventory) {
         this.$router.push({
-          name: 'session_inventory', params: { inventory_id: info.event.extendedProps.inventory.id }
+          name: 'session_inventory', params: { inventory_id: info.event.extendedProps.inventory.id },
         })
       }
     },

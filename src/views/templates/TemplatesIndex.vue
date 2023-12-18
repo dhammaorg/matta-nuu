@@ -1,5 +1,4 @@
 <template>
-
   <HelpMessage>
     <strong>Event Templates</strong> allows you to easily reuse events.
     When creating an event within a session you will be able to use such templates
@@ -10,7 +9,7 @@
 
     <div class="table-header">
       <Button icon="pi pi-plus" class="p-button-rounded" v-tooltip.top="'New Template'"
-              @click="$refs.newSessionModal.open({is_template: true})" />
+              @click="$refs.newSessionModal.open({ is_template: true })" />
       <h2>Templates</h2>
       <span class="p-input-icon-left search">
         <i class="pi pi-search" />
@@ -22,12 +21,12 @@
                :paginator="true" :rows="20" :filters="filters">
       <Column field="name" header="Template Name" />
       <Column class="text-end">
-        <template #body="{data}">
-          <router-link :to="{ name: 'session_schedule', params: { id: data.id }}">
-            <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'"/>
+        <template #body="{ data }">
+          <router-link :to="{ name: 'session_schedule', params: { id: data.id } }">
+            <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'" />
           </router-link>
           <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
-                  @click="duplicateTemplate(data)"/>
+                  @click="duplicateTemplate(data)" />
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
                   @click="deleteTemplate(data)" />
         </template>
@@ -76,6 +75,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

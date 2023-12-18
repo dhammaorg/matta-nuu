@@ -1,24 +1,27 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }"
           :header="note.id ? 'Update Note' : 'Add Note'"
           :modal="true" class="p-fluid recipie-dialog">
 
     <div class="p-field">
-      <Calendar v-model="note.date" required="true" dateFormat="d MM yy" icon="pi pi-calendar" placeholder="Date"/>
+      <Calendar v-model="note.date" required="true" dateFormat="d MM yy" icon="pi pi-calendar"
+                placeholder="Date" />
     </div>
 
     <div class="p-field">
-      <InputText id="name" v-model.trim="note.title" required="true" placeholder="Title" autofocus/>
+      <InputText id="name" v-model.trim="note.title" required="true" placeholder="Title" autofocus />
     </div>
 
     <div class="p-field">
-      <Textarea v-model="note.content" :autoResize="true" rows="4" placeholder="Content" class="w-100 mb-3"/>
+      <Textarea v-model="note.content" :autoResize="true" rows="4" placeholder="Content"
+                class="w-100 mb-3" />
     </div>
 
     <template #footer>
-      <Button label="Delete" icon="pi pi-trash" class="p-button-text p-button-danger float-start" :loading="loading" @click="destroy" />
+      <Button label="Delete" icon="pi pi-trash" class="p-button-text p-button-danger float-start"
+              :loading="loading" @click="destroy" />
 
-      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Save" icon="pi pi-check" class="p-button" :loading="loading" @click="save" />
     </template>
   </Dialog>
@@ -74,5 +77,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

@@ -2,8 +2,9 @@
   <div class="page-content">
     <h1 class="mt-0">Import data from another account</h1>
     <div class="p-field">
-      <Dropdown :options="accounts" optionLabel="account_name" optionValue="user_id" v-model="targetUserId"
-            placeholder="Select account" :filter="true" filterPlaceholder="" class="w-100" />
+      <Dropdown :options="accounts" optionLabel="account_name" optionValue="user_id"
+                v-model="targetUserId"
+                placeholder="Select account" :filter="true" filterPlaceholder="" class="w-100" />
     </div>
 
     <div v-if="targetUserId">
@@ -11,24 +12,25 @@
       <div class="p-field mt-3">
         <label>Templates to import</label>
         <Multiselect :options="target.templates" optionLabel="name"
-                    v-model="selected.templates" class="w-100" />
+                     v-model="selected.templates" class="w-100" />
         <small>All recipies and products used by those templates will be imported as well</small>
       </div>
 
       <div class="p-field">
         <label>Recipies to import</label>
         <Multiselect :options="target.recipies" optionLabel="name"
-                    v-model="selected.recipies" class="w-100" />
+                     v-model="selected.recipies" class="w-100" />
         <small>All products used by those recipies will be imported as well</small>
       </div>
 
       <div class="p-field mt-4">
-        <Button label="Import" icon="pi pi-cloud-download" @click="importData" :loading="importing"/>
+        <Button label="Import" icon="pi pi-cloud-download" @click="importData" :loading="importing" />
       </div>
 
       <template v-for="object in objects" :key="object">
         <Message v-if="existing[object].length" severity="info" :closable="false">
-          <strong>{{ existing[object].length }} {{ object }} not imported cause already exists : </strong>
+          <strong>{{ existing[object].length }} {{ object }} not imported cause already exists :
+          </strong>
           {{ existing[object].join(', ') }}
         </Message>
         <Message v-if="imported[object].length" severity="success" :closable="false">
@@ -205,9 +207,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .p-field small {
-    opacity: .6;
-    margin: 5px 0;
-    display: block;
-  }
+.p-field small {
+  opacity: .6;
+  margin: 5px 0;
+  display: block;
+}
 </style>

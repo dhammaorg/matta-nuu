@@ -19,25 +19,26 @@
 
     <Column field="name" header="Name" header-class="text-start"></Column>
     <Column field="supplier_id" header="Supplier" :sortable="true" :showFilterMatchModes="false">
-      <template #body="{data}">
+      <template #body="{ data }">
         {{ $root.getSupplier(data.supplier_id).name }}
       </template>
-      <template #filter="{filterModel}">
+      <template #filter="{ filterModel }">
         <InputSupplier v-model="filterModel.value" class="p-column-filter"
-                       :btnAdd="false" :showClear="false"/>
+                       :btnAdd="false" :showClear="false" />
       </template>
     </Column>
 
     <Column class="text-end">
-      <template #body="{data}">
-        <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id }}">
+      <template #body="{ data }">
+        <router-link
+                     :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id } }">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary" />
         </router-link>
         <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="destroy(data)" />
       </template>
     </Column>
   </DataTable>
-  <OrderNewDialog ref="orderForm" :days="sessionDays"/>
+  <OrderNewDialog ref="orderForm" :days="sessionDays" />
 </template>
 
 <script>
@@ -82,6 +83,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

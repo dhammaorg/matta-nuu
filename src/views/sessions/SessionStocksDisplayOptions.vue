@@ -11,27 +11,28 @@
           <!-- Group by -->
           <h5>Group by</h5>
           <div class="d-flex align-items-center mb-2">
-              <RadioButton v-model="options.groupBy" id="groupByCategory" value="category" />
-              <label for="groupByCategory" class="ms-2">Categories</label>
+            <RadioButton v-model="options.groupBy" id="groupByCategory" value="category" />
+            <label for="groupByCategory" class="ms-2">Categories</label>
           </div>
           <div class="d-flex align-items-center mb-2">
-              <RadioButton v-model="options.groupBy" id="groupBySupplier" value="supplier" />
-              <label for="groupBySupplier" class="ms-2">Supplier</label>
+            <RadioButton v-model="options.groupBy" id="groupBySupplier" value="supplier" />
+            <label for="groupBySupplier" class="ms-2">Supplier</label>
           </div>
           <div class="d-flex align-items-center mb-2">
-              <RadioButton v-model="options.groupBy" id="groupByNone" value="" />
-              <label for="groupByNone" class="ms-2">None</label>
+            <RadioButton v-model="options.groupBy" id="groupByNone" value="" />
+            <label for="groupByNone" class="ms-2">None</label>
           </div>
         </div>
 
         <!-- Filters -->
         <h5>Filter products</h5>
         <div class="mb-3">
-          <Checkbox v-model="options.onlyProductsWithSupplier" id="onlyProductsWithSupplierInput" :binary="true"/>
+          <Checkbox v-model="options.onlyProductsWithSupplier" id="onlyProductsWithSupplierInput"
+                    :binary="true" />
           <label for="onlyProductsWithSupplierInput" class="ms-2">Only with supplier</label>
         </div>
         <div class="mb-4">
-          <Checkbox v-model="options.onlyMissingProducts" id="onlyMissingProductsId" :binary="true"/>
+          <Checkbox v-model="options.onlyMissingProducts" id="onlyMissingProductsId" :binary="true" />
           <label for="onlyMissingProductsId" class="ms-2">Only missing in the future</label>
         </div>
 
@@ -70,8 +71,8 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  h5 {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
-  }
+h5 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+}
 </style>

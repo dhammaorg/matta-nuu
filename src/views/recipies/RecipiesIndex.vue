@@ -1,8 +1,9 @@
 <template>
-  <img class="page-background" src="@/assets/undraw_chef.svg"/>
+  <img class="page-background" src="@/assets/undraw_chef.svg" />
 
   <HelpMessage>
-    <strong>Recipies</strong> can be used in any sessions. Changing one recipie will update all sessions using it
+    <strong>Recipies</strong> can be used in any sessions. Changing one recipie will update all
+    sessions using it
   </HelpMessage>
 
   <div class="page-content">
@@ -17,7 +18,7 @@
     </div>
 
     <DataTable :value="$root.recipiesArray" dataKey="id"
-      :paginator="true" :rows="20" v-model:filters="filters" filterDisplay="menu">
+               :paginator="true" :rows="20" v-model:filters="filters" filterDisplay="menu">
 
       <Column field="name" header="Name" :sortable="true"></Column>
 
@@ -26,9 +27,9 @@
               filterField="category_ids" :showFilterMatchModes="false">
         <template #body="{ data }">
           <Chip v-for="catId in data.category_ids" :key="catId" class="me-2"
-                :label="$root.getCategory(catId).name"/>
+                :label="$root.getCategory(catId).name" />
         </template>
-        <template #filter="{filterModel}">
+        <template #filter="{ filterModel }">
           <InputCategory type="Recipie" v-model="filterModel.value" class="p-column-filter"
                          :btnAdd="false" :showClear="false" />
         </template>
@@ -36,9 +37,9 @@
 
       <!-- Actions -->
       <Column class="text-end">
-        <template #body="{data}">
+        <template #body="{ data }">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                  @click="$refs.form.show(data)" v-tooltip="'Edit'"/>
+                  @click="$refs.form.show(data)" v-tooltip="'Edit'" />
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
                   @click="deleteRecipie(data)" />
         </template>

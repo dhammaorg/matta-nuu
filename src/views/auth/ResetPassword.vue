@@ -1,13 +1,13 @@
 <template>
-   <img class="page-background" src="@/assets/undraw_welcoming.svg"/>
+  <img class="page-background" src="@/assets/undraw_welcoming.svg" />
 
   <div class="page-content" style="max-width: 400px">
     <h2 class="text-center mt-0">Reset your password</h2>
     <form>
       <InputText placeholder="Your Email" v-model="email" class="w-100 mb-3"
-                 autocomplete="email" name="email"/>
+                 autocomplete="email" name="email" />
       <Button label="Send me reset instructions" class="w-100" :loading="loading"
-              @click.prevent="reset" type="submit"/>
+              @click.prevent="reset" type="submit" />
     </form>
   </div>
 </template>
@@ -43,6 +43,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

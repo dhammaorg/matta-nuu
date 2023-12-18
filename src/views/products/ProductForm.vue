@@ -1,15 +1,15 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" header="Product"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Product"
           :modal="true" class="p-fluid product-dialog">
     <div class="p-field">
-      <InputText v-model.trim="product.name" required="true" placeholder="Name" autofocus/>
+      <InputText v-model.trim="product.name" required="true" placeholder="Name" autofocus />
     </div>
 
     <div class="p-field">
       <InputUnit v-model="product.unit" required="true" />
     </div>
 
-    <Divider/>
+    <Divider />
 
     <div class="product-form">
       <div class="p-field">
@@ -24,27 +24,29 @@
 
       <div class="p-field">
         <label>Packaging Name / Reference</label>
-        <InputText v-model="product.packaging_reference" placeholder="Packaging Name / Reference"/>
+        <InputText v-model="product.packaging_reference" placeholder="Packaging Name / Reference" />
       </div>
 
       <div class="p-field">
         <label>Packaging Conditioning</label>
         <div class="p-inputgroup">
           <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
-                       :maxFractionDigits="5"/>
+                       :maxFractionDigits="5" />
           <span class="p-inputgroup-addon" style="width: 4rem;">{{ product.unit }}</span>
         </div>
       </div>
 
       <div class="p-field-checkbox" v-if="product.packaging_conditioning">
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
-        <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit }}" to 1 piece in orders</label>
+        <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit
+        }}" to 1 piece in orders</label>
       </div>
     </div>
 
     <template #footer>
-      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
-      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveProduct" />
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
+              @click="saveProduct" />
     </template>
   </Dialog>
 </template>
@@ -91,16 +93,18 @@ export default {
 </script>
 
 <style lang='scss'>
-  .product-form {
-    display: flex;
-    flex-wrap: wrap;
-    .p-field {
+.product-form {
+  display: flex;
+  flex-wrap: wrap;
+
+  .p-field {
+    width: calc(50% - .5rem);
+    margin: 0 0 1rem 0 !important;
+
+    &:nth-child(even) {
       width: calc(50% - .5rem);
-      margin: 0 0 1rem 0 !important;
-      &:nth-child(even) {
-        width: calc(50% - .5rem);
-        margin-left: 1rem !important;
-      }
+      margin-left: 1rem !important;
     }
   }
+}
 </style>

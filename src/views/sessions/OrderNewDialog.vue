@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" :modal="true" class="p-fluid"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
           header="New Order">
 
     <div class="p-field" v-if="suppliers.length > 0">
@@ -10,11 +10,11 @@
     <!-- Date -->
     <div class="p-field">
       <label>Calculate quantities needed until</label>
-      <InputDay v-model="order.target_day" :days="sessionDays" class="w-100"/>
+      <InputDay v-model="order.target_day" :days="sessionDays" class="w-100" />
     </div>
 
     <template #footer>
-      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Create Order" icon="pi pi-check" class="p-button-text" @click="createOrder" />
     </template>
   </Dialog>
@@ -66,6 +66,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

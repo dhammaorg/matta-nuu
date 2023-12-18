@@ -6,10 +6,12 @@
         <i class="pi pi-search" />
         <InputText v-model="filters['global'].value" placeholder="Search..." />
       </span>
-      <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save" :loading="loading" />
+      <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save"
+              :loading="loading" />
     </div>
 
-    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="calc(100vh - 11rem)"
+    <DataTable :value="$root.productsArray" showGridlines :scrollable="true"
+               scrollHeight="calc(100vh - 11rem)"
                class="editable-cells-table session-table products-table" v-model:filters="filters"
                sortField="name" :sortOrder="1" filterDisplay="menu">
 
@@ -23,11 +25,12 @@
 
       <!-- Category -->
       <Column field="category_id" header="Category" :sortable="true" style="max-width: 15rem"
-              filterField="category_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
+              filterField="category_id" :showFilterMatchModes="false"
+              :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
           <InputCategory type="Product" v-model="data.category_id" placeholder="" />
         </template>
-        <template #filter="{filterModel}">
+        <template #filter="{ filterModel }">
           <InputCategory type="Product" v-model="filterModel.value" class="p-column-filter"
                          :btnAdd="false" :showClear="false" />
         </template>
@@ -35,21 +38,23 @@
 
       <!-- Supplier -->
       <Column field="supplier_id" header="Supplier" :sortable="true" style="max-width: 15rem"
-              filterField="supplier_id" :showFilterMatchModes="false" :filterMenuStyle="{'width':'14rem'}">
+              filterField="supplier_id" :showFilterMatchModes="false"
+              :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
           <InputSupplier v-model="data.supplier_id" placeholder="" />
         </template>
-        <template #filter="{filterModel}">
+        <template #filter="{ filterModel }">
           <InputSupplier v-model="filterModel.value" class="p-column-filter"
-                        :btnAdd="false" :showClear="false"/>
+                         :btnAdd="false" :showClear="false" />
         </template>
       </Column>
 
       <!-- Actions -->
       <Column class="text-end" style="max-width: 40px" header="Actions">
-        <template #body="{data}">
+        <template #body="{ data }">
           <Button icon="pi pi-pencil" class="p-button-text" @click="$refs.form.show(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteProduct(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
+                  @click="deleteProduct(data)" />
         </template>
       </Column>
 
@@ -58,7 +63,7 @@
         <template #body="{ data }">
           <Chip v-for="recipie in recipiesUsingProduct(data)" :key="`${data.id}_${recipie.id}`"
                 :label="recipie.name" icon="pi pi-pencil" class="edit-recipie-chip"
-                @click="$refs.recipieForm.show(recipie)" v-tooltip="'Edit this recipie'"/>
+                @click="$refs.recipieForm.show(recipie)" v-tooltip="'Edit this recipie'" />
         </template>
       </Column>
     </DataTable>
@@ -133,31 +138,37 @@ export default {
 </script>
 
 <style lang="scss">
-  .products-table {
-    td {
-      &:not(.product-column) {
-        padding: 0 !important;
-      }
-      &.product-column input {
-        background-color: transparent;
-        color: inherit;
-        text-align: left;
-      }
-      input, .p-dropdown {
-        border: none !important;
-      }
-      &.recipies {
-        justify-content: flex-start;
-        padding-left: .5rem !important;
-      }
+.products-table {
+  td {
+    &:not(.product-column) {
+      padding: 0 !important;
     }
-    .edit-recipie-chip {
-      cursor: pointer;
-      font-size: .8rem;
-      margin: 4px 4px 0 0;
-      .pi {
-        font-size: inherit;
-      }
+
+    &.product-column input {
+      background-color: transparent;
+      color: inherit;
+      text-align: left;
+    }
+
+    input,
+    .p-dropdown {
+      border: none !important;
+    }
+
+    &.recipies {
+      justify-content: flex-start;
+      padding-left: .5rem !important;
     }
   }
+
+  .edit-recipie-chip {
+    cursor: pointer;
+    font-size: .8rem;
+    margin: 4px 4px 0 0;
+
+    .pi {
+      font-size: inherit;
+    }
+  }
+}
 </style>

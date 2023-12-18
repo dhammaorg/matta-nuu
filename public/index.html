@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>assets/signal.svg" />
+    <title id="title">Matta Nuu</title>
+    <style id="print-orientation" type="text/css"></style>
+    <style id="print-event-filtering" type="text/css"></style>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="icon" href="<%= BASE_URL %>assets/signal.svg">
-  <title id="title">Matta Nuu</title>
-  <style id="print-orientation" type="text/css"></style>
-  <style id="print-event-filtering" type="text/css"></style>
-</head>
-
-<body class="matta-nuu">
-  <noscript>
-    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
-        Please enable it to continue.</strong>
-  </noscript>
-  <div id="app" class="p-component"></div>
-  <!-- built files will be auto injected -->
-</body>
-
+  <body class="matta-nuu">
+    <noscript>
+      We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without
+      JavaScript enabled. Please enable it to continue.
+    </noscript>
+    <div id="app" class="p-component"></div>
+    <!-- built files will be auto injected -->
+  </body>
 </html>

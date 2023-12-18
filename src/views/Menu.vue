@@ -2,15 +2,16 @@
   <Menubar :model="navItems" class="d-print-none">
     <template #start>
       <div class="d-flex align-items-center">
-        <img src="../assets/logo.png" class="me-4" height="50" style="margin-top: -5px"/>
+        <img src="../assets/logo.png" class="me-4" height="50" style="margin-top: -5px" />
       </div>
     </template>
     <template #end>
       <ToggleButton v-model="$root.help" class="p-button-sm p-button-text me-3" style="height: 2rem"
-                    onLabel="Help" offLabel="Help" onIcon="pi pi-question-circle" offIcon="pi pi-question-circle" />
+                    onLabel="Help" offLabel="Help" onIcon="pi pi-question-circle"
+                    offIcon="pi pi-question-circle" />
 
       <Button icon="pi pi-user" @click="this.$refs.menu.toggle($event)" v-if="$root.user"
-              class="btn-user p-button-rounded me-2"/>
+              class="btn-user p-button-rounded me-2" />
       <TieredMenu ref="menu" :model="userItems" :popup="true" />
     </template>
   </Menubar>
@@ -56,38 +57,52 @@ export default {
 </script>
 
 <style lang='scss'>
-  .matta-nuu .p-menubar {
-    border-radius: 0;
-    border: none;
-    background: var(--bluegray-900);
+.matta-nuu .p-menubar {
+  border-radius: 0;
+  border: none;
+  background: var(--bluegray-900);
+  color: var(--indigo-100);
+
+  h1 {
     color: var(--indigo-100);
-    h1 { color: var(--indigo-100); }
   }
-  .matta-nuu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
-    box-shadow: none !important;
-    &:hover {
-      background-color: var(--primary-color) !important;
-      .p-menuitem-icon, .p-menuitem-text {
-        color: var(--surface-0) !important;
-      }
-    }
-    .p-menuitem-icon, .p-menuitem-text {
-      color: var(--indigo-200) !important;
-    }
+}
+
+.matta-nuu .p-menubar .p-menubar-root-list>.p-menuitem>.p-menuitem-link {
+  box-shadow: none !important;
+
+  &:hover {
+    background-color: var(--primary-color) !important;
+
+    .p-menuitem-icon,
     .p-menuitem-text {
-      font-weight: 600 !important;
+      color: var(--surface-0) !important;
     }
   }
-  .p-menubar-start, .p-menubar-end {
-    display: flex;
-    align-items: center;
+
+  .p-menuitem-icon,
+  .p-menuitem-text {
+    color: var(--indigo-200) !important;
   }
-  .p-menubar .p-button.p-button-text {
-    color: var(--indigo-200);
+
+  .p-menuitem-text {
+    font-weight: 600 !important;
   }
-  .btn-user {
-    background: var(--indigo-200);
-    color: var(--bluegray-900);
-    border: none;
-  }
+}
+
+.p-menubar-start,
+.p-menubar-end {
+  display: flex;
+  align-items: center;
+}
+
+.p-menubar .p-button.p-button-text {
+  color: var(--indigo-200);
+}
+
+.btn-user {
+  background: var(--indigo-200);
+  color: var(--bluegray-900);
+  border: none;
+}
 </style>

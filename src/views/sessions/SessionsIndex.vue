@@ -18,18 +18,18 @@
     </div>
 
     <DataTable :value="$root.sessionsArray" dataKey="id"
-      :paginator="true" :rows="20" :filters="filters">
+               :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
-        <template #body="{data}">
-          <router-link :to="{ name: 'session_overview', params: { id: data.id }}">
-            <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'"/>
+        <template #body="{ data }">
+          <router-link :to="{ name: 'session_overview', params: { id: data.id } }">
+            <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'" />
           </router-link>
           <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
-                  @click="duplicateSession(data)"/>
+                  @click="duplicateSession(data)" />
           <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteSession(data)" v-tooltip="'Delete'"/>
+                  @click="deleteSession(data)" v-tooltip="'Delete'" />
         </template>
       </Column>
     </DataTable>

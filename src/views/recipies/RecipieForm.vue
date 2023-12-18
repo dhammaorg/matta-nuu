@@ -1,8 +1,8 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}" header="Recipie Details"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Recipie Details"
           :modal="true" class="p-fluid recipie-dialog">
     <div class="p-field">
-      <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus/>
+      <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus />
     </div>
 
     <div class="p-field">
@@ -13,7 +13,7 @@
       <div class="fw-bold mb-3">
         <span>Ingredients for</span>
         <InputNumber v-model="recipie.people_count" class="d-inline-block w-auto mx-2"
-                    inputStyle="width: 4rem" inputClass="text-center"/>
+                     inputStyle="width: 4rem" inputClass="text-center" />
         <span>People</span>
       </div>
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
@@ -21,11 +21,12 @@
           <InputProduct v-model="product.id" :showClear="false" :editable="true"
                         style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
           <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
-                        inputClass="border-start-0 input-amount" />
-          <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
+                       inputClass="border-start-0 input-amount" />
+          <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit
+          }}</span>
         </div>
         <Button icon="pi pi-times" class="p-button-text p-button-danger"
-                @click="removeProduct(product)"/>
+                @click="removeProduct(product)" />
       </div>
       <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto mt-2" label="Ingredient"
               @click="recipie.products.push({})"></Button>
@@ -37,8 +38,9 @@
     </div>
 
     <template #footer>
-      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
-      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveRecipie" />
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
+              @click="saveRecipie" />
     </template>
   </Dialog>
 </template>
@@ -91,36 +93,40 @@ export default {
 </script>
 
 <style lang="scss">
-  .ingredients {
-    .input-product-wrapper {
-      width: 20% !important;
-    }
-    .p-inputgroup {
-      &:hover > .btn-edit-product {
-        border-color: var(--primary-color);
-      }
-      .btn-edit-product {
-        border-radius: 0 !important;
-        background-color: transparent;
-        border-color: #ced4da;
-        border-left: none !important;
-        width: 2.5rem !important;
-        justify-content: flex-start;
-        padding-left: .25rem !important;
-        color: var(--text-color);
-        .pi {
-          font-size: .9rem;
-        }
-        &:hover {
-          background-color: transparent !important;
-          color: var(--primary-color);
-          border-color: #ced4da;
-        }
-      }
+.ingredients {
+  .input-product-wrapper {
+    width: 20% !important;
+  }
+
+  .p-inputgroup {
+    &:hover>.btn-edit-product {
+      border-color: var(--primary-color);
     }
 
-    .input-product {
-      border-right: none;
+    .btn-edit-product {
+      border-radius: 0 !important;
+      background-color: transparent;
+      border-color: #ced4da;
+      border-left: none !important;
+      width: 2.5rem !important;
+      justify-content: flex-start;
+      padding-left: .25rem !important;
+      color: var(--text-color);
+
+      .pi {
+        font-size: .9rem;
+      }
+
+      &:hover {
+        background-color: transparent !important;
+        color: var(--primary-color);
+        border-color: #ced4da;
+      }
     }
   }
+
+  .input-product {
+    border-right: none;
+  }
+}
 </style>

@@ -12,8 +12,8 @@ export function utils() {
   Date.prototype.isToday = function () {
     const today = new Date()
     return this.getDate() === today.getDate()
-    && this.getMonth() === today.getMonth()
-    && this.getFullYear() === today.getFullYear()
+      && this.getMonth() === today.getMonth()
+      && this.getFullYear() === today.getFullYear()
   }
   Date.prototype.isTodayOrAfter = function () {
     if (this.isToday()) return true

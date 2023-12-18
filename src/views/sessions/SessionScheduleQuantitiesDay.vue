@@ -2,9 +2,11 @@
   <div class="day-quantities" v-if="recipies.length > 0">
     <h1 class="text-center">{{ event.name }}<span v-if="day"> - {{ day }}</span></h1>
 
-    <div class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
+    <div
+         class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
       <div class="p-datatable-wrapper">
-        <table class="p-datatable-table" v-for="(recipie, index) in recipies" :key="`recipie-${recipie.id}`">
+        <table class="p-datatable-table" v-for="(recipie, index) in recipies"
+               :key="`recipie-${recipie.id}`">
           <thead class="p-datatable-thead" role="rowgroup" v-if="index == 0">
             <tr>
               <th class="first-column">People Count</th>
@@ -21,8 +23,10 @@
               <td :colspan="numbers.length + 2">
                 <h3 class="recipie-name">
                   {{ recipie.name }}
-                  <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex + 1] }})</span>
-                  <span class="p-chip fw-normal ms-2" v-if="recipie.row.label">{{ recipie.row.label}}</span>
+                  <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex +
+                    1] }})</span>
+                  <span class="p-chip fw-normal ms-2" v-if="recipie.row.label">{{
+                    recipie.row.label }}</span>
                 </h3>
               </td>
             </tr>
@@ -104,69 +108,90 @@ export default {
 </script>
 
 <style lang="scss">
-  .day-quantities {
+.day-quantities {
+  page-break-inside: avoid;
+
+  table {
     page-break-inside: avoid;
-    table {
-      page-break-inside: avoid;
-      td, tr {
-        $width: 3rem;
+
+    td,
+    tr {
+      $width: 3rem;
+      min-width: $width !important;
+      max-width: $width !important;
+      width: $width !important;
+
+      &.first-column {
+        $width: 150px;
         min-width: $width !important;
         max-width: $width !important;
         width: $width !important;
-        &.first-column {
-          $width: 150px;
-          min-width: $width !important;
-          max-width: $width !important;
-          width: $width !important;
-        }
-      }
-    }
-
-    padding-top: 2rem;
-    &:first-child {
-      padding-top: 0;
-    }
-    td {
-      padding: 0.35rem 0.5rem !important;
-    }
-    th, td {
-      min-width: 0 !important;
-    }
-    tr > td:nth-child(even), .p-datatable .p-datatable-thead > tr > th:nth-child(even) {
-      background-color: var(--bluegray-50);
-      @media print {
-        background-color: var(--gray-200);
-      }
-    }
-    tr > th:nth-child(odd):not(:last-child) {
-      background-color: var(--surface-0) !important;
-    }
-    td:not(:first-child) {
-      text-align: center !important;
-    }
-    td:last-child, th:last-child {
-      background-color: var(--bluegray-100) !important;
-      @media print {
-        background-color: var(--gray-400) !important;
-      }
-    }
-    th:not(:first-child) .p-column-header-content {
-      justify-content: center;
-    }
-    .recipie-name {
-      margin-bottom: 0;
-      font-size: 1rem;
-      margin: .5rem 0 .25rem 0;
-      @media print {
-        color: black !important;
-      }
-    }
-    .p-rowgroup-header > td {
-      border: none !important;
-      background-color: var(--surface-0) !important;
-      .p-chip {
-        font-size: .9rem;
       }
     }
   }
+
+  padding-top: 2rem;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  td {
+    padding: 0.35rem 0.5rem !important;
+  }
+
+  th,
+  td {
+    min-width: 0 !important;
+  }
+
+  tr>td:nth-child(even),
+  .p-datatable .p-datatable-thead>tr>th:nth-child(even) {
+    background-color: var(--bluegray-50);
+
+    @media print {
+      background-color: var(--gray-200);
+    }
+  }
+
+  tr>th:nth-child(odd):not(:last-child) {
+    background-color: var(--surface-0) !important;
+  }
+
+  td:not(:first-child) {
+    text-align: center !important;
+  }
+
+  td:last-child,
+  th:last-child {
+    background-color: var(--bluegray-100) !important;
+
+    @media print {
+      background-color: var(--gray-400) !important;
+    }
+  }
+
+  th:not(:first-child) .p-column-header-content {
+    justify-content: center;
+  }
+
+  .recipie-name {
+    margin-bottom: 0;
+    font-size: 1rem;
+    margin: .5rem 0 .25rem 0;
+
+    @media print {
+      color: black !important;
+    }
+  }
+
+  .p-rowgroup-header>td {
+    border: none !important;
+    background-color: var(--surface-0) !important;
+
+    .p-chip {
+      font-size: .9rem;
+    }
+  }
+}
 </style>

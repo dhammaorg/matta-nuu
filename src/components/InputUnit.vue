@@ -20,7 +20,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .p-dropdown {
-    width: 100%;
-  }
+.p-dropdown {
+  width: 100%;
+}
 </style>

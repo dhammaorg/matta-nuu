@@ -12,7 +12,7 @@
 
   <Dropdown v-else :options="categories" optionLabel="name" optionValue="id" :showClear="true"
             placeholder="Category" :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
-            @filter="filterValue = $event.value" >
+            @filter="filterValue = $event.value">
     <template #footer v-if="btnAdd">
       <div class="p-dropdown-header">
         <Button icon="pi pi-plus" :label="`${type} Category`" class="p-button-sm"

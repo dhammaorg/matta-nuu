@@ -16,11 +16,12 @@
       </Inplace>
     </div>
     <div class="flex-grow-1 flex-shrink-0 text-center" v-if="!session.is_template">
-      <TabMenu :model="items" class="d-flex justify-content-center"/>
+      <TabMenu :model="items" class="d-flex justify-content-center" />
     </div>
     <div class="d-flex">
       <template v-if="['session_orders', 'session_order'].includes($route.name)">
-        <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm"
+        <Button label="New Order" icon="pi pi-plus"
+                class="btn-new-order p-button-outlined p-button-sm"
                 @click="$refs.orderForm.show()" style="margin-left: 4.5rem" />
       </template>
       <template v-else>
@@ -31,7 +32,7 @@
       </template>
     </div>
 
-    <OrderNewDialog ref="orderForm" :days="sessionDays"/>
+    <OrderNewDialog ref="orderForm" :days="sessionDays" />
   </div>
 </template>
 
@@ -118,39 +119,44 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  $background-color: var(--indigo-500);
-  $active-color: white;
-  $inactive-color: var(--indigo-100);
+$background-color: var(--indigo-500);
+$active-color: white;
+$inactive-color: var(--indigo-100);
 
-  ::v-deep .p-tabmenu .p-tabmenu-nav {
-    .p-tabmenuitem .p-menuitem-link {
-      border-color: $background-color !important;
-      padding-top: 1.5rem;
-      background-color: transparent !important;
-      color: $inactive-color !important;
-      box-shadow: none !important;
-      font-weight: normal;
-    }
-    background-color: transparent;
-    .p-tabmenuitem.p-highlight .p-menuitem-link {
-      border-color: $active-color !important;
-      color: $active-color !important;
-      font-weight: 600;
-    }
-    .p-tabmenuitem:hover .p-menuitem-link {
-      color: $active-color !important;
-    }
+::v-deep .p-tabmenu .p-tabmenu-nav {
+  .p-tabmenuitem .p-menuitem-link {
+    border-color: $background-color !important;
+    padding-top: 1.5rem;
+    background-color: transparent !important;
+    color: $inactive-color !important;
+    box-shadow: none !important;
+    font-weight: normal;
   }
 
-  .submenu {
-    background-color: $background-color;
-    h2 {
-      color: var(--indigo-50) !important;
-      font-size: 1rem;
-      font-weight: 500;
-    }
+  background-color: transparent;
+
+  .p-tabmenuitem.p-highlight .p-menuitem-link {
+    border-color: $active-color !important;
+    color: $active-color !important;
+    font-weight: 600;
   }
-  .btn-new-order {
-    background-color: var(--surface-0) !important;
+
+  .p-tabmenuitem:hover .p-menuitem-link {
+    color: $active-color !important;
   }
+}
+
+.submenu {
+  background-color: $background-color;
+
+  h2 {
+    color: var(--indigo-50) !important;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+.btn-new-order {
+  background-color: var(--surface-0) !important;
+}
 </style>

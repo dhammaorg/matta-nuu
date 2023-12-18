@@ -1,5 +1,6 @@
 <template>
-  <Message v-if="$route.query.firstVisit" severity="success" :closable="true" icon="pi pi-question" class="help-message">
+  <Message v-if="$route.query.firstVisit" severity="success" :closable="true" icon="pi pi-question"
+           class="help-message">
     <strong>Welcome to Matta-Nuu !!</strong>
     <p>The HELP has been activated to help you doing your first steps</p>
     <p>You can toggle HELP any time from main menu</p>
@@ -10,21 +11,21 @@
     <div class="p-field mb-4">{{ $root.user.email }}</div>
     <div class="p-field">
       <label>Account Name</label>
-      <InputText v-model="$root.userData.account_name" class="w-100 "/>
+      <InputText v-model="$root.userData.account_name" class="w-100 " />
     </div>
     <div class="p-field">
       <label>Change your password</label>
-      <InputText v-model="newPassword" placeholder="New Password" type="password" class="w-100 "/>
+      <InputText v-model="newPassword" placeholder="New Password" type="password" class="w-100 " />
     </div>
     <Divider align="center" class="mt-4">Informations to prefill Orders</Divider>
     <div class="p-field">
       <label>Organisation Name</label>
-      <InputText v-model="$root.userData.org_name" class="w-100 "/>
+      <InputText v-model="$root.userData.org_name" class="w-100 " />
     </div>
     <div class="p-field">
       <label>Organisation Contact Details</label>
       <Textarea placeholder="Address, Phone, Email..." v-model="$root.userData.org_details"
-                :autoResize="true" :rows="2" class="w-100"/>
+                :autoResize="true" :rows="2" class="w-100" />
     </div>
 
     <Button label="Save" :loading="loading" icon="pi pi-save" class="mt-3" @click="submit"></Button>
@@ -67,6 +68,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

@@ -1,9 +1,9 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }"
           :header="isNew ? 'Add an Event to the Session' : 'Edit Event'"
           :modal="true" class="p-fluid">
     <div class="p-field">
-      <InputText v-model.trim="event.name" required="true" placeholder="Name" autofocus/>
+      <InputText v-model.trim="event.name" required="true" placeholder="Name" autofocus />
     </div>
 
     <div class="p-field" v-if="isNew">
@@ -31,7 +31,7 @@
     </div>
 
     <template #footer>
-      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false"/>
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Save" icon="pi pi-check" class="p-button-text" @click="save" />
     </template>
   </Dialog>
@@ -116,6 +116,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

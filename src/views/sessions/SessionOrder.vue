@@ -11,14 +11,16 @@
             </h2>
           </template>
           <template #content>
-            <InputText v-model="order.name" autofocus/>
+            <InputText v-model="order.name" autofocus />
           </template>
         </Inplace>
       </div>
       <div class="d-print-none">
-        <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy"/>
-        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print" @click="print()" />
-        <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save" :loading="loading"/>
+        <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy" />
+        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print"
+                @click="print()" />
+        <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save"
+                :loading="loading" />
       </div>
     </div>
 
@@ -40,7 +42,8 @@
       <div class="p-inputgroup mb-4">
         <span class="p-inputgroup-addon">Quantities until</span>
         <InputDay v-model="order.target_day" :days="sessionDays" />
-        <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate" :loading="isCalculating" />
+        <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate"
+                :loading="isCalculating" />
       </div>
       <div class="p-inputgroup mb-3 justify-content-center">
         <Checkbox v-model="order.group_by_category" :binary="true" />
@@ -63,7 +66,8 @@
         </div>
       </div>
 
-      <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header" class="w-100 mb-3"/>
+      <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header"
+                class="w-100 mb-3" />
 
       <DataTable :value="values" class="mb-3 border border-bottom-0"
                  :class="{ 'p-datatable-sm': values.length > 15 }"
@@ -79,7 +83,8 @@
             <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
-        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
+        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center"
+                body-class="form-cell">
           <template #body="{ data }">
             <InputUnit v-model="data.unit" :only-siblings="true" class="d-print-none" />
             <div class="text-center d-none d-print-block">{{ data.unit }}</div>
@@ -103,17 +108,19 @@
 
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
-          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product" @keyup.enter="addProduct"
+          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product"
+                        @keyup.enter="addProduct"
                         :showClear="false" :editable="false" />
-          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" class="flex-shrink-0" />
+          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct"
+                  class="flex-shrink-0" />
         </div>
       </div>
 
-      <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer" class="mt-3 w-100"/>
+      <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer"
+                class="mt-3 w-100" />
     </div>
 
   </div>
-
 </template>
 
 <script>
@@ -269,55 +276,72 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .session-order {
-    max-width: 800px;
+.session-order {
+  max-width: 800px;
+}
+
+::v-deep td.needed,
+::v-deep td.actions {
+  background-color: var(--indigo-50);
+}
+
+.p-inputgroup-addon {
+  width: 130px;
+  background-color: var(--surface-b);
+}
+
+::v-deep .p-input-group .p-dropdown {
+  background-color: var(--surface-b);
+}
+
+.order-options {
+  max-width: 80%;
+  margin: 0 auto;
+  font-size: .9rem;
+
+  .p-checkbox {
+    transform: scale(0.8);
+    height: 1rem;
+    margin-top: -5px;
   }
-  ::v-deep td.needed, ::v-deep td.actions {
-    background-color: var(--indigo-50);
-  }
-  .p-inputgroup-addon {
-    width: 130px;
-    background-color: var(--surface-b);
-  }
-  ::v-deep .p-input-group .p-dropdown {
-    background-color: var(--surface-b);
-  }
-  .order-options {
-    max-width: 80%;
-    margin: 0 auto;
+}
+
+::v-deep .order-options {
+
+  .p-button,
+  .p-inputtext {
     font-size: .9rem;
-    .p-checkbox {
-      transform: scale(0.8);
-      height: 1rem;
-      margin-top: -5px;
-    }
   }
-  ::v-deep .order-options {
-    .p-button, .p-inputtext {
-      font-size: .9rem;
-    }
-  }
-  ::v-deep td, ::v-deep th {
-    min-width: 100px !important;
-  }
-  ::v-deep .form-cell.unit .p-inputtext {
-    justify-content: flex-end;
-  }
-  ::v-deep .p-rowgroup-header td {
-    background-color: transparent;
+}
+
+::v-deep td,
+::v-deep th {
+  min-width: 100px !important;
+}
+
+::v-deep .form-cell.unit .p-inputtext {
+  justify-content: flex-end;
+}
+
+::v-deep .p-rowgroup-header td {
+  background-color: transparent;
+}
+
+@media print {
+  .session-order {
+    max-width: 600px;
+    margin-top: 2rem;
   }
 
-  @media print {
-    .session-order {
-      max-width: 600px;
-      margin-top: 2rem;
-    }
-    .card { margin-top: 2rem; }
-    .p-inputtextarea {
-      border: none;
-      padding: 0px;
-      margin-bottom: 0 !important;
-      font-weight: 500;
-    }
+  .card {
+    margin-top: 2rem;
   }
+
+  .p-inputtextarea {
+    border: none;
+    padding: 0px;
+    margin-bottom: 0 !important;
+    font-weight: 500;
+  }
+}
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{width: '600px'}"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }"
           header="Create Event Template" :modal="true" class="p-fluid">
 
     <div class="p-field">
-      <InputText v-model="template.name" placeholder="Template Name"/>
+      <InputText v-model="template.name" placeholder="Template Name" />
     </div>
 
     <div class="p-field d-flex">
@@ -13,7 +13,7 @@
         <span class="p-inputgroup-addon">people</span>
       </div>
 
-      <Button label="Create Template" @click="save" class="ms-3"/>
+      <Button label="Create Template" @click="save" class="ms-3" />
     </div>
 
     <hr>
@@ -95,6 +95,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>

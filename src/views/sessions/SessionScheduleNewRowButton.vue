@@ -2,12 +2,12 @@
   <Button type="button" icon="pi pi-plus" class="p-button-sm" label="Row"
           @click="$refs.addRowMenu.toggle($event)" />
   <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true">
-    <template #item="{item}">
-        <a class="p-menuitem-link" v-tooltip.right="item.help">
-          <span class="p-menuitem-text" @click="addRow(item.id)">
-            {{item.label}}
-          </span>
-        </a>
+    <template #item="{ item }">
+      <a class="p-menuitem-link" v-tooltip.right="item.help">
+        <span class="p-menuitem-text" @click="addRow(item.id)">
+          {{ item.label }}
+        </span>
+      </a>
     </template>
   </TieredMenu>
 </template>
@@ -36,6 +36,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang='scss' scoped></style>
