@@ -12,7 +12,6 @@
       <router-view></router-view>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -26,6 +25,7 @@ export default {
       sessionDays: computed(() => this.sessionDays),
       stockDays: computed(() => this.stockDays),
       sessionOrders: computed(() => this.sessionOrders),
+      sessionInventories: computed(() => this.sessionInventories),
     }
   },
   computed: {
@@ -70,6 +70,18 @@ export default {
           result.delivery_day_object = this.stockDays.find((d) => d.id == result.delivery_day) || {}
           result.delivery_day_label = result.delivery_day_object.dateHeader
           result.delivery_day_date = result.delivery_day_object.date
+          return result
+        })
+    },
+    sessionInventories() {
+      return Object.values(this.$root.inventories)
+        .filter((inventory) => inventory.session_id === this.$root.session.id)
+        .sort((a, b) => (a.id < b.id ? 1 : -1))
+        .map((o) => {
+          const result = { ...o }
+          result.day_object = this.stockDays.find((d) => d.id == result.day) || {}
+          result.day_label = result.day_object.dateHeader
+          result.day_date = result.day_object.date
           return result
         })
     },

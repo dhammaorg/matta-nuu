@@ -7,6 +7,11 @@
         <i class="pi pi-shopping-cart"></i>
         <b>{{ arg.event.title }}</b>
       </template>
+      <!-- Inventory -->
+      <template v-if="arg.event.extendedProps.inventory">
+        <i class="pi pi-file-edit"></i>
+        <b>{{ arg.event.title }}</b>
+      </template>
       <!-- Note -->
       <template v-else-if="arg.event.extendedProps.note">
         <i class="pi pi-circle-fill"></i>
@@ -32,10 +37,9 @@
     </template>
   </FullCalendar>
 
-  <NoteFormDialog ref="noteForm"/>
+  <NoteFormDialog ref="noteForm" />
   <OrderNewDialog ref="orderForm" />
-  <InventoryDialog ref="inventoryForm" :products="sessionProducts" :stocks="stocks" />
-
+  <InventoryNewDialog ref="inventoryForm" />
 </template>
 
 <script>
@@ -43,15 +47,15 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import NoteFormDialog from '@/views/notes/NoteFormDialog.vue'
-import InventoryDialog from './InventoryDialog.vue'
+import InventoryNewDialog from './InventoryNewDialog.vue'
 import OrderNewDialog from './OrderNewDialog.vue'
 import StockMixin from '@/services/stocks-mixin'
 
 export default {
-  inject: ['sessionOrders', 'sessionDays', 'stockDays'],
+  inject: ['sessionOrders', 'sessionInventories', 'sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    FullCalendar, NoteFormDialog, OrderNewDialog, InventoryDialog,
+    FullCalendar, NoteFormDialog, OrderNewDialog, InventoryNewDialog,
   },
   data() {
     return {
@@ -101,26 +105,6 @@ export default {
         textColor: 'var(--indigo-900)',
       }))
     },
-    convertedOrders() {
-      return this.sessionOrders.map((order) => ({
-        title: order.name,
-        date: new Date(order.delivery_day_date).setHours(2),
-        className: 'order',
-        display: 'list-item',
-        extendedProps: { order },
-      }))
-    },
-    convertedNotes() {
-      return Object.values(this.$root.notes)
-        .filter((order) => order.session_id === this.$root.session.id)
-        .map((note) => ({
-          title: note.title,
-          date: new Date(note.date).setHours(3),
-          className: 'note',
-          display: 'list-item',
-          extendedProps: { note },
-        }))
-    },
     convertedAlerts() {
       const result = []
       Object.entries(this.missingProductsPerDay).forEach(([dayId, productStocks]) => {
@@ -140,9 +124,39 @@ export default {
       })
       return result
     },
+    convertedOrders() {
+      return this.sessionOrders.map((order) => ({
+        title: order.name,
+        date: new Date(order.delivery_day_date).setHours(2),
+        className: 'order',
+        display: 'list-item',
+        extendedProps: { order },
+      }))
+    },
+    convertedInventories() {
+      return this.sessionInventories.map((inventory) => ({
+        title: 'Inventory',
+        date: new Date(inventory.day_date).setHours(3),
+        className: 'inventory',
+        display: 'list-item',
+        extendedProps: { inventory },
+      }))
+    },
+    convertedNotes() {
+      return Object.values(this.$root.notes)
+        .filter((order) => order.session_id === this.$root.session.id)
+        .map((note) => ({
+          title: note.title,
+          date: new Date(note.date).setHours(4),
+          className: 'note',
+          display: 'list-item',
+          extendedProps: { note },
+        }))
+    },
     eventsToDisplay() {
       return this.convertedEvents
         .concat(this.convertedOrders)
+        .concat(this.convertedInventories)
         .concat(this.convertedNotes)
         .concat(this.convertedAlerts)
     },
@@ -183,6 +197,10 @@ export default {
           name: 'session_stocks',
           query: { groupBy: 'supplier', onlyMissing: true },
         })
+      } else if (info.event.extendedProps.inventory) {
+        this.$router.push({
+          name: 'session_inventory', params: { inventory_id: info.event.extendedProps.inventory.id }
+        })
       }
     },
     newEvent() {
@@ -207,100 +225,128 @@ export default {
 </script>
 
 <style lang="scss">
-  .fc {
-    --fc-today-bg-color: rgba(255,220,40,.35);
-  }
+.fc {
+  --fc-today-bg-color: rgba(255, 220, 40, .35);
+}
 
-  .fc .fc-daygrid-day-number {
+.fc .fc-daygrid-day-number {
+  display: flex;
+  align-items: center;
+
+  .day-label {
+    margin-right: .5rem;
+    background-color: var(--indigo-100);
+    padding: 0 3px;
+    border-radius: 4px;
+    margin-top: -1px;
+    font-size: 0.8rem;
+    color: var(--indigo-800);
+  }
+}
+
+.fc-day.fc-daygrid-day {
+  cursor: pointer;
+
+  &:after {
+    content: "+";
+    opacity: 0;
+    transition: opacity .4s;
+    position: absolute;
+    bottom: 0.5rem;
+    right: 1rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    line-height: 1rem;
+    background-color: var(--blue-50);
+    color: var(--blue-200);
+    font-weight: bold;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    .day-label {
-      margin-right: .5rem;
-      background-color: var(--indigo-100);
-      padding: 0 3px;
-      border-radius: 4px;
-      margin-top: -1px;
-      font-size: 0.8rem;
-      color: var(--indigo-800);
-    }
+    justify-content: center;
   }
-  .fc-day.fc-daygrid-day {
+
+  &:hover:after {
+    opacity: 1;
+  }
+}
+
+.fc-event {
+  overflow: hidden;
+
+  i {
+    font-size: .8rem;
+    margin-right: 5px;
+  }
+
+  &.event {
+    padding-left: 0.5rem;
+    border-radius: 4px;
+    margin-top: -1px;
+    margin-bottom: 3px;
+    border: none !important;
+  }
+
+  &.order {
     cursor: pointer;
-    &:after {
-      content: "+";
-      opacity: 0;
-      transition: opacity .4s;
-      position: absolute;
-      bottom: 0.5rem;
-      right: 1rem;
-      width: 1.2rem;
-      height: 1.2rem;
-      line-height: 1rem;
-      background-color: var(--blue-50);
-      color: var(--blue-200);
-      font-weight: bold;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    &:hover:after {
-      opacity: 1;
+    color: var(--purple-600);
+
+    &:hover {
+      color: var(--purple-700) !important;
+      background-color: var(--purple-50) !important;
     }
   }
-  .fc-event {
-    overflow: hidden;
+
+  &.note {
+    cursor: pointer;
+    color: var(--blue-600);
+
+    &:hover {
+      color: var(--blue-700) !important;
+      background-color: var(--blue-50) !important;
+    }
+
     i {
-      font-size: .8rem;
-      margin-right: 5px;
+      transform: scale(.8);
     }
-
-    &.event {
-      padding-left: 0.5rem;
-      border-radius: 4px;
-      margin-top: -1px;
-      margin-bottom: 3px;
-      border: none !important;
-    }
-
-    &.order {
-      cursor: pointer;
-      color: var(--purple-600);
-      &:hover {
-        color: var(--purple-700) !important;
-        background-color: var(--purple-50) !important;
-      }
-    }
-    &.note {
-      cursor: pointer;
-      color: var(--blue-600);
-      &:hover {
-        color: var(--blue-700) !important;
-        background-color: var(--blue-50) !important;
-      }
-      i {
-        transform: scale(.8);
-      }
-    }
-    &.alert {
-      color: var(--bluegray-500);
-      &:hover {
-        color: var(--bluegray-600) !important;
-        background-color: var(--bluegray-50) !important;
-      }
-    }
-  }
-  .fc-addNote-button {
-    background-color: var(--blue-600) !important;
-    border-color: var(--blue-600) !important;
-  }
-  .fc-addOrder-button {
-    background-color: var(--purple-600) !important;
-    border-color: var(--purple-600) !important;
-  }
-  .fc-addInventory-button {
-    background-color: var(--bluegray-600) !important;
-    border-color: var(--bluegray-600) !important;
   }
 
+  &.inventory {
+    cursor: pointer;
+    color: var(--teal-600);
+
+    &:hover {
+      color: var(--teal-700) !important;
+      background-color: var(--teal-50) !important;
+    }
+
+    i {
+      transform: scale(1.1);
+    }
+  }
+
+  &.alert {
+    color: var(--bluegray-500);
+
+    &:hover {
+      color: var(--bluegray-600) !important;
+      background-color: var(--bluegray-50) !important;
+    }
+  }
+}
+
+.fc-addNote-button {
+  background-color: var(--blue-600) !important;
+  border-color: var(--blue-600) !important;
+}
+
+.fc-addOrder-button {
+  background-color: var(--purple-600) !important;
+  border-color: var(--purple-600) !important;
+}
+
+.fc-addInventory-button {
+  background-color: var(--bluegray-600) !important;
+  border-color: var(--bluegray-600) !important;
+}
 </style>

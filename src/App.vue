@@ -1,13 +1,12 @@
 <template>
   <template v-if="dataFetched || !user">
     <Menu />
-    <router-view/>
+    <router-view />
 
     <Toast position="top-center" />
     <ConfirmDialog></ConfirmDialog>
   </template>
-  <Spinner v-else/>
-
+  <Spinner v-else />
 </template>
 
 <script>
@@ -32,6 +31,7 @@ export default {
       orders: {},
       notes: {},
       categories: {},
+      inventories: {},
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
       userData: {}, // users preferences
@@ -171,28 +171,27 @@ export default {
       }
       session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
 
-      // Loads associated orders and notes
+      // Loads associated objects
       if (!session.is_template) {
-        let result = await this.$db.from('orders').select().match({ session_id: this.$route.params.id })
-        if (result.error) return this.toastError(result.error)
-        result.data.forEach((order) => {
-          if (!this.$root.orders[order.id]) {
-            this.$root.orders[order.id] = order
-          }
-        })
-
-        result = await this.$db.from('notes').select().match({ session_id: this.$route.params.id })
-        if (result.error) return this.toastError(result.error)
-        result.data.forEach((note) => {
-          if (!this.$root.notes[note.id]) {
-            this.$root.notes[note.id] = note
-          }
-        })
+        this.fetchSessionAssociatedObjects('orders')
+        this.fetchSessionAssociatedObjects('notes')
+        this.fetchSessionAssociatedObjects('inventories')
       }
+
       this.sessions[sessionId] = session
       this.initProductsForSession()
       this.fullyLoadedSessions.push(sessionId)
       return session
+    },
+    async fetchSessionAssociatedObjects(objectName) {
+      const result = await this.$db.from(objectName).select().match({ session_id: this.$route.params.id })
+      if (result.error) return this.toastError(result.error)
+      result.data.forEach((obj) => {
+        if (!this.$root[objectName][obj.id]) {
+          this.$root[objectName][obj.id] = obj
+        }
+      })
+      return this.$root[objectName]
     },
     setPageTitle(title) {
       document.getElementById('title').innerHTML = title
@@ -222,68 +221,94 @@ export default {
 </script>
 
 <style lang="scss">
-  @media print {
-    // Hide header and footer added while printed with website url and date
-    @page { margin: 0; }
-    body { padding: 30px !important; }
+@media print {
 
-    // Adjust color for more contrast
-    .p-datatable .p-datatable-thead > tr > th,
-    .p-datatable .p-datatable-tbody > tr {
-      color: black !important;
-    }
-    .p-rowgroup-header td {
-      color: var(--bluegray-700);
-    }
-    .p-datatable .p-datatable-thead > tr > th,
-    .p-datatable .p-datatable-tbody > tr > td {
-      border-color: var(--gray-400) !important;
-    }
-    .p-toast { display: none; }
-
-  }
-  #app, body, html {
+  // Hide header and footer added while printed with website url and date
+  @page {
     margin: 0;
+  }
+
+  body {
+    padding: 30px !important;
+  }
+
+  // Adjust color for more contrast
+  .p-datatable .p-datatable-thead>tr>th,
+  .p-datatable .p-datatable-tbody>tr {
+    color: black !important;
+  }
+
+  .p-rowgroup-header td {
+    color: var(--bluegray-700);
+  }
+
+  .p-datatable .p-datatable-thead>tr>th,
+  .p-datatable .p-datatable-tbody>tr>td {
+    border-color: var(--gray-400) !important;
+  }
+
+  .p-toast {
+    display: none;
+  }
+
+}
+
+#app,
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  overflow-x: hidden;
+  color: var(--text-color);
+
+  @media screen {
+    background-color: var(--surface-ground);
+  }
+
+  color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+
+  @media print {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+
+.page-content {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 2.5rem;
+  margin-top: 3rem;
+  position: relative;
+  @extend .card;
+}
+
+.p-message+.page-content {
+  margin-top: 1rem;
+}
+
+.card {
+  background: white;
+  padding: 3rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, .02), 0 0 2px rgba(0, 0, 0, .05), 0 1px 4px rgba(0, 0, 0, .08);
+
+  @media print {
     padding: 0;
-    width: 100%;
-    height: 100%;
-    font-size: 14px;
-    overflow-x: hidden;
-    color: var(--text-color);
-    @media screen { background-color:var(--surface-ground); }
-    color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-    @media print {
-      overflow: visible !important;
-      height: auto !important;
-    }
+    background: transparent;
+    box-shadow: none;
   }
-  .page-content {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding-top: 2.5rem;
-    margin-top: 3rem;
-    position: relative;
-    @extend .card;
+}
+
+.page-full-content {
+  padding: 2rem;
+  padding-bottom: 0;
+
+  @media print {
+    padding: 0;
   }
-  .p-message + .page-content {
-    margin-top: 1rem;
-  }
-  .card {
-    background: white;
-    padding: 3rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 5px rgba(0,0,0,.02),0 0 2px rgba(0,0,0,.05),0 1px 4px rgba(0,0,0,.08);
-    @media print {
-      padding: 0;
-      background: transparent;
-      box-shadow: none;
-    }
-  }
-  .page-full-content {
-    padding: 2rem;
-    padding-bottom: 0;
-    @media print { padding: 0; }
-  }
-</style>
+}</style>

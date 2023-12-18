@@ -5,7 +5,8 @@
       You can adjust real values per day
     </p>
     <p>
-      Everything you buy should be displayed here. You can either enter manually bought amount on each cell, or use the
+      Everything you buy should be displayed here. You can either enter manually bought amount on each
+      cell, or use the
       <strong>orders</strong> feature to help you manage them
     </p>
     <p>
@@ -13,38 +14,38 @@
     </p>
   </HelpMessage>
 
-  <div v-if="!isMounted" :style="{height: 'calc(100vh - 11rem)'}">
-    <Spinner/>
+  <div v-if="!isMounted" :style="{ height: 'calc(100vh - 11rem)' }">
+    <Spinner />
   </div>
 
   <!-- Search outside of the table so it's not refresh when table is refresh -->
-  <InputText :value="filters['product_name'].value" @change="filters['product_name'].value = $event.target.value"
-             v-debounce="250" class="stocks-search-input" placeholder="Search Product..." />
+  <InputText :value="filters['product_name'].value"
+    @change="filters['product_name'].value = $event.target.value" v-debounce="250"
+    class="stocks-search-input" placeholder="Search Product..." />
 
   <DataTable :value="stocksToDisplay" showGridlines v-if="session.events.length > 0 && isMounted"
-              stateStorage="session" stateKey="datatable-stocks"
-             :scrollable="true" scrollHeight="calc(100vh - 11rem)"
-             @cell-edit-complete="onCellEditComplete"  v-model:filters="filters"
-             :rowGroupMode="groupByMode"
-             :groupRowsBy="groupByOption"
-             editMode="cell" class="editable-cells-table stocks-table session-table">
+    stateStorage="session" stateKey="datatable-stocks" :scrollable="true"
+    scrollHeight="calc(100vh - 11rem)" @cell-edit-complete="onCellEditComplete"
+    v-model:filters="filters" :rowGroupMode="groupByMode" :groupRowsBy="groupByOption" editMode="cell"
+    class="editable-cells-table stocks-table session-table">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
         <Column class="top-left-cell transparent align-top" frozen :rowspan="3">
           <template #header>
             <div class="d-flex flex-column gap-1">
-              <Button type="button" icon="pi pi-plus" label="Inventory" class="p-button-sm"
-                        @click="$refs.inventoryForm.show()" />
-              <SessionStocksDisplayOptions v-model="options"/>
+              <SplitButton type="button" icon="pi pi-plus" label="Inventory" size="small"
+                @click="$refs.inventoryForm.show()"
+                :model="[{ label: 'Simple Inventory', command: () => { $refs.inventorySimpleForm.show() } }]" />
+              <SessionStocksDisplayOptions v-model="options" />
             </div>
           </template>
         </Column>
         <!-- Initial Stocks -->
-        <Column class="event-start event-end text-center" :rowspan="3" header="Initial Stocks"/>
+        <Column class="event-start event-end text-center" :rowspan="3" header="Initial Stocks" />
         <!-- Event Header -->
         <Column v-for="event in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end header-group">
+          class="event-start event-end header-group">
           <template #header>
             {{ event.name }}
           </template>
@@ -52,13 +53,13 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="day.class" class="day-date"
-                :header="day.dateHeader" />
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="day.class"
+          class="day-date" :header="day.dateHeader" />
       </Row>
       <Row>
         <!-- Day Name Header -->
         <Column v-for="day in sessionDays" :header="day.label" :key="`header-${day.id}`"
-                :class="day.class" class="fw-normal day-label" />
+          :class="day.class" class="fw-normal day-label" />
       </Row>
     </ColumnGroup>
 
@@ -71,24 +72,26 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id" :class="`cell-stock editor-sm ${day.class} ${day.id}`">
+    <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id"
+      :class="`cell-stock editor-sm ${day.class} ${day.id}`">
       <template #body="{ data, field }">
-        <div class="cell-content" :class="{'negative-value': data.values[field].value.round() < 0 }">
+        <div class="cell-content" :class="{ 'negative-value': data.values[field].value.round() < 0 }">
           <span class="stock-value-container d-flex flex-column align-items-center">
             <span class="stock-value consumption" v-if="data.values[field].consumption > 0"
-                  :title="data.values[field].consumptionLabels.join(' | ')">
+              :title="data.values[field].consumptionLabels.join(' | ')">
               -{{ data.values[field].consumption.round() }}
             </span>
             <span class="stock-value bought" v-if="data.values[field].bought > 0"
-                  :title="data.values[field].boughtLabels.join(' | ')">
+              :title="data.values[field].boughtLabels.join(' | ')">
               +{{ data.values[field].bought.round() }}
             </span>
           </span>
           <span class="stock-value-container stock-value"
-               :class="{'fw-bold text-primary': data.values[field].real != null }"
-               :style="data.values[field].inventoryWarning && 'color: var(--orange-600) !important'"
-               :title="data.values[field].inventoryWarning ? `Theoric stock was ${data.values[field].theoric.round()} ${data.product_unit}` : null">
-            <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round() }}</template>
+            :class="{ 'fw-bold text-primary': data.values[field].real != null }"
+            :style="data.values[field].inventoryWarning && 'color: var(--orange-600) !important'"
+            :title="data.values[field].inventoryWarning ? `Theoric stock was ${data.values[field].theoric.round()} ${data.product_unit}` : null">
+            <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round()
+            }}</template>
             <template v-else>{{ data.values[field].value.round() }}</template>
           </span>
           <span class="stock-value-container"></span>
@@ -96,10 +99,12 @@
       </template>
       <template #editor="{ data, field }">
         <InputNumber v-model="data.values[field].real" placeholder="Stock" :maxFractionDigits="2" />
-        <InputNumber v-model="data.values[field].manuallyBought" placeholder="Bought" :maxFractionDigits="2" />
+        <InputNumber v-model="data.values[field].manuallyBought" placeholder="Bought"
+          :maxFractionDigits="2" />
         <div v-for="order in data.values[field].ordered" :key="day + field + order.id"
-             :title="`Ordered Amount from ${order.name}`" class="p-2">
-          <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: order.id }}">
+          :title="`Ordered Amount from ${order.name}`" class="p-2">
+          <router-link
+            :to="{ name: 'session_order', params: { id: $route.params.id, order_id: order.id } }">
             <strong>+ {{ order.value.round() }}</strong>
             <Button icon="pi pi-pencil" class="p-button-text p-button-sm p-0 px-2 w-auto" />
           </router-link>
@@ -108,30 +113,33 @@
     </Column>
 
     <template #groupheader="{ data }">
-      <span style="position: sticky; left: .7rem">{{ (data[options.groupBy] || {}).name || "Others" }}</span>
+      <span style="position: sticky; left: .7rem">{{ (data[options.groupBy] || {}).name || "Others"
+      }}</span>
     </template>
 
   </DataTable>
 
-  <InventoryDialog ref="inventoryForm" :products="sessionProducts" :stocks="stocks" />
-
+  <InventoryDialog ref="inventoryForm" />
+  <InventorySimpleDialog ref="inventorySimpleForm" :products="sessionProducts" :stocks="stocks" />
 </template>
 
 <script>
 import ColumnGroup from 'primevue/columngroup'
 import Row from 'primevue/row'
 import InputNumber from 'primevue/inputnumber'
+import SplitButton from 'primevue/splitbutton';
 import StockMixin from '@/services/stocks-mixin'
 import CalendarMixin from '@/services/calendar-mixin'
 import Spinner from '@/components/Spinner.vue'
-import InventoryDialog from './InventoryDialog.vue'
+import InventoryDialog from './InventoryNewDialog.vue'
+import InventorySimpleDialog from './InventorySimpleDialog.vue'
 import SessionStocksDisplayOptions from './SessionStocksDisplayOptions.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin, CalendarMixin],
   components: {
-    ColumnGroup, Row, InputNumber, Spinner, InventoryDialog, SessionStocksDisplayOptions,
+    ColumnGroup, Row, SplitButton, InputNumber, Spinner, InventoryDialog, InventorySimpleDialog, SessionStocksDisplayOptions,
   },
   data() {
     return {
