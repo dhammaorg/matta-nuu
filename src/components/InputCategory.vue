@@ -26,7 +26,7 @@
 
 <script>
 import MultiSelect from 'primevue/multiselect'
-import CategoryForm from './CategoryForm.vue'
+import CategoryForm from '@/views/categories/CategoryForm.vue'
 
 export default {
   props: {
