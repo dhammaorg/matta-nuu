@@ -44,7 +44,7 @@
 
       <div class="p-field w-100 mt-0">
         <label>Storage Areas</label>
-        <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_areas"
+        <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_area_ids"
                        placeholder="Storage Areas" />
       </div>
     </div>

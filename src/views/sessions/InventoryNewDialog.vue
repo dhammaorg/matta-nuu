@@ -34,8 +34,8 @@ export default {
       this.inventory = {
         day: this.sessionDays.find((day) => day.date.isToday())?.id,
         session_id: this.$root.session.id,
-        storage_areas: [],
-        categories: [],
+        storage_area_ids: [],
+        product_category_ids: [],
         values: {},
       }
       this.visible = true

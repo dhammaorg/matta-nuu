@@ -50,11 +50,12 @@
       </Column>
 
       <!-- Storage Areas -->
-      <Column field="storage_areas" header="Storage Areas" :sortable="true" style="max-width: 14rem"
-              filterField="storage_areas" :showFilterMatchModes="false"
+      <Column field="storage_area_ids" header="Storage Areas" :sortable="true"
+              style="max-width: 14rem"
+              filterField="storage_area_ids" :showFilterMatchModes="false"
               :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
-          <InputCategory type="StorageArea" :multiple="true" v-model="data.storage_areas" />
+          <InputCategory type="StorageArea" :multiple="true" v-model="data.storage_area_ids" />
         </template>
         <template #filter="{ filterModel }">
           <InputCategory type="StorageArea" v-model="filterModel.value" class="p-column-filter"
@@ -126,7 +127,7 @@ export default {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         supplier_id: { value: null, matchMode: FilterMatchMode.EQUALS },
         category_id: { value: null, matchMode: FilterMatchMode.EQUALS },
-        storage_areas: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        storage_area_ids: { value: null, matchMode: FilterMatchMode.CONTAINS },
       }
     },
     onCellEditComplete(event) {
