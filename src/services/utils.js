@@ -1,3 +1,6 @@
+/* eslint-disable no-extend-native */
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable func-names */
 export function utils() {
   Date.prototype.addDays = function (days) {
     const date = new Date(this.valueOf())
@@ -10,14 +13,16 @@ export function utils() {
     return date
   }
   Date.prototype.isToday = function () {
-    const today = new Date()
-    return this.getDate() === today.getDate()
-      && this.getMonth() === today.getMonth()
-      && this.getFullYear() === today.getFullYear()
+    return this.equals(new Date())
   }
   Date.prototype.isTodayOrAfter = function () {
     if (this.isToday()) return true
     return this >= new Date()
+  }
+  Date.prototype.equals = function (date) {
+    return this.getDate() === date.getDate()
+      && this.getMonth() === date.getMonth()
+      && this.getFullYear() === date.getFullYear()
   }
 
   Number.prototype.round = function (decimals = 2) {
