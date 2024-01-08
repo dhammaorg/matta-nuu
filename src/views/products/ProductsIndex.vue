@@ -24,7 +24,7 @@
       </Column>
 
       <!-- Category -->
-      <Column field="category_id" header="Category" :sortable="true" style="max-width: 15rem"
+      <Column field="category_id" header="Category" :sortable="true" style="max-width: 12rem"
               filterField="category_id" :showFilterMatchModes="false"
               :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
@@ -37,7 +37,7 @@
       </Column>
 
       <!-- Supplier -->
-      <Column field="supplier_id" header="Supplier" :sortable="true" style="max-width: 15rem"
+      <Column field="supplier_id" header="Supplier" :sortable="true" style="max-width: 14rem"
               filterField="supplier_id" :showFilterMatchModes="false"
               :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
@@ -46,6 +46,19 @@
         <template #filter="{ filterModel }">
           <InputSupplier v-model="filterModel.value" class="p-column-filter"
                          :btnAdd="false" :showClear="false" />
+        </template>
+      </Column>
+
+      <!-- Storage Areas -->
+      <Column field="storage_areas" header="Storage Areas" :sortable="true" style="max-width: 14rem"
+              filterField="storage_areas" :showFilterMatchModes="false"
+              :filterMenuStyle="{ 'width': '14rem' }">
+        <template #body="{ data }">
+          <InputCategory type="StorageArea" :multiple="true" v-model="data.storage_areas" />
+        </template>
+        <template #filter="{ filterModel }">
+          <InputCategory type="StorageArea" v-model="filterModel.value" class="p-column-filter"
+                         placeholder="Storage Areas" :btnAdd="false" :showClear="false" />
         </template>
       </Column>
 
@@ -113,6 +126,7 @@ export default {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         supplier_id: { value: null, matchMode: FilterMatchMode.EQUALS },
         category_id: { value: null, matchMode: FilterMatchMode.EQUALS },
+        storage_areas: { value: null, matchMode: FilterMatchMode.CONTAINS },
       }
     },
     onCellEditComplete(event) {
@@ -151,8 +165,10 @@ export default {
     }
 
     input,
-    .p-dropdown {
+    .p-dropdown,
+    .p-multiselect {
       border: none !important;
+      width: 100%;
     }
 
     &.recipies {

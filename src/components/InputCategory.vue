@@ -1,6 +1,6 @@
 <template>
   <MultiSelect v-if="multiple"
-               :options="categories" optionLabel="name" optionValue="id" placeholder="Categories"
+               :options="categories" optionLabel="name" optionValue="id"
                v-bind="$attrs">
     <template #footer v-if="btnAdd">
       <div class="p-multiselect-header">
@@ -11,11 +11,11 @@
   </MultiSelect>
 
   <Dropdown v-else :options="categories" optionLabel="name" optionValue="id" :showClear="true"
-            placeholder="Category" :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
+            :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
             @filter="filterValue = $event.value">
     <template #footer v-if="btnAdd">
       <div class="p-dropdown-header">
-        <Button icon="pi pi-plus" :label="`${type} Category`" class="p-button-sm"
+        <Button icon="pi pi-plus" :label="btnAddLabel" class="p-button-sm"
                 @click="$refs.form.show({ name: filterValue, type })" />
       </div>
     </template>
@@ -37,6 +37,10 @@ export default {
     btnAdd: {
       type: Boolean,
       default: true,
+    },
+    btnAddLabel: {
+      type: String,
+      default(props) { return props.type === 'StorageArea' ? 'Storage Area' : `${props.type} Category` },
     },
     multiple: {
       type: Boolean,

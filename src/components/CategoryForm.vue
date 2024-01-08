@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :header="`${category.type} Category`"
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :header="headerLabel"
           :modal="true" class="p-fluid category-dialog">
 
     <div class="p-field">
@@ -23,6 +23,11 @@ export default {
       loading: false,
       category: {},
     }
+  },
+  computed: {
+    headerLabel() {
+      return this.category.type === 'StorageArea' ? 'Storage Area' : `${this.category.type} Category`
+    },
   },
   methods: {
     show(object = {}) {

@@ -36,10 +36,16 @@
         </div>
       </div>
 
-      <div class="p-field-checkbox" v-if="product.packaging_conditioning">
+      <div class="p-field-checkbox w-100 mb-3" v-if="product.packaging_conditioning">
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
         <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit
         }}" to 1 piece in orders</label>
+      </div>
+
+      <div class="p-field w-100 mt-0">
+        <label>Storage Areas</label>
+        <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_areas"
+                       placeholder="Storage Areas" />
       </div>
     </div>
 
@@ -97,12 +103,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
 
-  .p-field {
+  .p-field:not(.w-100) {
     width: calc(50% - .5rem);
     margin: 0 0 1rem 0 !important;
 
     &:nth-child(even) {
-      width: calc(50% - .5rem);
       margin-left: 1rem !important;
     }
   }
