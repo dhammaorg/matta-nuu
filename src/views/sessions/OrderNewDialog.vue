@@ -13,6 +13,12 @@
       <InputDay v-model="order.target_day" :days="sessionDays" class="w-100" />
     </div>
 
+    <!-- Delivery Date -->
+    <div class="p-field">
+      <label>Delivery date</label>
+      <InputDay v-model="order.delivery_day" :days="stockDays" class="w-100" />
+    </div>
+
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Create Order" icon="pi pi-check" class="p-button-text" @click="createOrder" />
@@ -39,13 +45,16 @@ export default {
     },
   },
   methods: {
-    show() {
+    show(data) {
       this.order = {
-        target_day: this.sessionDays.at(-1).id,
-        session_id: this.$root.session.id,
-        report_values_in_stocks: true,
-        group_by_category: true,
-        delivery_day: this.stockDays.at(0).id,
+        ...{
+          target_day: this.sessionDays.at(-1).id,
+          session_id: this.$root.session.id,
+          report_values_in_stocks: true,
+          group_by_category: true,
+          delivery_day: this.stockDays.at(0).id,
+        },
+        ...data,
       }
       if (this.suppliers.length === 1) this.order.supplier_id = this.suppliers.at(0).id
       this.visible = true

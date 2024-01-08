@@ -4,11 +4,14 @@
     <template #eventContent="arg">
       <!-- Order -->
       <template v-if="arg.event.extendedProps.order">
-        <i class="pi pi-shopping-cart"></i>
-        <b>{{ arg.event.title }}</b>
+        <span :title="arg.event.extendedProps.tooltip">
+          <i v-if="arg.event.classNames.includes('order-delivery')" class="pi pi-shopping-cart"></i>
+          <i v-else class="pi pi-angle-double-right"></i>
+          <b>{{ arg.event.title }}</b>
+        </span>
       </template>
       <!-- Inventory -->
-      <template v-if="arg.event.extendedProps.inventory">
+      <template v-else-if="arg.event.extendedProps.inventory">
         <i class="pi pi-file-edit"></i>
         <b>{{ arg.event.title }}</b>
       </template>
@@ -40,12 +43,15 @@
   <NoteFormDialog ref="noteForm" />
   <OrderNewDialog ref="orderForm" />
   <InventoryNewDialog ref="inventoryForm" />
+
+  <ContextMenu ref="contextMenu" :model="actionsMenu" @hide="selectedDate = null" />
 </template>
 
 <script>
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import ContextMenu from 'primevue/contextmenu'
 import NoteFormDialog from '@/views/notes/NoteFormDialog.vue'
 import InventoryNewDialog from './InventoryNewDialog.vue'
 import OrderNewDialog from './OrderNewDialog.vue'
@@ -55,7 +61,7 @@ export default {
   inject: ['sessionOrders', 'sessionInventories', 'sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    FullCalendar, NoteFormDialog, OrderNewDialog, InventoryNewDialog,
+    FullCalendar, NoteFormDialog, OrderNewDialog, InventoryNewDialog, ContextMenu,
   },
   data() {
     return {
@@ -72,7 +78,7 @@ export default {
         //   // visible dates on calendar, maybe do to some calculation only on those dates
         // },
         customButtons: {
-          addNote: { text: '+ Note', click: this.newEvent },
+          addNote: { text: '+ Note', click: this.newNote },
           addInventory: { text: '+ Inventory', click: this.newInventory },
           addOrder: { text: '+ Order', click: this.newOrder },
         },
@@ -82,6 +88,7 @@ export default {
           right: 'today prev,next',
         },
       },
+      selectedDate: null,
     }
   },
   computed: {
@@ -124,19 +131,28 @@ export default {
       })
       return result
     },
-    convertedOrders() {
+    convertedOrdersDeliveries() {
       return this.sessionOrders.map((order) => ({
         title: order.name,
         date: new Date(order.delivery_day_date).setHours(2),
-        className: 'order',
+        className: 'order order-delivery',
         display: 'list-item',
-        extendedProps: { order },
+        extendedProps: { order, tooltip: `Delivery Date for ${order.name}` },
+      }))
+    },
+    convertedOrdersTargets() {
+      return this.sessionOrders.map((order) => ({
+        title: order.name,
+        date: new Date(order.target_day_date).setHours(3),
+        className: 'order order-target',
+        display: 'list-item',
+        extendedProps: { order, tooltip: `The quantities ordered in ${order.name} were calculated to meet the needs until ${order.target_day_label}` },
       }))
     },
     convertedInventories() {
       return this.sessionInventories.map((inventory) => ({
         title: 'Inventory',
-        date: new Date(inventory.day_date).setHours(3),
+        date: new Date(inventory.day_date).setHours(4),
         className: 'inventory',
         display: 'list-item',
         extendedProps: { inventory },
@@ -147,7 +163,7 @@ export default {
         .filter((order) => order.session_id === this.$root.session.id)
         .map((note) => ({
           title: note.title,
-          date: new Date(note.date).setHours(4),
+          date: new Date(note.date).setHours(5),
           className: 'note',
           display: 'list-item',
           extendedProps: { note },
@@ -155,10 +171,39 @@ export default {
     },
     eventsToDisplay() {
       return this.convertedEvents
-        .concat(this.convertedOrders)
+        .concat(this.convertedOrdersDeliveries)
+        .concat(this.convertedOrdersTargets)
         .concat(this.convertedInventories)
         .concat(this.convertedNotes)
         .concat(this.convertedAlerts)
+    },
+    selectedDay() {
+      if (!this.selectedDate) return null
+
+      return this.sessionDays.find((day) => day.date.equals(this.selectedDate))
+    },
+    selectedDateLabel() {
+      return this.selectedDate?.toLocaleDateString([], { weekday: 'short', month: 'long', day: 'numeric' })
+    },
+    selectedDateLabelShort() {
+      return this.selectedDate?.toLocaleDateString([], { month: 'short', day: 'numeric' })
+    },
+    actionsMenu() {
+      return [
+        { label: this.selectedDateLabel, disabled: true, class: 'context-menu-title' },
+        { label: 'Add Note', command: this.newNote },
+        { label: 'Start Inventory', command: this.newInventory, disabled: this.selectedDay == null },
+        {
+          label: `New Order until ${this.selectedDateLabelShort}`,
+          command: () => { this.newOrder({ target_day: this.selectedDay?.id }) },
+          disabled: this.selectedDay == null,
+        },
+        {
+          label: `New Order to deliver ${this.selectedDateLabelShort}`,
+          command: () => { this.newOrder({ delivery_day: this.selectedDay?.id }) },
+          disabled: this.selectedDay == null,
+        },
+      ]
     },
   },
   mounted() {
@@ -179,7 +224,8 @@ export default {
       return day ? day.label : ''
     },
     handleDateClick(info) {
-      this.$refs.noteForm.show({ date: new Date(info.dateStr) })
+      this.selectedDate = new Date(info.dateStr)
+      this.$refs.contextMenu.show(info.jsEvent)
     },
     handleEventClick(info) {
       if (info.event.extendedProps.note) {
@@ -203,14 +249,16 @@ export default {
         })
       }
     },
-    newEvent() {
-      this.$refs.noteForm.show()
+    newNote() {
+      this.$refs.noteForm.show({ date: this.selectedDate })
     },
-    newOrder() {
-      this.$refs.orderForm.show()
+    newOrder(data = {}) {
+      this.$refs.orderForm.show(data)
     },
     newInventory() {
-      this.$refs.inventoryForm.show()
+      this.$refs.inventoryForm.show({
+        day: this.selectedDay?.id,
+      })
     },
   },
   watch: {
@@ -295,6 +343,10 @@ export default {
       color: var(--purple-700) !important;
       background-color: var(--purple-50) !important;
     }
+
+    &.order-target {
+      opacity: .7;
+    }
   }
 
   &.note {
@@ -348,5 +400,18 @@ export default {
 .fc-addInventory-button {
   background-color: var(--bluegray-600) !important;
   border-color: var(--bluegray-600) !important;
+}
+
+.matta-nuu .p-contextmenu {
+  width: auto;
+
+  .p-menuitem.context-menu-title .p-menuitem-link {
+    opacity: 1;
+
+    .p-menuitem-text {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+  }
 }
 </style>

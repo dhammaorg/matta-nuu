@@ -30,13 +30,16 @@ export default {
   mounted() {
   },
   methods: {
-    show() {
+    show(object) {
       this.inventory = {
-        day: this.sessionDays.find((day) => day.date.isToday())?.id,
-        session_id: this.$root.session.id,
-        storage_area_ids: [],
-        product_category_ids: [],
-        values: {},
+        ...{
+          day: this.sessionDays.find((day) => day.date.isToday())?.id,
+          session_id: this.$root.session.id,
+          storage_area_ids: [],
+          product_category_ids: [],
+          values: {},
+        },
+        ...object,
       }
       this.visible = true
     },

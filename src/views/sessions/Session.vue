@@ -71,6 +71,9 @@ export default {
           result.delivery_day_object = this.stockDays.find((d) => d.id == result.delivery_day) || {}
           result.delivery_day_label = result.delivery_day_object.dateHeader
           result.delivery_day_date = result.delivery_day_object.date
+          result.target_day_object = this.stockDays.find((d) => d.id == result.target_day) || {}
+          result.target_day_label = result.target_day_object.dateHeader
+          result.target_day_date = result.target_day_object.date
           return result
         })
     },
