@@ -53,6 +53,9 @@ export default {
       filterValue: '',
     }
   },
+  mounted() {
+    this.removeNonExistingCategories()
+  },
   computed: {
     categories() {
       return Object.values(this.$root.categories).filter((c) => c.type === this.type)
@@ -66,6 +69,19 @@ export default {
         this.$emit('update:modelValue', currentValue)
       } else {
         this.$emit('update:modelValue', catId)
+      }
+    },
+    // Manage missing categories (we do not have delete persist operaton on array)
+    // This apply only on multiple fields, cause for simple field we have cascade delete
+    // configured at database level
+    removeNonExistingCategories() {
+      if (!this.multiple) return
+
+      const currentValue = this.$attrs.modelValue || []
+      const existing = this.categories.map((cat) => cat.id)
+      const filteredValue = currentValue.filter((catId) => existing.includes(catId))
+      if (filteredValue.length !== currentValue.length) {
+        this.$emit('update:modelValue', filteredValue)
       }
     },
   },
