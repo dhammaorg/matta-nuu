@@ -9,7 +9,7 @@
 
     <!-- Date -->
     <div class="p-field">
-      <label>Calculate quantities needed until</label>
+      <label>Calculate quantities needed until (last day included)</label>
       <InputDay v-model="order.target_day" :days="sessionDays" class="w-100" />
     </div>
 

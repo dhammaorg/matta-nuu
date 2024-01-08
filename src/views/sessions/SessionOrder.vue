@@ -40,7 +40,7 @@
         </span>
       </div>
       <div class="p-inputgroup mb-4">
-        <span class="p-inputgroup-addon">Quantities until</span>
+        <span class="p-inputgroup-addon">Quantities until (last day included)</span>
         <InputDay v-model="order.target_day" :days="sessionDays" />
         <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate"
                 :loading="isCalculating" />
