@@ -33,6 +33,14 @@ export default {
         { label: 'Suppliers', to: { name: 'suppliers' }, icon: 'pi pi-shopping-cart' },
         { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
         { label: 'Event Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
+        {
+          label: 'More',
+          items: [
+            { label: 'Product Categories', to: { name: 'categories', params: { type: 'Product' } } },
+            { label: 'Recipie Categories', to: { name: 'categories', params: { type: 'Recipie' } } },
+            { label: 'Storage Areas', to: { name: 'categories', params: { type: 'StorageArea' } } },
+          ],
+        },
       ],
       userItems: [
         { label: this.$root.userData.account_name, disabled: true },
@@ -65,6 +73,10 @@ export default {
 
   h1 {
     color: var(--indigo-100);
+  }
+
+  .p-submenu-list {
+    z-index: 1000;
   }
 }
 

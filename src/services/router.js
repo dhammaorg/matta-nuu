@@ -11,6 +11,7 @@ import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
 import ProductsIndex from '@/views/products/ProductsIndex.vue'
 import SuppliersIndex from '@/views/suppliers/SuppliersIndex.vue'
 import TemplatesIndex from '@/views/templates/TemplatesIndex.vue'
+import CategoriesIndex from '@/views/categories/CategoriesIndex.vue'
 import Login from '@/views/auth/Login.vue'
 import Register from '@/views/auth/Register.vue'
 import ResetPassword from '@/views/auth/ResetPassword.vue'
@@ -98,6 +99,11 @@ const routes = [
     path: '/templates',
     name: 'templates',
     component: TemplatesIndex,
+  },
+  {
+    path: '/categories/:type',
+    name: 'categories',
+    component: CategoriesIndex,
   },
   {
     path: '/import',
