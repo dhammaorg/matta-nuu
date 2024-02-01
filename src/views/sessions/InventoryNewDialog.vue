@@ -8,6 +8,20 @@
       <InputDay v-model="inventory.day" :days="stockDays" class="w-100" />
     </div>
 
+    <!-- Storage Areas -->
+    <div class="p-field">
+      <label>Restrict to some storage areas</label>
+      <InputCategory type="StorageArea" :multiple="true" v-model="inventory.storage_area_ids"
+                     :btnAdd="false" />
+    </div>
+
+    <!-- Product Categories -->
+    <div class="p-field">
+      <label>Restrict to some product categories</label>
+      <InputCategory type="Product" :multiple="true" v-model="inventory.product_category_ids"
+                     :btnAdd="false" />
+    </div>
+
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Start the inventory" class="p-button-primary" @click="createInventory" />
@@ -17,10 +31,11 @@
 
 <script>
 import InputDay from '@/components/InputDay.vue'
+import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  components: { InputDay },
+  components: { InputDay, InputCategory },
   data() {
     return {
       visible: false,
