@@ -4,7 +4,7 @@
                v-bind="$attrs">
     <template #footer v-if="btnAdd">
       <div class="p-multiselect-header">
-        <Button icon="pi pi-plus" :label="`${type} Category`" class="p-button-sm"
+        <Button icon="pi pi-plus" :label="btnAddLabel" class="p-button-sm"
                 @click="$refs.form.show({ name: filterValue, type })" />
       </div>
     </template>
