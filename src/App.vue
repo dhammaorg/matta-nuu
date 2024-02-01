@@ -173,9 +173,9 @@ export default {
 
       // Loads associated objects
       if (!session.is_template) {
-        this.fetchSessionAssociatedObjects('orders')
-        this.fetchSessionAssociatedObjects('notes')
-        this.fetchSessionAssociatedObjects('inventories')
+        await this.fetchSessionAssociatedObjects('orders')
+        await this.fetchSessionAssociatedObjects('notes')
+        await this.fetchSessionAssociatedObjects('inventories')
       }
 
       this.sessions[sessionId] = session
