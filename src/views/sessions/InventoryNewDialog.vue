@@ -15,9 +15,16 @@
                      :btnAdd="false" />
     </div>
 
+    <!-- Suppliers -->
+    <div class="p-field">
+      <label>Restrict to some suppliers</label>
+      <InputSupplier :multiple="true" v-model="inventory.supplier_ids"
+                     :btnAdd="false" />
+    </div>
+
     <!-- Product Categories -->
     <div class="p-field">
-      <label>Restrict to some product categories</label>
+      <label>Restrict to some categories</label>
       <InputCategory type="Product" :multiple="true" v-model="inventory.product_category_ids"
                      :btnAdd="false" />
     </div>
@@ -32,10 +39,11 @@
 <script>
 import InputDay from '@/components/InputDay.vue'
 import InputCategory from '@/components/InputCategory.vue'
+import InputSupplier from '@/components/InputSupplier.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  components: { InputDay, InputCategory },
+  components: { InputDay, InputCategory, InputSupplier },
   data() {
     return {
       visible: false,
@@ -52,6 +60,7 @@ export default {
           session_id: this.$root.session.id,
           storage_area_ids: [],
           product_category_ids: [],
+          supplier_ids: [],
           values: {},
         },
         ...object,

@@ -1,5 +1,17 @@
 <template>
-  <Dropdown :options="$root.suppliersArray" optionLabel="name" optionValue="id" :showClear="true"
+  <MultiSelect v-if="multiple"
+               :options="$root.suppliersArray" optionLabel="name" optionValue="id"
+               v-bind="$attrs">
+    <template #footer v-if="btnAdd">
+      <div class="p-multiselect-header">
+        <Button icon="pi pi-plus" label="Supplier" class="p-button-sm"
+                @click="$refs.form.show({ name: filterValue })" />
+      </div>
+    </template>
+  </MultiSelect>
+
+  <Dropdown v-else :options="$root.suppliersArray" optionLabel="name" optionValue="id"
+            :showClear="true"
             placeholder="Supplier" :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
             @filter="filterValue = $event.value">
     <template #footer v-if="btnAdd">
@@ -14,14 +26,19 @@
 </template>
 
 <script>
+import MultiSelect from 'primevue/multiselect'
 import SupplierForm from '@/views/suppliers/SupplierForm.vue'
 
 export default {
-  components: { SupplierForm },
+  components: { SupplierForm, MultiSelect },
   props: {
     btnAdd: {
       type: Boolean,
       default: true,
+    },
+    multiple: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
