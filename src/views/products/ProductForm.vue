@@ -95,6 +95,12 @@ export default {
       }
     },
   },
+  watch: {
+    'product.packaging_conditioning': function (newVal, oldVal) {
+      //  reset convert_to_piece to false when no packaging_conditioning is present
+      if (!newVal) this.product.packaging_convert_to_piece = false
+    },
+  },
 }
 </script>
 
