@@ -1,67 +1,75 @@
 <template>
-  <div class="text-center mx-auto" style="max-width: 600px;">
-    <div class="d-flex mb-4">
-      <h1 class="m-0">Inventory - {{ inventory.day_label }}</h1>
-      <Button v-if="!finished" icon="pi pi-save" title="Save"
-              class="p-button-success p-button-sm ms-auto"
-              @click="save" :loading="saving" />
-    </div>
-    <h3 v-if="currentStorageArea" :class="{ 'text-primary': storageState === 'chooseNext' }">
-      <i v-if="storageState === 'chooseNext'" class="pi pi-check-circle me-2 fs-5"></i>
-      {{ currentStorageArea.name }}
-    </h3>
-    <div v-if="storageState == 'inProgress'">
-      <Card class="shadow-none border" v-if="inventory.values[currentProduct.id]">
-        <template #title>{{ currentProduct.name }}</template>
-        <template #content>
-          <div class="p-inputgroup">
-            <InputNumber v-model="inventory.values[currentProduct.id].value" :maxFractionDigits="5"
-                         placeholder="Stock" ref="stockInput"
-                         @keyup.enter="onInputStockKeyEnter" />
-            <!-- <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
-                v-tooltip.top="'Theoretical stock'">
-            {{ stockValueFor(stock.product_id) }}
-          </span> -->
-            <span class="p-inputgroup-addon" style="width: 5rem;">
-              {{ inventory.values[currentProduct.id].unit }}
-            </span>
-          </div>
-        </template>
-        <template #footer>
-          <div class="d-flex align-items-center justify-content-between">
-            <Button label="Prev" icon="pi pi-chevron-left" class="p-button-secondary"
-                    @click="productIndex = Math.max(productIndex - 1, 0)"
-                    :disabled="productIndex == 0" />
-            <div>{{ productIndex + 1 }} / {{ currentProducts.length }}</div>
-
-            <Button v-if="productIndex == currentProducts.length - 1"
-                    label="Finish"
-                    @click="finishArea" ref="nextButton" />
-            <Button v-else label="Next" icon="pi pi-chevron-right"
-                    @click="productIndex = productIndex + 1" ref="nextButton" />
-          </div>
-        </template>
-      </Card>
-    </div>
-
-    <div class="text-center" v-if="storageState == 'chooseNext'">
-      <template v-if="finished">
-        <h1>Inventory is finished !</h1>
-        <Button icon="pi pi-save" label="Save" class="p-button-success"
+  <div class="d-flex flex-column h-100 pb-4 mx-auto justify-content-between"
+       style="max-width: 600px; max-height: 800px;">
+    <div class="header">
+      <div class="d-flex">
+        <h1 class="m-0"><span class="d-none d-md-inline">Inventory - </span>{{ inventory.day_label }}
+        </h1>
+        <Button v-if="!finished" icon="pi pi-save" title="Save"
+                class="p-button-success ms-auto"
                 @click="save" :loading="saving" />
+      </div>
+      <h3 v-if="currentStorageArea" :class="{ 'text-primary': storageState === 'chooseNext' }">
+        <i class=" me-2 fs-5"
+           :class="storageState === 'chooseNext' ? 'pi pi-check-circle' : 'pi pi-map-marker'"></i>
+        {{ currentStorageArea.name }}
+      </h3>
+    </div>
 
+    <template v-if="storageState == 'inProgress' && inventory.values[currentProduct.id]">
+      <div class="content">
+        <h3 class="mb-4">{{ currentProduct.name }}</h3>
+        <div class="p-inputgroup">
+          <InputNumber v-model="inventory.values[currentProduct.id].value" :maxFractionDigits="5"
+                       placeholder="Stock" ref="stockInput"
+                       @keyup.enter="onInputStockKeyEnter" />
+          <!-- <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
+              v-tooltip.top="'Theoretical stock'">
+          {{ stockValueFor(stock.product_id) }}
+        </span> -->
+          <span class="p-inputgroup-addon" style="width: 5rem;">
+            {{ inventory.values[currentProduct.id].unit }}
+          </span>
+        </div>
+      </div>
+      <div class="footer d-flex align-items-center justify-content-between">
+        <Button label="Prev" icon="pi pi-chevron-left" class="p-button-secondary"
+                @click="productIndex = Math.max(productIndex - 1, 0)"
+                :disabled="productIndex == 0" />
+        <div>{{ productIndex + 1 }} / {{ currentProducts.length }}</div>
+
+        <Button v-if="productIndex == currentProducts.length - 1"
+                label="Finish"
+                @click="finishArea" ref="nextButton" />
+        <Button v-else label="Next" icon="pi pi-chevron-right"
+                @click="productIndex = productIndex + 1" ref="nextButton" />
+      </div>
+    </template>
+
+    <template v-if="storageState == 'chooseNext'">
+      <template v-if="finished">
+        <div class="content">
+          <h1>Inventory is finished !</h1>
+        </div>
+        <div class="footer">
+          <Button icon="pi pi-save" label="Save" class="p-button-success"
+                  @click="save" :loading="saving" />
+        </div>
       </template>
       <template v-else>
-        <div class="p-field">
-          <label>{{ currentStorageArea ? 'Next Storage is' : 'Choose the area to start' }}</label>
-          <InputCategory type="StorageArea" v-model="nextStorageAreaId" :list="nextStorageAreas"
-                         :btnAdd="false" :showClear="false" />
+        <div class="content">
+          <div class="p-field">
+            <label>{{ currentStorageArea ? 'Next Storage is' : 'Choose the area to start' }}</label>
+            <InputCategory type="StorageArea" v-model="nextStorageAreaId" :list="nextStorageAreas"
+                           :btnAdd="false" :showClear="false" />
+          </div>
         </div>
-
-        <Button label="Continue" class="w-100 mt-3"
-                @click="currentStorageAreaId = nextStorageAreaId" />
+        <div class="footer">
+          <Button label="Continue" class="w-100"
+                  @click="currentStorageAreaId = nextStorageAreaId" />
+        </div>
       </template>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -171,6 +179,7 @@ export default {
         .match({ id: this.inventory.id })
 
       if (error) this.toastError(error)
+      else this.toastSuccess({ name: 'Inventory' }, 'saved')
       this.saving = false
     },
   },
@@ -193,3 +202,13 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+.header {}
+
+.content {
+  text-align: center;
+  padding-bottom: 20%;
+}
+
+.footer {}
+</style>

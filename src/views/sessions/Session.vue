@@ -9,7 +9,7 @@
   </HelpMessage>
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
-    <div :style="contentFullPage ? '' : ''" v-if="$root.isSessionFullyLoaded()">
+    <div class="h-100" v-if="$root.isSessionFullyLoaded()">
       <router-view></router-view>
     </div>
   </div>

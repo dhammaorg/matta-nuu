@@ -256,6 +256,8 @@ export default {
 #app,
 body,
 html {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -305,6 +307,7 @@ html {
 }
 
 .page-full-content {
+  flex-grow: 1;
   padding: 2rem;
   padding-bottom: 0;
 
