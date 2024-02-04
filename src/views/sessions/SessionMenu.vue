@@ -1,6 +1,5 @@
 <template>
-  <div class="submenu px-3 d-flex align-items-center d-print-none overflow-scroll">
-
+  <div class="submenu px-3 d-flex align-items-center d-print-none overflow-auto">
     <h2 v-if="session.is_template" class="flex-grow-1 py-2">Event Template</h2>
     <div v-else class="d-flex justify-content-center flex-shrink-0">
       <Inplace :closable="true">
