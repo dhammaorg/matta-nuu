@@ -8,6 +8,8 @@
       <InputDay v-model="inventory.day" :days="stockDays" class="w-100" />
     </div>
 
+    <Divider />
+
     <!-- Storage Areas -->
     <div class="p-field">
       <label>Restrict to some storage areas</label>
@@ -37,13 +39,16 @@
 </template>
 
 <script>
+import Divider from 'primevue/divider'
 import InputDay from '@/components/InputDay.vue'
 import InputCategory from '@/components/InputCategory.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  components: { InputDay, InputCategory, InputSupplier },
+  components: {
+    InputDay, InputCategory, InputSupplier, Divider,
+  },
   data() {
     return {
       visible: false,
