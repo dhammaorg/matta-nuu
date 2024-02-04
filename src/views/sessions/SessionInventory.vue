@@ -43,19 +43,21 @@
     </template>
 
     <!-- Fill Area Stocks -->
-    <template v-if="currentStorageArea && inventory.values[currentProduct.id]">
+    <template
+              v-if="currentStorageArea && inventory.values[currentProduct.id][currentStorageArea?.id]">
       <!-- Stock & Unit inputs -->
       <div class="content">
         <h3 class="mb-4">{{ currentProduct.name }}</h3>
         <div class="p-inputgroup">
-          <InputNumber v-model="inventory.values[currentProduct.id].value" :maxFractionDigits="5"
+          <InputNumber v-model="inventory.values[currentProduct.id][currentStorageArea.id].value"
+                       :maxFractionDigits="5"
                        placeholder="Stock" ref="stockInput"
                        @keyup.enter="onInputStockKeyEnter" />
           <!-- <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
               v-tooltip.top="'Theoretical stock'">{{ stockValueFor(stock.product_id) }}
           </span> -->
           <span class="p-inputgroup-addon" style="width: 5rem;">
-            {{ inventory.values[currentProduct.id].unit }}
+            {{ inventory.values[currentProduct.id][currentStorageArea.id].unit }}
           </span>
         </div>
       </div>
@@ -165,7 +167,7 @@ export default {
       })
     },
     completedProductsForArea(area) {
-      return this.productsForArea(area).filter((product) => this.inventory.values[product.id]?.value)
+      return this.productsForArea(area).filter((product) => this.inventory.values[product.id][area.id]?.value)
     },
     async onInputStockKeyEnter() {
       await this.$nextTick()
@@ -195,7 +197,13 @@ export default {
     // initialize values for each product
     products() {
       if (!this.products || this.products.length == 0) return
-      this.products.forEach((product) => { this.inventory.values[product.id] ||= { unit: product.unit } })
+      this.products.forEach((product) => {
+        const areasIds = product.storage_area_ids || ['other']
+        this.inventory.values[product.id] ||= {}
+        areasIds.forEach((areaId) => {
+          this.inventory.values[product.id][areaId] ||= { unit: product.unit }
+        })
+      })
     },
     async currentProduct() {
       this.focusStockInput()
