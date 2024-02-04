@@ -6,7 +6,9 @@
       </div>
     </template>
     <template #end>
-      <ToggleButton v-model="$root.help" class="p-button-sm p-button-text me-3" style="height: 2rem"
+      <ToggleButton v-model="$root.help"
+                    class="p-button-sm p-button-text me-3 d-none d-md-inline-block"
+                    style="height: 2rem"
                     onLabel="Help" offLabel="Help" onIcon="pi pi-question-circle"
                     offIcon="pi pi-question-circle" />
 

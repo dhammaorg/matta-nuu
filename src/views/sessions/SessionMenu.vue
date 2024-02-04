@@ -1,8 +1,8 @@
 <template>
-  <div class="submenu px-3 d-flex align-items-center d-print-none">
+  <div class="submenu px-3 d-flex align-items-center d-print-none overflow-scroll">
 
-    <h2 class="flex-grow-1 py-2" v-if="session.is_template">Event Template</h2>
-    <div class="d-flex justify-content-center" v-if="!session.is_template">
+    <h2 v-if="session.is_template" class="flex-grow-1 py-2">Event Template</h2>
+    <div v-else class="d-flex justify-content-center flex-shrink-0">
       <Inplace :closable="true">
         <template #display>
           <h2 class="m-0 me-3" title="Edit">
