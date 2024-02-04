@@ -7,25 +7,30 @@
       <div class="d-flex">
         <h1 class="m-0"><span class="d-none d-md-inline">Inventory - </span>{{ inventory.day_label }}
         </h1>
-        <Button v-if="currentStorageArea" icon="pi pi-save" title="Save"
-                class="p-button-success ms-auto"
-                @click="save" :loading="saving" />
+        <div class="ms-auto">
+          <Button icon="pi pi-trash" title="Delete"
+                  class="p-button-text p-button-danger me-1"
+                  @click="destroy" :loading="loading" />
+          <Button v-if="currentArea" icon="pi pi-save" title="Save"
+                  class="p-button-success"
+                  @click="save" :loading="saving" />
+        </div>
       </div>
-      <h3 v-if="currentStorageArea">
+      <h3 v-if="currentArea">
         <i class=" me-2 fs-5 pi pi-map-marker"></i>
-        {{ currentStorageArea.name }}
+        {{ currentArea.name }}
       </h3>
     </div>
 
     <!-- Choose Area -->
-    <template v-if="!currentStorageArea">
+    <template v-if="!currentArea">
       <div class="content">
         <h3 class="text-primary">
           <span v-if="allAreasCompleted">Inventory done !</span>
           <span v-else-if="noneAreaCompleted">Choose the Area to Start</span>
           <span v-else>Choose the Next Area</span>
         </h3>
-        <div v-for="area in storageAreas" :key="area.id"
+        <div v-for="area in areas" :key="area.id"
              @click="startArea(area)"
              class="storage-area-card border mb-3 rounded-3 p-3"
              :class="{ completed: isAreaCompleted(area) }">
@@ -43,13 +48,12 @@
     </template>
 
     <!-- Fill Area Stocks -->
-    <template
-              v-if="currentStorageArea && inventory.values[currentProduct.id][currentStorageArea?.id]">
+    <template v-if="currentArea && (inventory.values[currentProduct.id] || {})[currentArea?.id]">
       <!-- Stock & Unit inputs -->
       <div class="content">
         <h3 class="mb-4">{{ currentProduct.name }}</h3>
         <div class="p-inputgroup">
-          <InputNumber v-model="inventory.values[currentProduct.id][currentStorageArea.id].value"
+          <InputNumber v-model="inventory.values[currentProduct.id][currentArea.id].value"
                        :maxFractionDigits="5"
                        placeholder="Stock" ref="stockInput"
                        @keyup.enter="onInputStockKeyEnter" />
@@ -57,7 +61,7 @@
               v-tooltip.top="'Theoretical stock'">{{ stockValueFor(stock.product_id) }}
           </span> -->
           <span class="p-inputgroup-addon" style="width: 5rem;">
-            {{ inventory.values[currentProduct.id][currentStorageArea.id].unit }}
+            {{ inventory.values[currentProduct.id][currentArea.id].unit }}
           </span>
         </div>
       </div>
@@ -84,7 +88,7 @@ import InputNumber from 'primevue/inputnumber'
 import StockMixin from '@/services/stocks-mixin'
 
 export default {
-  inject: ['sessionDays', 'stockDays', 'sessionInventories'],
+  inject: ['sessionInventories'],
   mixins: [StockMixin],
   components: { InputNumber },
   data() {
@@ -97,17 +101,18 @@ export default {
         values: {},
       },
       otherArea: { name: 'Other Products', id: 'other' },
-      currentStorageArea: undefined,
+      currentArea: undefined,
       productIndex: 0,
+      loading: false,
       saving: false,
     }
   },
   beforeMount() {
     this.inventory = this.sessionInventories.find((inv) => inv.id == this.$route.params.inventory_id)
-    if (this.storageAreas.length === 1) this.currentStorageArea = this.storageAreas.at(0)
+    if (this.areas.length === 1) this.currentArea = this.areas.at(0)
   },
   computed: {
-    storageAreas() {
+    areas() {
       let result = Object.values(this.$root.categories)
         .filter((c) => c.type === 'StorageArea')
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -121,7 +126,7 @@ export default {
       return result
     },
     isAreaCompleteds() {
-      return this.storageAreas.filter((area) => this.inventory.completed_storage_areas_ids.includes(area.id))
+      return this.areas.filter((area) => this.inventory.completed_storage_areas_ids.includes(area.id))
     },
     products() {
       let result = this.sessionProducts.map((productId) => this.$root.getProduct(productId))
@@ -133,15 +138,15 @@ export default {
       }
       return result
     },
-    // Products related to currentStorageArea
+    // Products related to currentArea
     currentProducts() {
-      return this.currentStorageArea ? this.productsForArea(this.currentStorageArea) : []
+      return this.currentArea ? this.productsForArea(this.currentArea) : []
     },
     currentProduct() {
       return this.currentProducts.at(this.productIndex) || {}
     },
     allAreasCompleted() {
-      return this.storageAreas.length === this.isAreaCompleteds.length
+      return this.areas.length === this.isAreaCompleteds.length
     },
     noneAreaCompleted() {
       return this.isAreaCompleteds.length === 0
@@ -149,13 +154,13 @@ export default {
   },
   methods: {
     startArea(area) {
-      this.currentStorageArea = area
+      this.currentArea = area
       this.productIndex = 0
       this.focusStockInput()
     },
     finishCurrentArea() {
-      this.inventory.completed_storage_areas_ids.push(this.currentStorageArea.id)
-      this.currentStorageArea = null
+      this.inventory.completed_storage_areas_ids.push(this.currentArea.id)
+      this.currentArea = null
     },
     isAreaCompleted(area) {
       return this.inventory.completed_storage_areas_ids.includes(area.id)
@@ -167,7 +172,7 @@ export default {
       })
     },
     completedProductsForArea(area) {
-      return this.productsForArea(area).filter((product) => this.inventory.values[product.id][area.id]?.value)
+      return this.productsForArea(area).filter((product) => (this.inventory.values[product.id] || {})[area.id]?.value)
     },
     async onInputStockKeyEnter() {
       await this.$nextTick()
@@ -184,6 +189,7 @@ export default {
       delete inventoryToSave.day_object
       delete inventoryToSave.day_label
       delete inventoryToSave.day_date
+      // this.dbUpdate('inventories', inventoryToSave)
       const { error } = await this.$db.from('inventories')
         .update(inventoryToSave)
         .match({ id: this.inventory.id })
@@ -191,6 +197,17 @@ export default {
       if (error) this.toastError(error)
       else this.toastSuccess({ name: 'Inventory' }, 'saved')
       this.saving = false
+    },
+    destroy() {
+      this.$confirm.require({
+        message: 'Are you sure you want to this inventory ?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: async () => {
+          this.dbDestroy('inventories', this.inventory)
+          this.$router.push({ name: 'session_overview', params: { id: this.$route.params.id } })
+        },
+      })
     },
   },
   watch: {
