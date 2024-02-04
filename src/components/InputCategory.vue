@@ -46,6 +46,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    list: {
+      type: Array,
+      default: null,
+    },
   },
   components: { CategoryForm, MultiSelect },
   data() {
@@ -58,7 +62,7 @@ export default {
   },
   computed: {
     categories() {
-      return Object.values(this.$root.categories).filter((c) => c.type === this.type)
+      return this.list || Object.values(this.$root.categories).filter((c) => c.type === this.type)
     },
   },
   methods: {
