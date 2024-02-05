@@ -2,9 +2,8 @@
   <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
           header="New Order">
 
-    <div class="p-field" v-if="suppliers.length > 0">
-      <Dropdown v-model="order.supplier_id" :options="suppliers" placeholder="Supplier"
-                optionLabel="name" optionValue="id" />
+    <div class="p-field" v-if="$root.suppliersArray.length > 0">
+      <InputSupplier v-model="order.supplier_id" />
     </div>
 
     <!-- Date -->
@@ -27,22 +26,17 @@
 </template>
 
 <script>
-import Dropdown from 'primevue/dropdown'
 import InputDay from '@/components/InputDay.vue'
+import InputSupplier from '../../components/InputSupplier.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  components: { Dropdown, InputDay },
+  components: { InputDay, InputSupplier },
   data() {
     return {
       visible: false,
       order: {},
     }
-  },
-  computed: {
-    suppliers() {
-      return this.$root.suppliersArray
-    },
   },
   methods: {
     show(data) {
@@ -56,7 +50,6 @@ export default {
         },
         ...data,
       }
-      if (this.suppliers.length === 1) this.order.supplier_id = this.suppliers.at(0).id
       this.visible = true
     },
     async createOrder() {
