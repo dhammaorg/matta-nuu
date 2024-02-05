@@ -215,7 +215,7 @@ export default {
     products() {
       if (!this.products || this.products.length == 0) return
       this.products.forEach((product) => {
-        const areasIds = product.storage_area_ids || ['other']
+        const areasIds = product.storage_area_ids.length > 0 ? product.storage_area_ids : ['other']
         this.inventory.values[product.id] ||= {}
         areasIds.forEach((areaId) => {
           this.inventory.values[product.id][areaId] ||= { unit: product.unit }
