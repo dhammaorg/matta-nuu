@@ -162,6 +162,8 @@ export default {
     return {
       options: {
         groupBy: this.$route.query.groupBy === undefined ? 'category' : this.$route.query.groupBy,
+        supplierId: null,
+        categoryId: null,
         onlyProductsWithSupplier: false,
         onlyMissingProducts: this.$route.query.onlyMissing === undefined ? false : this.$route.query.onlyMissing == 'true',
       },
@@ -175,9 +177,16 @@ export default {
       let result = this.stocks
       if (this.options.onlyProductsWithSupplier) result = result.filter((s) => s.supplier.name)
       if (this.options.onlyMissingProducts) result = result.filter((s) => s.missingDay !== false)
+      if (this.options.supplierId) {
+        result = result.filter((s) => s.supplier.id == this.options.supplierId)
+      }
+      if (this.options.categoryId) {
+        result = result.filter((s) => s.category.id == this.options.categoryId)
+      }
+
       result = result.sort((a, b) => {
         if (this.options.groupBy) {
-          // sort first by gour option, then by name
+          // sort first by group option, then by name
           const aValue = a[this.options.groupBy].name || 'xxxx'
           const bValue = b[this.options.groupBy].name || 'xxxx'
           if (!aValue || aValue === bValue) {
