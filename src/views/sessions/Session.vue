@@ -81,13 +81,6 @@ export default {
       return Object.values(this.$root.inventories)
         .filter((inventory) => inventory.session_id === this.$root.session.id)
         .sort((a, b) => (a.id < b.id ? 1 : -1))
-        .map((o) => {
-          const result = { ...o }
-          result.day_object = this.stockDays.find((d) => d.id == result.day) || {}
-          result.day_label = result.day_object.dateHeader
-          result.day_date = result.day_object.date
-          return result
-        })
     },
     contentFullPage() {
       return this.$route.name !== 'session_orders'

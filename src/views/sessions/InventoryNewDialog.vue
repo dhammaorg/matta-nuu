@@ -33,7 +33,8 @@
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-      <Button label="Start the inventory" class="p-button-primary" @click="createInventory" />
+      <Button v-if="isEditing" label="Update" class="p-button-primary" @click="updateInventory" />
+      <Button v-else label="Start the inventory" class="p-button-primary" @click="createInventory" />
     </template>
   </Dialog>
 </template>
@@ -55,7 +56,10 @@ export default {
       inventory: {},
     }
   },
-  mounted() {
+  computed: {
+    isEditing() {
+      return this.inventory.id
+    },
   },
   methods: {
     show(object) {
@@ -78,6 +82,12 @@ export default {
         this.$router.push({ name: 'session_inventory', params: { id: this.$route.params.id, inventory_id: inventory.id } })
         this.inventory = {}
       })
+    },
+    async updateInventory() {
+      await this.dbUpdate('inventories', this.inventory)
+      this.$emit('inventory-updated', this.inventory)
+      this.visible = false
+      this.inventory = {}
     },
   },
 }

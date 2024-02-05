@@ -152,7 +152,7 @@ export default {
     convertedInventories() {
       return this.sessionInventories.map((inventory) => ({
         title: 'Inventory',
-        date: new Date(inventory.day_date).setHours(4),
+        date: new Date(this.stockDays.find((d) => d.id == inventory.day)?.date).setHours(4),
         className: 'inventory',
         display: 'list-item',
         extendedProps: { inventory },

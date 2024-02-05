@@ -5,21 +5,27 @@
     <!-- Header -->
     <div class="header">
       <div class="d-flex">
-        <h1 class="m-0"><span class="d-none d-md-inline">Inventory - </span>{{ inventory.day_label }}
+        <h1 class="m-0">
+          <span class="d-none d-md-inline">Inventory - </span>
+          {{ this.stockDays.find((d) => d.id == inventory.day)?.dateHeader }}
         </h1>
         <div class="ms-auto">
+          <Button icon="pi pi-pencil" title="Edit"
+                  class="p-button-text p-button-secondary"
+                  @click="$refs.form.show(inventory)" />
           <Button icon="pi pi-trash" title="Delete"
-                  class="p-button-text p-button-danger me-2"
+                  class="p-button-text p-button-danger me-3"
                   @click="destroy" :loading="loading" />
           <Button icon="pi pi-save" title="Save"
                   class="p-button-success"
-                  @click="save" :loading="saving" />
+                  @click="save" :loading="loading" />
         </div>
       </div>
-      <h3 v-if="currentArea" class="d-flex align-items-center mt-2">
+      <h3 v-if="currentArea" class="d-flex align-items-center mt-0 pt-3">
         <i class=" me-2 fs-5 pi pi-map-marker"></i>
         {{ currentArea.name }}
-        <Button icon="pi pi-pencil" title="Change Area" class="p-button-text p-button-secondary"
+        <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area"
+                class="p-button-text p-button-secondary"
                 @click="currentArea = null" />
       </h3>
     </div>
@@ -45,7 +51,7 @@
         </div>
       </div>
       <div class="footer">
-        <Button label="Save" class="w-100 p-button-success" @click="save" :loading="saving" />
+        <Button label="Save" class="w-100 p-button-success" @click="save" :loading="loading" />
       </div>
     </template>
 
@@ -99,6 +105,8 @@
       </div>
     </template>
   </div>
+
+  <InventoryNewDialog ref="form" @inventory-updated="onInventoryUpdated($event)" />
 </template>
 
 <script>
@@ -106,11 +114,14 @@ import InputNumber from 'primevue/inputnumber'
 import Tag from 'primevue/tag'
 import RadioButton from 'primevue/radiobutton'
 import StockMixin from '@/services/stocks-mixin'
+import InventoryNewDialog from './InventoryNewDialog.vue'
 
 export default {
   inject: ['sessionInventories'],
   mixins: [StockMixin],
-  components: { InputNumber, RadioButton, Tag },
+  components: {
+    InputNumber, RadioButton, Tag, InventoryNewDialog,
+  },
   data() {
     return {
       inventory: {
@@ -124,7 +135,6 @@ export default {
       currentArea: undefined,
       productIndex: 0,
       loading: false,
-      saving: false,
     }
   },
   beforeMount() {
@@ -208,19 +218,7 @@ export default {
       })
     },
     async save() {
-      this.saving = true
-      const inventoryToSave = { ...this.inventory }
-      delete inventoryToSave.day_object
-      delete inventoryToSave.day_label
-      delete inventoryToSave.day_date
-      // this.dbUpdate('inventories', inventoryToSave)
-      const { error } = await this.$db.from('inventories')
-        .update(inventoryToSave)
-        .match({ id: this.inventory.id })
-
-      if (error) this.toastError(error)
-      else this.toastSuccess({ name: 'Inventory' }, 'saved')
-      this.saving = false
+      this.dbUpdate('inventories', this.inventory)
     },
     destroy() {
       this.$confirm.require({
@@ -232,6 +230,10 @@ export default {
           this.$router.push({ name: 'session_overview', params: { id: this.$route.params.id } })
         },
       })
+    },
+    onInventoryUpdated(data) {
+      this.inventory = data
+      this.currentArea = null
     },
   },
   watch: {
