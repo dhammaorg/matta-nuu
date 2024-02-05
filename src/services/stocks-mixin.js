@@ -1,6 +1,7 @@
 import { convertToUnit } from '@/services/units'
 
 export default {
+  inject: ['sessionDays', 'stockDays', 'sessionInventories'],
   data() {
     return {
       stocks: [],
@@ -78,11 +79,12 @@ export default {
         if (!doCalculation && day.id === fromDayId) doCalculation = true
 
         if (doCalculation || !values[day.id]) {
+          // Bought / Ordered
           const manuallyBought = (this.session.buys[productId] || {})[day.id]
           let bought = manuallyBought || 0
           const ordered = []
           const boughtLabels = []
-          if (manuallyBought) boughtLabels.push(`+${manuallyBought} ${product.unit} manually bought`)
+          if (manuallyBought) boughtLabels.push(`+${manuallyBought} ${product.unit} FromManualStock bought`)
           this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
             if (order.values[productId] && order.values[productId].value) {
               // in the order, 2500g is converted to 2.5kg, so need to convert it back here
@@ -93,14 +95,36 @@ export default {
             }
           })
 
-          // consumption is always the same, so reusing previously calculated value if exists
+          // Consumption is always the same, so reusing previously calculated value if exists
           let { consumption } = values[day.id] || {}
           let { consumptionLabels } = values[day.id] || {}
           if (consumption === undefined) {
             ({ consumption, consumptionLabels } = this.consumption(productId, day))
           }
 
-          const real = (this.session.realStocks[productId] || {})[day.id]
+          // Real stocks / Inventories
+          const realFromManualStock = (this.session.realStocks[productId] || {})[day.id]
+          const realFromInventories = []
+          const inventories = this.sessionInventories.filter((inv) => inv.day === day.id)
+          inventories.forEach((inventory) => {
+            let productVal = 0
+            const areas = []
+            Object.entries(inventory.values[productId] || {}).forEach(([areaId, areaVal]) => {
+              if (areaVal.value) {
+                const value = convertToUnit(areaVal.value, areaVal.unit, product)
+                productVal += value
+                const area = this.$root.getCategory(areaId)
+                areas.push(area.name || 'Other')
+              }
+            })
+            const title = `Stock from inventory (${areas.join(', ')})`
+            realFromInventories.push({ value: productVal, title, id: inventory.id })
+          })
+          let real = realFromManualStock
+          if (!real && realFromInventories.length > 0) {
+            real = realFromInventories.reduce((acc, obj) => acc + obj.value, 0)
+          }
+
           let theoric = previousStock
           // a negative previousStock is just theorical, as soon as we buy something, we consider
           // this previous negative stock to be equal to 0
@@ -131,9 +155,11 @@ export default {
 
           values[day.id] = {
             real,
-            manuallyBought,
+            realFromManualStock,
+            realFromInventories,
             bought,
             boughtLabels,
+            manuallyBought,
             ordered,
             consumption,
             consumptionLabels,

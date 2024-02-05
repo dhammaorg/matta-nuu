@@ -75,6 +75,7 @@
     <!-- Cells -->
     <Column v-for="day in stockDays" :key="`cell-${day.id}`" :field="day.id"
             :class="`cell-stock editor-sm ${day.class} ${day.id}`">
+      <!-- Cell View -->
       <template #body="{ data, field }">
         <div class="cell-content" :class="{ 'negative-value': data.values[field].value.round() < 0 }">
           <span class="stock-value-container d-flex flex-column align-items-center">
@@ -98,11 +99,26 @@
           <span class="stock-value-container"></span>
         </div>
       </template>
+
+      <!-- Cell Edit -->
       <template #editor="{ data, field }">
-        <InputNumber v-model="data.values[field].real" placeholder="Stock" :maxFractionDigits="2" />
+        <!-- Stock Input -->
+        <InputNumber v-model="data.values[field].realFromManualStock" placeholder="Stock"
+                     :maxFractionDigits="2" />
+        <div v-for="inventory in data.values[field].realFromInventories"
+             :key="day + field + 'inventory' + inventory.id"
+             :title="inventory.title" class="p-2 flex-shrink-0">
+          <router-link class="text-primary"
+                       :to="{ name: 'session_inventory', params: { id: $route.params.id, inventory_id: inventory.id } }">
+            <strong>{{ inventory.value.round() }}</strong>
+            <Button icon="pi pi-pencil" class="p-button-text p-button-sm p-0 px-2 w-auto" />
+          </router-link>
+        </div>
+
+        <!-- Bought Input -->
         <InputNumber v-model="data.values[field].manuallyBought" placeholder="Bought"
                      :maxFractionDigits="2" />
-        <div v-for="order in data.values[field].ordered" :key="day + field + order.id"
+        <div v-for="order in data.values[field].ordered" :key="day + field + 'order' + order.id"
              :title="`Ordered Amount from ${order.name}`" class="p-2">
           <router-link
                        :to="{ name: 'session_order', params: { id: $route.params.id, order_id: order.id } }">
@@ -184,7 +200,7 @@ export default {
   methods: {
     onCellEditComplete(event) {
       const { data, field: day } = event
-      const newReal = data.values[day].real
+      const newReal = data.values[day].realFromManualStock
       const newBought = data.values[day].manuallyBought
       // recalculate only the data we need
       /* eslint-disable eqeqeq */
