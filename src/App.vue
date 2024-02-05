@@ -142,6 +142,7 @@ export default {
         .then((result) => {
           result.data.forEach((session) => {
             if (!this.sessions[session.id]) {
+              session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
               this.sessions[session.id] = { ...emptySession, ...session }
             }
           })
@@ -169,6 +170,7 @@ export default {
         },
         ...data,
       }
+
       session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
 
       // Loads associated objects
