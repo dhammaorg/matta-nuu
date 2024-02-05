@@ -62,7 +62,8 @@ export default {
   },
   computed: {
     categories() {
-      return this.list || Object.values(this.$root.categories).filter((c) => c.type === this.type)
+      const array = this.list || Object.values(this.$root.categories).filter((c) => c.type === this.type)
+      return [...array].sort((a, b) => a.name.localeCompare(b.name))
     },
   },
   methods: {

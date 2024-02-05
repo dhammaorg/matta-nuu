@@ -1,6 +1,6 @@
 <template>
   <div class="p-inputgroup">
-    <Dropdown v-bind="$attrs" :options="$root.recipiesArray" optionLabel="name" optionValue="id"
+    <Dropdown v-bind="$attrs" :options="options" optionLabel="name" optionValue="id"
               placeholder="Recipie" :filter="true" filterPlaceholder="" :showClear="true"
               class="w-100" @filter="filterValue = $event.value">
       <template #footer>
@@ -29,6 +29,9 @@ export default {
   computed: {
     value() {
       return this.$attrs.modelValue
+    },
+    options() {
+      return [...this.$root.recipiesArray].sort((a, b) => a.name.localeCompare(b.name))
     },
   },
 }

@@ -1,6 +1,6 @@
 <template>
   <MultiSelect v-if="multiple"
-               :options="$root.suppliersArray" optionLabel="name" optionValue="id"
+               :options="suppliers" optionLabel="name" optionValue="id"
                v-bind="$attrs">
     <template #footer v-if="btnAdd">
       <div class="p-multiselect-header">
@@ -10,7 +10,7 @@
     </template>
   </MultiSelect>
 
-  <Dropdown v-else :options="$root.suppliersArray" optionLabel="name" optionValue="id"
+  <Dropdown v-else :options="suppliers" optionLabel="name" optionValue="id"
             :showClear="true"
             placeholder="Supplier" :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
             @filter="filterValue = $event.value">
@@ -45,6 +45,11 @@ export default {
     return {
       filterValue: '',
     }
+  },
+  computed: {
+    suppliers() {
+      return [...this.$root.suppliersArray].sort((a, b) => a.name.localeCompare(b.name))
+    },
   },
 }
 </script>
