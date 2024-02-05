@@ -54,18 +54,34 @@
       <!-- Stock & Unit inputs -->
       <div class="content">
         <h3 class="mb-4">{{ currentProduct.name }}</h3>
+        <!-- Unit -->
+        <div v-if="currentProduct.packaging_convert_to_piece"
+             class="d-flex align-items-center mb-4 justify-content-center">
+          <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit"
+                       id="unit-default" name="unit"
+                       :value="currentProduct.unit" />
+          <label for="unit-default" class="ms-2 me-4">{{ currentProduct.unit }}</label>
+          <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit"
+                       id="unit-piece" name="unit" value="piece" />
+          <label for="unit-piece" class="ms-2">
+            piece ({{ currentProduct.packaging_conditioning }}{{ currentProduct.unit }})
+            <Tag :value="currentProduct.packaging_reference" class="ms-2 p-tag-secondary" />
+          </label>
+        </div>
+        <!-- Stock -->
         <div class="p-inputgroup">
           <InputNumber v-model="inventory.values[currentProduct.id][currentArea.id].value"
                        :maxFractionDigits="5"
                        placeholder="Stock" ref="stockInput"
                        @keyup.enter="onInputStockKeyEnter" />
-          <!-- <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
-              v-tooltip.top="'Theoretical stock'">{{ stockValueFor(stock.product_id) }}
-          </span> -->
           <span class="p-inputgroup-addon" style="width: 5rem;">
             {{ inventory.values[currentProduct.id][currentArea.id].unit }}
           </span>
         </div>
+        <!-- Theoritical Stock & Warning -->
+        <!-- <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
+              v-tooltip.top="'Theoretical stock'">{{ stockValueFor(stock.product_id) }}
+          </span> -->
       </div>
 
       <!-- Navigation -->
@@ -87,12 +103,14 @@
 
 <script>
 import InputNumber from 'primevue/inputnumber'
+import Tag from 'primevue/tag'
+import RadioButton from 'primevue/radiobutton'
 import StockMixin from '@/services/stocks-mixin'
 
 export default {
   inject: ['sessionInventories'],
   mixins: [StockMixin],
-  components: { InputNumber },
+  components: { InputNumber, RadioButton, Tag },
   data() {
     return {
       inventory: {
@@ -255,5 +273,10 @@ export default {
   &.completed {
     opacity: .5;
   }
+}
+
+.p-tag-secondary {
+  color: inherit;
+  background-color: var(--bluegray-100);
 }
 </style>
