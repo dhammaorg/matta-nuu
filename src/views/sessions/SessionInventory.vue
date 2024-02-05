@@ -9,16 +9,18 @@
         </h1>
         <div class="ms-auto">
           <Button icon="pi pi-trash" title="Delete"
-                  class="p-button-text p-button-danger me-1"
+                  class="p-button-text p-button-danger me-2"
                   @click="destroy" :loading="loading" />
-          <Button v-if="currentArea" icon="pi pi-save" title="Save"
+          <Button icon="pi pi-save" title="Save"
                   class="p-button-success"
                   @click="save" :loading="saving" />
         </div>
       </div>
-      <h3 v-if="currentArea">
+      <h3 v-if="currentArea" class="d-flex align-items-center mt-2">
         <i class=" me-2 fs-5 pi pi-map-marker"></i>
         {{ currentArea.name }}
+        <Button icon="pi pi-pencil" title="Change Area" class="p-button-text p-button-secondary"
+                @click="currentArea = null" />
       </h3>
     </div>
 
@@ -213,7 +215,7 @@ export default {
   watch: {
     // initialize values for each product
     products() {
-      if (!this.products || this.products.length == 0) return
+      if (!this.products || this.products.length === 0) return
       this.products.forEach((product) => {
         const areasIds = product.storage_area_ids.length > 0 ? product.storage_area_ids : ['other']
         this.inventory.values[product.id] ||= {}
