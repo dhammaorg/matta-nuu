@@ -129,13 +129,17 @@ export default {
   },
   beforeMount() {
     this.inventory = this.sessionInventories.find((inv) => inv.id == this.$route.params.inventory_id)
-    if (this.areas.length === 1) this.currentArea = this.areas.at(0)
+    // if (this.areas.length === 1) this.currentArea = this.areas.at(0)
   },
   computed: {
     areas() {
       let result = Object.values(this.$root.categories)
         .filter((c) => c.type === 'StorageArea')
         .sort((a, b) => a.name.localeCompare(b.name))
+
+      let areasIdsInUse = this.products.reduce((acc, product) => acc.concat(product.storage_area_ids), [])
+      areasIdsInUse = Array.from(new Set(areasIdsInUse))
+      if (areasIdsInUse.lentgh > 0) result = result.filter((c) => areasIdsInUse.includes(c.id))
 
       if (this.inventory.storage_area_ids.length > 0) {
         result = result.filter((c) => this.inventory.storage_area_ids.includes(c.id))
