@@ -2,14 +2,17 @@
   <Dialog v-model:visible="visible" :style="{ width: '600px' }"
           :header="isNew ? 'Add an Event to the Session' : 'Edit Event'"
           :modal="true" class="p-fluid">
-    <div class="p-field">
-      <InputText v-model.trim="event.name" required="true" placeholder="Name" autofocus />
+    <div class="p-field" v-if="isNew">
+      <label v-if="template">Template</label>
+      <Dropdown :options="$root.templatesArray" optionLabel="name" v-model="template"
+                placeholder="Use a template (optional)" :filter="true" showClear
+                filterPlaceholder=""
+                class="w-100" />
     </div>
 
-    <div class="p-field" v-if="isNew">
-      <Dropdown :options="$root.templatesArray" optionLabel="name" v-model="template"
-                placeholder="Use a template (optional)" :filter="true" filterPlaceholder=""
-                class="w-100" />
+    <div class="p-field">
+      <label v-if="event.name">Event Name</label>
+      <InputText v-model.trim="event.name" required="true" placeholder="Name" autofocus />
     </div>
 
     <div class="p-field">
@@ -49,7 +52,7 @@ export default {
     return {
       visible: false,
       isTemplate: false,
-      template: {},
+      template: undefined,
       event: {},
       updateAmounts: true,
       amountChanged: false,
@@ -73,7 +76,7 @@ export default {
     async save() {
       if (this.event.name && this.event.start_date) {
         // Fill new event with chosen template
-        if (this.isNew && this.template.id) {
+        if (this.isNew && this.template) {
           this.template = await this.$root.fetchSession(this.template.id)
           const eventTemplate = { ...this.template.events.at(0) }
           this.event = { ...eventTemplate, ...this.event, ...{ id: null } }
@@ -108,8 +111,18 @@ export default {
         this.$emit('save', this.event)
         this.visible = false
         this.event = {}
-        this.template = {}
+        this.template = undefined
         this.updateAmounts = false
+      }
+    },
+  },
+  watch: {
+    // Prefill event name and people_count from event template
+    template() {
+      if (this.template && this.template.events) {
+        const eventTemplate = this.template.events[0]
+        this.event.name ||= eventTemplate.name
+        this.event.people_count ||= eventTemplate.people_count
       }
     },
   },

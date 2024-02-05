@@ -137,12 +137,12 @@ export default {
           })
           this.handleDataFetched()
         })
-      this.$db.from('sessions').select('id, name, is_template')
+      this.$db.from('sessions').select('id, name, is_template, events')
         .match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
           result.data.forEach((session) => {
             if (!this.sessions[session.id]) {
-              this.sessions[session.id] = { ...session, ...emptySession }
+              this.sessions[session.id] = { ...emptySession, ...session }
             }
           })
           this.handleDataFetched()
