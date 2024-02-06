@@ -140,10 +140,10 @@ export default {
           if (day.id === 'initial') value = (real || 0) + bought
           else value = (real != null) ? real : theoric
 
-          // inventoryWarning - the real stock is quite different from theoretical stock.
+          // stockDiff - the real stock is quite different from theoretical stock.
           // we use the total previous consumption since last inventory to determine the thresold
-          let inventoryWarning = false
-          if (day.id !== 'initial' && real) {
+          let stockDiff = 0
+          if (day.id !== 'initial' && real != null) {
             let totalConsFromLastInventory = 0
             let inThePast = true
             Object.entries(values).forEach(([iteratorDayId, iteratorValue]) => {
@@ -153,8 +153,11 @@ export default {
                 if (iteratorValue.real != null && inThePast) totalConsFromLastInventory = 0
               }
             })
-            inventoryWarning = Math.abs(real - theoric) > (totalConsFromLastInventory * 0.2)
+            // + 0.0000001 is to avoid division by 0
+            if (totalConsFromLastInventory === 0) stockDiff = Math.abs(real - theoric) / (Math.max(real, theoric) + 0.0000001)
+            else stockDiff = Math.abs(real - theoric) / totalConsFromLastInventory
           }
+          // 5 3  5-3/5
 
           values[day.id] = {
             real,
@@ -168,7 +171,7 @@ export default {
             consumptionLabels,
             theoric,
             value,
-            inventoryWarning,
+            stockDiff,
           }
 
           previousStock = value
