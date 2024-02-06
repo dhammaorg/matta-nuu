@@ -1,7 +1,7 @@
 <template>
   <Button type="button" icon="pi pi-sliders-h" class="p-button-sm p-button-secondary"
           :class="{ 'p-button-warning': filtersPresent > 0 }"
-          :badge="filtersPresent && filtersPresent.toString()"
+          :badge="filtersPresent.length > 0 ? filtersPresent.toString() : null"
           label="Filters / Display" @click="show" />
 
   <Dialog v-model:visible="visible" :style="{ width: '600px' }"
