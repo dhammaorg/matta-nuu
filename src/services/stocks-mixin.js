@@ -109,11 +109,12 @@ export default {
           const realFromInventories = []
           const inventories = this.sessionInventories.filter((inv) => inv.day === day.id)
           inventories.forEach((inventory) => {
-            let productVal = 0
+            let productVal
             const areas = []
             Object.entries(inventory.values[productId] || {}).forEach(([areaId, areaVal]) => {
-              if (areaVal.value) {
+              if (areaVal.value !== undefined) {
                 const value = convertToUnit(areaVal.value, areaVal.unit, product)
+                productVal ||= 0
                 productVal += value
                 const area = this.$root.getCategory(areaId)
                 areas.push(area.name || 'Other')
@@ -121,7 +122,7 @@ export default {
             })
             let title = 'Stock from inventory'
             if (areas.length > 0) title += ` (${areas.join(', ')})`
-            realFromInventories.push({ value: productVal, title, id: inventory.id })
+            if (productVal !== undefined) realFromInventories.push({ value: productVal, title, id: inventory.id })
           })
           let real = realFromManualStock
           if (realFromInventories.length > 0) {
