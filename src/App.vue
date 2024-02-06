@@ -252,7 +252,21 @@ export default {
   .p-toast {
     display: none;
   }
+}
 
+@media (max-width: 800px) {
+  .matta-nuu .p-dialog {
+    border-radius: 0;
+    background: white;
+    margin: 0;
+    max-height: 100%;
+    height: 100%;
+    width: 100%;
+
+    .p-dialog-content {
+      flex-grow: 1;
+    }
+  }
 }
 
 #app,
