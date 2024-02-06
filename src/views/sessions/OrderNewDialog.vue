@@ -20,7 +20,7 @@
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-      <Button label="Create Order" icon="pi pi-check" class="p-button-text" @click="createOrder" />
+      <Button label="Create Order" @click="createOrder" />
     </template>
   </Dialog>
 </template>

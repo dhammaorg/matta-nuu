@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
-          header="Start a full Inventory" position="top">
+          :header="isEditing ? 'Update Inventory' : 'Start a full Inventory'">
 
     <!-- Date -->
     <div class="p-field">
