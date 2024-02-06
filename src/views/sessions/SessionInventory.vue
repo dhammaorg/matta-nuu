@@ -201,7 +201,7 @@ export default {
       return this.inventory.values[this.currentProduct.id][this.currentArea.id].value
     },
     currentTheoriticalStock() {
-      const theoricValue = this.theoricStockFor(this.currentProduct.id, this.inventory.day)
+      const theoricValue = Math.max(0, this.theoricStockFor(this.currentProduct.id, this.inventory.day))
       const theoricLabel = `${theoricValue.round()} ${this.currentProduct.unit}`
       if (this.currentProduct.packaging_convert_to_piece && this.currentUnit === 'piece') {
         return `${(theoricValue / this.currentProduct.packaging_conditioning).round()} pieces (${theoricLabel})`
@@ -229,10 +229,11 @@ export default {
       if (this.currentProduct.storage_area_ids.length <= 1) {
         const newValue = newStock.values[this.inventory.day]
         if (newValue.inventoryWarning) {
-          let theoric = `${newValue.theoric.round()} ${newStock.product_unit}`
+          const theoricVal = Math.max(0, newValue.theoric)
+          let theoric = `${theoricVal.round()} ${newStock.product_unit}`
           let real = `${newValue.real} ${newStock.product_unit}`
           if (this.currentProduct.packaging_convert_to_piece && this.currentUnit === 'piece') {
-            theoric = `${(theoric / this.currentProduct.packaging_conditioning).round()} pieces (${theoric})`
+            theoric = `${(theoricVal / this.currentProduct.packaging_conditioning).round()} pieces (${theoric})`
             real = `${this.currentValue} (${real})`
           }
           this.$confirm.require({
