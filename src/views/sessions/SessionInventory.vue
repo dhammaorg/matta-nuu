@@ -232,7 +232,7 @@ export default {
         // Special case: if theoric is -5 but real stock is 0, then stockDiff will be big,
         // although it does not make sens to display the warning in such case cause
         // user will see theotic = 0, real = 0
-        if (newValue.stockDiff > 0.3 && (theoricVal !== 0 || newValue.real !== 0)) {
+        if (newValue.stockDiff > 0.3 && this.currentValue !== null && (theoricVal !== 0 || newValue.real !== 0)) {
           let theoric = `${theoricVal.round()} ${newStock.product_unit}`
           let real = `${newValue.real} ${newStock.product_unit}`
           if (this.currentProduct.packaging_convert_to_piece && this.currentUnit === 'piece') {
