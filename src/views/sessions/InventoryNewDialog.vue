@@ -69,6 +69,7 @@ export default {
           session_id: this.$root.session.id,
           storage_area_ids: [],
           product_category_ids: [],
+          completed_storage_areas_ids: [],
           supplier_ids: [],
           values: {},
         },
