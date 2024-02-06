@@ -27,6 +27,7 @@
         <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area"
                 class="p-button-text p-button-secondary"
                 @click="currentArea = null" />
+        <Tag v-if="currentCategory" :value="currentCategory" class="ms-1 p-tag-secondary" />
       </h3>
     </div>
 
@@ -170,6 +171,15 @@ export default {
       if (this.inventory.product_category_ids.length > 0) {
         result = result.filter((product) => this.inventory.product_category_ids.includes(product.category_id))
       }
+      result = result.sort((a, b) => {
+        // sort first by category, then by name
+        const aValue = this.$root.getCategory(a.category_id).name || 'xxxx'
+        const bValue = this.$root.getCategory(b.category_id).name || 'xxxx'
+        if (!aValue || aValue === bValue) {
+          return a.name.localeCompare(b.name)
+        }
+        return aValue.localeCompare(bValue)
+      })
       return result
     },
     // Products related to currentArea
@@ -178,6 +188,9 @@ export default {
     },
     currentProduct() {
       return this.currentProducts.at(this.productIndex) || {}
+    },
+    currentCategory() {
+      return this.$root.getCategory(this.currentProduct.category_id).name
     },
     allAreasCompleted() {
       return this.areas.length === this.isAreaCompleteds.length
