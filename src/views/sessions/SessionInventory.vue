@@ -163,7 +163,7 @@ export default {
       return result
     },
     isAreaCompleteds() {
-      return this.areas.filter((area) => this.inventory.completed_storage_areas_ids.includes(area.id))
+      return this.areas.filter((area) => this.inventory.completed_storage_areas_ids.includes(area.id.toString()))
     },
     products() {
       let result = this.sessionProducts.map((productId) => this.$root.getProduct(productId))
@@ -263,11 +263,11 @@ export default {
       else this.productIndex += 1
     },
     finishCurrentArea() {
-      this.inventory.completed_storage_areas_ids.push(this.currentArea.id)
+      this.inventory.completed_storage_areas_ids.push(this.currentArea.id.toString())
       this.currentArea = null
     },
     isAreaCompleted(area) {
-      return this.inventory.completed_storage_areas_ids.includes(area.id)
+      return this.inventory.completed_storage_areas_ids.includes(area.id.toString())
     },
     productsForArea(area) {
       return this.products.filter((product) => {
@@ -276,7 +276,7 @@ export default {
       })
     },
     completedProductsForArea(area) {
-      return this.productsForArea(area).filter((product) => (this.inventory.values[product.id] || {})[area.id]?.value)
+      return this.productsForArea(area).filter((product) => (this.inventory.values[product.id] || {})[area.id]?.value != null)
     },
     focusStockInput() {
       this.$nextTick(() => {
