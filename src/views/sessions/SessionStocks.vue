@@ -103,7 +103,8 @@
       <!-- Cell Edit -->
       <template #editor="{ data, field }">
         <!-- Stock Input -->
-        <InputNumber v-model="data.values[field].realFromManualStock" placeholder="Stock"
+        <InputNumber v-if="data.values[field].realFromInventories.length == 0"
+                     v-model="data.values[field].realFromManualStock" placeholder="Stock"
                      :maxFractionDigits="2" />
         <div v-for="inventory in data.values[field].realFromInventories"
              :key="day + field + 'inventory' + inventory.id"
@@ -111,7 +112,7 @@
           <router-link class="text-primary"
                        :to="{ name: 'session_inventory', params: { id: $route.params.id, inventory_id: inventory.id } }">
             <strong>{{ inventory.value.round() }}</strong>
-            <Button icon="pi pi-pencil" class="p-button-text p-button-sm p-0 px-2 w-auto" />
+            <Button icon="pi pi-pencil" class="p-button-text p-button-sm p-0 px-1 ms-2 w-auto" />
           </router-link>
         </div>
 

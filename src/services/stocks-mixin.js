@@ -119,11 +119,12 @@ export default {
                 areas.push(area.name || 'Other')
               }
             })
-            const title = `Stock from inventory (${areas.join(', ')})`
+            let title = 'Stock from inventory'
+            if (areas.length > 0) title += ` (${areas.join(', ')})`
             realFromInventories.push({ value: productVal, title, id: inventory.id })
           })
           let real = realFromManualStock
-          if (!real && realFromInventories.length > 0) {
+          if (realFromInventories.length > 0) {
             real = realFromInventories.reduce((acc, obj) => acc + obj.value, 0)
           }
 
