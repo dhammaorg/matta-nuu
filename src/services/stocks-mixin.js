@@ -65,7 +65,9 @@ export default {
     },
     reCalculateStockFor(productId, fromDayId) {
       const index = this.stocks.findIndex((s) => s.product_id === productId)
-      this.stocks.splice(index, 1, this.calculateStockFor(productId, fromDayId))
+      const result = this.calculateStockFor(productId, fromDayId)
+      this.stocks.splice(index, 1, result)
+      return result
     },
     calculateStockFor(productId, fromDayId) {
       let previousStock = 0
@@ -246,6 +248,11 @@ export default {
     },
     recipieProducts(recipieId) {
       return this.$root.getRecipie(recipieId).products || []
+    },
+    theoricStockFor(productId, day) {
+      if (!this.stocks || !day) return null
+      const { values } = this.stocks.find((s) => s.product_id == productId) || {}
+      return values && values[day] ? values[day].theoric.round() : 0
     },
   },
 }

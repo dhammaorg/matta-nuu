@@ -80,15 +80,18 @@
           <InputNumber v-model="inventory.values[currentProduct.id][currentArea.id].value"
                        :maxFractionDigits="5"
                        placeholder="Stock" ref="stockInput"
-                       @keyup.enter="onInputStockKeyEnter" />
+                       @keyup.enter="finishProduct" />
           <span class="p-inputgroup-addon" style="width: 5rem;">
             {{ inventory.values[currentProduct.id][currentArea.id].unit }}
           </span>
         </div>
-        <!-- Theoritical Stock & Warning -->
-        <!-- <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
-              v-tooltip.top="'Theoretical stock'">{{ stockValueFor(stock.product_id) }}
-          </span> -->
+        <!-- Theoritical Stock -->
+        <div class="fst-italic mt-4">
+          <template v-if="currentProduct.storage_area_ids.length <= 1">Theoritical Stock</template>
+          <template v-else>Total Theoritical Stock ({{ currentProduct.storage_area_ids.map(id =>
+            $root.getCategory(id).name).join(' + ') }})</template>
+          = {{ currentTheoriticalStock }}
+        </div>
       </div>
 
       <!-- Navigation -->
@@ -98,11 +101,10 @@
                 :disabled="productIndex == 0" />
         <div>{{ productIndex + 1 }} / {{ currentProducts.length }}</div>
 
-        <Button v-if="productIndex == currentProducts.length - 1"
-                label="Finish"
-                @click="finishCurrentArea" ref="nextButton" />
+        <Button v-if="productIndex == currentProducts.length - 1" label="Finish"
+                @click="finishProduct" />
         <Button v-else label="Next" icon="pi pi-chevron-right"
-                @click="productIndex = productIndex + 1" ref="nextButton" />
+                @click="finishProduct" />
       </div>
     </template>
   </div>
@@ -192,6 +194,20 @@ export default {
     currentCategory() {
       return this.$root.getCategory(this.currentProduct.category_id).name
     },
+    currentUnit() {
+      return this.inventory.values[this.currentProduct.id][this.currentArea.id].unit
+    },
+    currentValue() {
+      return this.inventory.values[this.currentProduct.id][this.currentArea.id].value
+    },
+    currentTheoriticalStock() {
+      const theoricValue = this.theoricStockFor(this.currentProduct.id, this.inventory.day)
+      const theoricLabel = `${theoricValue.round()} ${this.currentProduct.unit}`
+      if (this.currentProduct.packaging_convert_to_piece && this.currentUnit === 'piece') {
+        return `${(theoricValue / this.currentProduct.packaging_conditioning).round()} pieces (${theoricLabel})`
+      }
+      return theoricLabel
+    },
     allAreasCompleted() {
       return this.areas.length === this.isAreaCompleteds.length
     },
@@ -204,6 +220,43 @@ export default {
       this.currentArea = area
       this.productIndex = 0
       this.focusStockInput()
+    },
+    finishProduct() {
+      const newStock = this.reCalculateStockFor(this.currentProduct.id, this.inventory.day)
+
+      // If the product have only one storage area, then we got the whole stock for
+      // this product, and we can compare it with theotical stock
+      if (this.currentProduct.storage_area_ids.length <= 1) {
+        const newValue = newStock.values[this.inventory.day]
+        if (newValue.inventoryWarning) {
+          let theoric = `${newValue.theoric.round()} ${newStock.product_unit}`
+          let real = `${newValue.real} ${newStock.product_unit}`
+          if (this.currentProduct.packaging_convert_to_piece && this.currentUnit === 'piece') {
+            theoric = `${(theoric / this.currentProduct.packaging_conditioning).round()} pieces (${theoric})`
+            real = `${this.currentValue} (${real})`
+          }
+          this.$confirm.require({
+            header: 'The stock seems wrong',
+            message: `Theoretical stock is ${theoric}
+              but you entered ${real}
+
+              Are you sure this is the correct value?
+            `,
+            rejectLabel: 'Cancel',
+            acceptLabel: "Yes I'm sure",
+            accept: async () => {
+              this.goToNextProductOrArea()
+            },
+          })
+          return
+        }
+      }
+
+      this.goToNextProductOrArea()
+    },
+    goToNextProductOrArea() {
+      if (this.productIndex === this.currentProducts.length - 1) this.finishCurrentArea()
+      else this.productIndex += 1
     },
     finishCurrentArea() {
       this.inventory.completed_storage_areas_ids.push(this.currentArea.id)
@@ -220,10 +273,6 @@ export default {
     },
     completedProductsForArea(area) {
       return this.productsForArea(area).filter((product) => (this.inventory.values[product.id] || {})[area.id]?.value)
-    },
-    async onInputStockKeyEnter() {
-      await this.$nextTick()
-      this.$refs.nextButton.$el.click()
     },
     focusStockInput() {
       this.$nextTick(() => {
@@ -297,5 +346,10 @@ export default {
 .p-tag-secondary {
   color: inherit;
   background-color: var(--bluegray-100);
+}
+
+.p-confirm-dialog-message {
+  margin-left: 0;
+  line-height: 1.8;
 }
 </style>

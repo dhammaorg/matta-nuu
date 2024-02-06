@@ -19,7 +19,7 @@
                      inputClass="border-start-0" />
         <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
               v-tooltip.top="'Theoretical stock'">
-          {{ stockValueFor(stock.product_id) }}
+          {{ $parent.theoricStockFor(stock.product_id, day) }}
         </span>
         <span class="p-inputgroup-addon" style="width: 5rem;">{{
           $root.getProduct(stock.product_id).unit }}</span>
@@ -90,11 +90,6 @@ export default {
     productsFor(stock) {
       const alreadySet = this.inventory.map((s) => s.product_id)
       return this.products.filter((p) => !alreadySet.includes(p) || p == stock.product_id)
-    },
-    stockValueFor(productId) {
-      if (!this.stocks || !this.day) return
-      const { values } = this.stocks.find((s) => s.product_id == productId) || {}
-      return values && values[this.day] ? values[this.day].value.round() : 0
     },
   },
 }
