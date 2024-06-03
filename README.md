@@ -2,11 +2,20 @@
 
 https://matta-nuu.netlify.app/#/
 
-## Project setup
+### Stack
 
-```
-yarn install
-```
+- VueJs 3 + Vue CLI
+- Database with [Supabase](https://supabase.com/). [Voir la doc](https://supabase.com/docs/reference/javascript/select)
+- Component Library : [Primevue](https://primevue.org/)
+
+### Project setup
+
+- Install [NVM](https://github.com/nvm-sh/nvm)
+- `git clone https://github.com/dhammaorg/matta-nuu.git`
+- `cd matta-nuu`
+- `nvm use`
+- `npm install -g yarn`
+- `yarn install`
 
 ### Compiles and hot-reloads for development
 
@@ -20,7 +29,12 @@ yarn serve
 yarn build
 ```
 
-### Lints and fixes files
+### Linters
+
+If you are using VSCode, please use the existing configuration
+`cp .vscode/settings-example.json .vscode/settings.json` and install the recommended extensions
+
+Otherwise, before pushing you run linters with
 
 ```
 yarn lint
