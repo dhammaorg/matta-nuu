@@ -23,6 +23,11 @@ https://matta-nuu.netlify.app/#/
 yarn serve
 ```
 
+### Production database is used for dev
+
+Be careful, the same database (provided by supabase) is used for production and dev.
+So for dev purpose beter create a new user so you'll be sure to not break anything
+
 ### Compiles and minifies for production
 
 ```
