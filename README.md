@@ -49,6 +49,10 @@ yarn lint
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
+### Database credentials
+
+`cp .env_example .env.local` and ask lead developer for supabase credentials
+
 ### Database scheme
 
 ```mermaid
