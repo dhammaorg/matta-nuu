@@ -111,6 +111,13 @@ export default {
 
       this.$db.from('recipies').select().match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
+          if (result.status === 401) {
+            // On 21/07/2024 we have renewed JWT token from supabase
+            // It result with all signed_in without to be blocked because no longer authorize
+            // we need to force re authenticate by clearing supabase.auth.token
+            localStorage.removeItem('supabase.auth.token')
+            window.location.reload(true)
+          }
           result.data.forEach((recipie) => {
             this.recipies[recipie.id] = recipie
           })
