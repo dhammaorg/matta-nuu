@@ -63,6 +63,15 @@
         </template>
       </Column>
 
+      <!-- Price -->
+      <Column field="price" header="Unit Price" style="max-width: 14rem">
+        <template #body="{ data }">
+          <InputText :value="getLastPriceValue(data)" disabled
+                     :maxFractionDigits="2" />
+        </template>
+      </Column>
+
+
       <!-- Actions -->
       <Column class="text-end" style="max-width: 40px" header="Actions">
         <template #body="{ data }">
@@ -90,6 +99,7 @@
 <script>
 import { FilterMatchMode } from 'primevue/api'
 import Chip from 'primevue/chip'
+import InputText from 'primevue/inputtext'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
@@ -97,7 +107,7 @@ import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip,
+    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip, InputText,
   },
   data() {
     return {
@@ -148,7 +158,22 @@ export default {
     recipiesUsingProduct(product) {
       return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
     },
-  },
+    getProductLastPrice(prices) {
+      if (!prices || prices.length === 0) {
+        return null;
+      }
+
+      const lastPrice = prices.reduce((latest, current) => {
+        return new Date(current.date) > new Date(latest.date) ? current : latest;
+      });
+
+      return lastPrice;
+    },
+    getLastPriceValue(product) {
+      const lastPrice = this.getProductLastPrice(product.prices);
+      return lastPrice ? lastPrice.value + "€/" + product.unit : null;
+    }
+  }
 }
 </script>
 

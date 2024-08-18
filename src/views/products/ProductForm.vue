@@ -38,15 +38,31 @@
 
       <div class="p-field-checkbox w-100 mb-3" v-if="product.packaging_conditioning">
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
-        <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit
-        }}" to 1 piece in orders</label>
+        <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{
+          product.unit
+          }}" to 1 piece in orders</label>
       </div>
 
-      <div class="p-field w-100 mt-0">
+      <div class="p-field w-100 mt-0 mb-3">
         <label>Storage Areas</label>
         <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_area_ids"
                        placeholder="Storage Areas" />
       </div>
+
+      <!-- Unit Price -->
+      <div class="p-field w-100 mt-0 mb-3">
+        <label>Unit Price (Excluding Tax)</label>
+        <div class="p-inputgroup">
+          <InputNumber :value="getLastPriceValue(product)" disabled
+                       placeholder="Unit Price (Excluding Tax)"
+                       :maxFractionDigits="2" />
+
+          <Button icon="pi pi-history" class="p-button-text"
+                  @click="$refs.productsPriceHistoryForm.show(this.product)" />
+        </div>
+
+      </div>
+
     </div>
 
     <template #footer>
@@ -55,6 +71,9 @@
               @click="saveProduct" />
     </template>
   </Dialog>
+
+  <ProductsPriceHistory @updatedPrices="handleUpdatedPrices" ref="productsPriceHistoryForm">
+  </ProductsPriceHistory>
 </template>
 
 <script>
@@ -65,10 +84,13 @@ import Checkbox from 'primevue/checkbox'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
+import Calendar from 'primevue/calendar';
+import ProductsPriceHistory from './ProductsPriceHistory.vue'
+
 
 export default {
   components: {
-    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox,
+    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox, Calendar, ProductsPriceHistory,
   },
   data() {
     return {
@@ -94,6 +116,25 @@ export default {
         this.product = {}
       }
     },
+    handleUpdatedPrices(updatedProductData) {
+      this.visible = false
+      this.product = {}
+    },
+    getProductLastPrice(prices) {
+      if (!prices || prices.length === 0) {
+        return null;
+      }
+
+      const lastPrice = prices.reduce((latest, current) => {
+        return new Date(current.date) > new Date(latest.date) ? current : latest;
+      });
+
+      return lastPrice;
+    },
+    getLastPriceValue(product) {
+      const lastPrice = this.getProductLastPrice(product.prices);
+      return lastPrice ? lastPrice.value + " € / " + product.unit : null;
+    }
   },
   watch: {
     'product.packaging_conditioning': function (newVal, oldVal) {
