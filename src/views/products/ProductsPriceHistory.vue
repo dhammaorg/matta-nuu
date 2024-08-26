@@ -53,7 +53,10 @@ export default {
     },
     methods: {
         show(object = {}) {
-            this.product = { ...object, prices: [...object.prices] || [{}] };
+            this.product = {
+                ...object,
+                prices: Array.isArray(object.prices) ? [...object.prices] : [{}]
+            };
             this.visible = true
         },
         newRow(event) {

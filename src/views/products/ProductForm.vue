@@ -22,6 +22,26 @@
         <InputSupplier v-model="product.supplier_id" />
       </div>
 
+      <!-- Unit Price -->
+      <div class="p-field">
+        <label>Unit Price</label>
+        <div class="p-inputgroup">
+          <InputNumber v-model="productPriceValue"
+                       placeholder="Unit Price"
+                       :maxFractionDigits="2" />
+          <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit
+            }}</span>
+        </div>
+      </div>
+
+      <!-- Price History -->
+      <div class="p-field">
+        <label>Price History</label>
+        <Button icon=" pi pi-history" class="p-button-text"
+                v-if="product.id && product.prices && product.prices.length > 0"
+                @click="$refs.productsPriceHistoryForm.show(this.product)" />
+      </div>
+
       <div class="p-field">
         <label>Packaging Name / Reference</label>
         <InputText v-model="product.packaging_reference" placeholder="Packaging Name / Reference" />
@@ -49,19 +69,6 @@
                        placeholder="Storage Areas" />
       </div>
 
-      <!-- Unit Price -->
-      <div class="p-field w-100 mt-0 mb-3">
-        <label>Unit Price (Excluding Tax)</label>
-        <div class="p-inputgroup">
-          <InputNumber :value="getLastPriceValue(product)" disabled
-                       placeholder="Unit Price (Excluding Tax)"
-                       :maxFractionDigits="2" />
-
-          <Button icon="pi pi-history" class="p-button-text"
-                  @click="$refs.productsPriceHistoryForm.show(this.product)" />
-        </div>
-
-      </div>
 
     </div>
 
@@ -97,15 +104,20 @@ export default {
       visible: false,
       loading: false,
       product: {},
+      productPriceValue: null,
     }
   },
   methods: {
     show(object = {}) {
       this.product = { ...object }
       this.visible = true
+      this.productPriceValue = this.getLastPriceValue(this.product)
     },
     async saveProduct() {
       if (this.product.name) {
+        // prepare product.prices
+        this.savePrice()
+
         if (this.product.id) {
           this.dbUpdate('products', this.product)
         } else {
@@ -114,6 +126,26 @@ export default {
         }
         this.visible = false
         this.product = {}
+      }
+    },
+    savePrice() {
+      if (this.productPriceValue && this.productPriceValue !== 0) {
+        const newPrice = {
+          date: new Date().toISOString(),
+          value: this.productPriceValue
+        };
+
+        // if there is already a list of prices
+        if (this.product.prices) {
+          this.product.prices.push(newPrice)
+
+          // filter empty prices and order list
+          this.product.prices = this.product.prices.filter((p) => p.date && p.value).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        } else {
+          this.product.prices = []
+          this.product.prices.push(newPrice)
+        }
       }
     },
     handleUpdatedPrices(updatedProductData) {
@@ -133,7 +165,7 @@ export default {
     },
     getLastPriceValue(product) {
       const lastPrice = this.getProductLastPrice(product.prices);
-      return lastPrice ? lastPrice.value + " € / " + product.unit : null;
+      return lastPrice ? lastPrice.value : null;
     }
   },
   watch: {
