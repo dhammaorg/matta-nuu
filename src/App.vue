@@ -218,6 +218,28 @@ export default {
     getSupplier(id) {
       return this.suppliers[id] || {}
     },
+    getCurrentProductPriceValue(product) {
+      return product?.prices?.[0]?.value ?? null;
+    },
+    getCurrentProductPriceDate(product) {
+      return product?.prices?.[0]?.date ?? null;
+    },
+    addProductPrice(productPriceValue, product) {
+      if (productPriceValue && productPriceValue !== 0) {
+        const newPrice = {
+          date: new Date(),
+          value: productPriceValue
+        };
+
+        if (product.prices) {
+          product.prices.push(newPrice)
+          product.prices = product.prices.filter((p) => p.date && p.value).sort((a, b) => b.date - a.date);
+        } else {
+          product.prices = []
+          product.prices.push(newPrice)
+        }
+      }
+    },
   },
 }
 </script>

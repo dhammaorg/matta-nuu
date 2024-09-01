@@ -10,8 +10,8 @@
         <div class="prices my-4 py-2">
             <div v-for="price in product.prices" class="d-flex mb-2" :key="price">
                 <div class="p-inputgroup">
-                    <Calendar v-model="price.date" showIcon iconDisplay="input"
-                              dateFormat="dd/mm/yy" class="w-50" />
+                    <Calendar v-model="price.date" required="true"
+                              dateFormat="d MM yy" placeholder="Date" class="w-50" />
                     <InputNumber v-model="price.value" :maxFractionDigits="2"
                                  placeholder="Value"
                                  inputClass="border-start-0 input-amount" />
@@ -57,6 +57,13 @@ export default {
                 ...object,
                 prices: Array.isArray(object.prices) ? [...object.prices] : [{}]
             };
+            // Convert price.date from database which is String to javascript Date
+            if (this.product.prices) {
+                this.product.prices.forEach(price => {
+                    price.date = new Date(price.date)
+                });
+            }
+
             this.visible = true
         },
         newRow(event) {
@@ -64,24 +71,22 @@ export default {
         },
         async savePrice() {
             if (this.product.prices) {
-                // filter empty prices and order
-                this.product.prices = this.product.prices.filter((p) => p.date && p.value).sort((a, b) => new Date(b.date) - new Date(a.date));
+                this.product.prices = this.product.prices
+                    .filter((p) => p.date && p.value)
+                    .sort((a, b) => b.date - a.date);
 
                 if (this.product.id) {
                     this.dbUpdate('products', this.product)
                 }
+                this.$emit('updatedPrices', this.product.prices);
                 this.visible = false
                 this.product.prices = [{}]
                 this.product = {}
-                this.$emit('updatedPrices', this.updatedProductData);
+
             }
         },
         removeRow(price) {
             this.product.prices = this.product.prices.filter((p) => p.date !== price.date)
-        },
-        formatDate(dateString) {
-            const date = new Date(dateString);
-            return new Intl.DateTimeFormat('default', { dateStyle: 'long' }).format(date);
         },
     },
 }

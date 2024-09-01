@@ -64,10 +64,12 @@
       </Column>
 
       <!-- Price -->
-      <Column field="price" header="Unit Price" style="max-width: 14rem">
+      <Column field="price" header="Price" style="max-width: 14rem">
         <template #body="{ data }">
-          <InputText :value="getLastPriceValue(data)" disabled
-                     :maxFractionDigits="2" />
+          <InputNumber :value="$root.getCurrentProductPriceValue(data)"
+                       @blur="updateValue(Number($event.target.value), data)"
+                       :maxFractionDigits="2" class="w-50" />
+          <div class="w-50">{{ "€/" + data.unit }}</div>
         </template>
       </Column>
 
@@ -100,6 +102,7 @@
 import { FilterMatchMode } from 'primevue/api'
 import Chip from 'primevue/chip'
 import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
@@ -107,7 +110,7 @@ import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip, InputText,
+    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip, InputText, InputNumber,
   },
   data() {
     return {
@@ -158,21 +161,9 @@ export default {
     recipiesUsingProduct(product) {
       return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
     },
-    getProductLastPrice(prices) {
-      if (!prices || prices.length === 0) {
-        return null;
-      }
-
-      const lastPrice = prices.reduce((latest, current) => {
-        return new Date(current.date) > new Date(latest.date) ? current : latest;
-      });
-
-      return lastPrice;
+    updateValue(newValue, product) {
+      this.$root.addProductPrice(newValue, product)
     },
-    getLastPriceValue(product) {
-      const lastPrice = this.getProductLastPrice(product.prices);
-      return lastPrice ? lastPrice.value + "€/" + product.unit : null;
-    }
   }
 }
 </script>

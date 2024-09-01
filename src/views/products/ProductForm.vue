@@ -22,24 +22,18 @@
         <InputSupplier v-model="product.supplier_id" />
       </div>
 
-      <!-- Unit Price -->
       <div class="p-field">
-        <label>Unit Price</label>
+        <label>Price <span v-if="productPriceDate">(since {{ productPriceDate }})</span></label>
         <div class="p-inputgroup">
           <InputNumber v-model="productPriceValue"
-                       placeholder="Unit Price"
+                       placeholder="Price"
                        :maxFractionDigits="2" />
           <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit
             }}</span>
+          <Button icon="pi pi-history" class="p-button-text"
+                  v-if="product.id && product.prices && product.prices.length > 0"
+                  @click="$refs.productsPriceHistoryForm.show(this.product)" />
         </div>
-      </div>
-
-      <!-- Price History -->
-      <div class="p-field">
-        <label>Price History</label>
-        <Button icon=" pi pi-history" class="p-button-text"
-                v-if="product.id && product.prices && product.prices.length > 0"
-                @click="$refs.productsPriceHistoryForm.show(this.product)" />
       </div>
 
       <div class="p-field">
@@ -60,7 +54,7 @@
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
         <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{
           product.unit
-          }}" to 1 piece in orders</label>
+        }}" to 1 piece in orders</label>
       </div>
 
       <div class="p-field w-100 mt-0 mb-3">
@@ -105,18 +99,21 @@ export default {
       loading: false,
       product: {},
       productPriceValue: null,
+      productPriceDate: null,
     }
   },
   methods: {
     show(object = {}) {
       this.product = { ...object }
       this.visible = true
-      this.productPriceValue = this.getLastPriceValue(this.product)
+      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product)
+      this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product))
     },
     async saveProduct() {
       if (this.product.name) {
-        // prepare product.prices
-        this.savePrice()
+        if (!(this.product?.prices?.[0]?.value ?? null)
+          || !(this.product?.prices?.[0]?.date ?? null))
+          this.$root.addProductPrice(this.productPriceValue, this.product)
 
         if (this.product.id) {
           this.dbUpdate('products', this.product)
@@ -128,45 +125,14 @@ export default {
         this.product = {}
       }
     },
-    savePrice() {
-      if (this.productPriceValue && this.productPriceValue !== 0) {
-        const newPrice = {
-          date: new Date().toISOString(),
-          value: this.productPriceValue
-        };
-
-        // if there is already a list of prices
-        if (this.product.prices) {
-          this.product.prices.push(newPrice)
-
-          // filter empty prices and order list
-          this.product.prices = this.product.prices.filter((p) => p.date && p.value).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        } else {
-          this.product.prices = []
-          this.product.prices.push(newPrice)
-        }
-      }
+    handleUpdatedPrices(updatedProductPrices) {
+      this.product.prices = updatedProductPrices
+      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product)
+      this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product))
     },
-    handleUpdatedPrices(updatedProductData) {
-      this.visible = false
-      this.product = {}
+    formatDate(dateString) {
+      return dateString ? new Intl.DateTimeFormat('default', { dateStyle: 'short' }).format(new Date(dateString)) : null;
     },
-    getProductLastPrice(prices) {
-      if (!prices || prices.length === 0) {
-        return null;
-      }
-
-      const lastPrice = prices.reduce((latest, current) => {
-        return new Date(current.date) > new Date(latest.date) ? current : latest;
-      });
-
-      return lastPrice;
-    },
-    getLastPriceValue(product) {
-      const lastPrice = this.getProductLastPrice(product.prices);
-      return lastPrice ? lastPrice.value : null;
-    }
   },
   watch: {
     'product.packaging_conditioning': function (newVal, oldVal) {
