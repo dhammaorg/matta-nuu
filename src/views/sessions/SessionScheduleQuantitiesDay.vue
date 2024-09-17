@@ -1,13 +1,16 @@
 <template>
   <div class="day-quantities" v-if="recipies.length > 0">
-    <h1 class="text-center">{{ event.name }}<span v-if="day"> - {{ day }}</span></h1>
 
     <div
          class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
       <div class="p-datatable-wrapper">
-        <table class="p-datatable-table" v-for="(recipie, index) in recipies"
-               :key="`recipie-${recipie.id}`">
-          <thead class="p-datatable-thead" role="rowgroup" v-if="index == 0">
+        <table class="p-datatable-table">
+          <thead class="p-datatable-thead" role="rowgroup">
+            <tr class="day-title">
+              <td :colspan="numbers.length + 2">
+                {{ event.name }}<span v-if="day"> - {{ day }}</span>
+              </td>
+            </tr>
             <tr>
               <th class="first-column">People Count</th>
               <th v-for="number in numbers" :key="`column-${number}`">
@@ -18,12 +21,14 @@
               </th>
             </tr>
           </thead>
-          <tbody class="p-datatable-tbody">
+          <tbody class="p-datatable-tbody" v-for="recipie in recipies"
+                 :key="`recipie-${recipie.id}`">
             <tr class="p-rowgroup-header">
               <td :colspan="numbers.length + 2">
                 <h3 class="recipie-name">
                   {{ recipie.name }}
-                  <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex +
+                  <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex
+                    +
                     1] }})</span>
                   <span class="p-chip fw-normal ms-2" v-if="recipie.row.label">{{
                     recipie.row.label }}</span>
@@ -114,6 +119,24 @@ export default {
   table {
     page-break-inside: avoid;
 
+    thead {
+      // Display thead on each page even if there is a line break
+      display: table-header-group;
+    }
+
+    tbody {
+      page-break-inside: avoid;
+    }
+
+    .day-title td {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: black;
+      background-color: var(--surface-0) !important;
+      padding-bottom: 1rem !important;
+    }
+
     td,
     tr {
       $width: 3rem;
@@ -150,7 +173,7 @@ export default {
     background-color: var(--bluegray-50);
 
     @media print {
-      background-color: var(--gray-200);
+      background-color: #E7E7E7;
     }
   }
 
