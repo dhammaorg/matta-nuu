@@ -33,7 +33,10 @@
 
     <!-- Choose Area -->
     <template v-if="!currentArea">
-      <div class="content">
+      <div v-if="areas.length == 0">
+        <h3>No products available. Please check your configuration</h3>
+      </div>
+      <div v-else class="content">
         <h3 class="text-primary">
           <span v-if="allAreasCompleted">Inventory done !</span>
           <span v-else-if="noneAreaCompleted">Choose the Area to Start</span>
@@ -103,8 +106,7 @@
 
         <Button v-if="productIndex == currentProducts.length - 1" label="Finish"
                 @click="finishProduct" />
-        <Button v-else label="Next" icon="pi pi-chevron-right"
-                @click="finishProduct" />
+        <Button v-else label="Next" icon="pi pi-chevron-right" @click="finishProduct" />
       </div>
     </template>
   </div>
@@ -158,6 +160,7 @@ export default {
         result = result.filter((c) => this.inventory.storage_area_ids.includes(c.id))
       } else {
         result.push(this.otherArea)
+        result = result.filter((area) => this.productsForArea(area).length > 0)
       }
 
       return result

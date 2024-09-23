@@ -126,6 +126,7 @@ export default {
       this.$db.from('products').select().match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
           result.data.forEach((product) => {
+            product.storage_area_ids ||= []
             this.products[product.id] = product
           })
           this.handleDataFetched()
