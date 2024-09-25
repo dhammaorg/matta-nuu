@@ -63,6 +63,17 @@
         </template>
       </Column>
 
+      <!-- Price -->
+      <Column field="price" header="Price" style="max-width: 14rem">
+        <template #body="{ data }">
+          <InputNumber :value="$root.getCurrentProductPriceValue(data)"
+                       @blur="updateValue(Number($event.target.value), data)"
+                       :maxFractionDigits="2" class="w-50" />
+          <div class="w-50">{{ "€/" + data.unit }}</div>
+        </template>
+      </Column>
+
+
       <!-- Actions -->
       <Column class="text-end" style="max-width: 40px" header="Actions">
         <template #body="{ data }">
@@ -90,6 +101,8 @@
 <script>
 import { FilterMatchMode } from 'primevue/api'
 import Chip from 'primevue/chip'
+import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
@@ -97,7 +110,7 @@ import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip,
+    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip, InputText, InputNumber,
   },
   data() {
     return {
@@ -148,7 +161,10 @@ export default {
     recipiesUsingProduct(product) {
       return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
     },
-  },
+    updateValue(newValue, product) {
+      this.$root.addProductPrice(newValue, product)
+    },
+  }
 }
 </script>
 
