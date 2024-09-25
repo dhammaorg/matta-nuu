@@ -109,8 +109,7 @@
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
           <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product"
-                        @keyup.enter="addProduct"
-                        :showClear="false" :editable="false" />
+                        @keyup.enter="addProduct" :showClear="false" :editable="false" />
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct"
                   class="flex-shrink-0" />
         </div>
@@ -262,8 +261,8 @@ export default {
       } else {
         this.order.values[this.newProduct.id] = {
           id: this.newProduct.id,
-          name: this.newProduct.name,
-          unit: this.newProduct.unit,
+          name: this.newProduct.packaging_reference || this.newProduct.name,
+          unit: this.newProduct.packaging_convert_to_piece ? 'piece' : this.newProduct.unit,
         }
       }
       this.newProduct = ''
