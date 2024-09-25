@@ -112,7 +112,7 @@ export default {
             let productVal
             const areas = []
             Object.entries(inventory.values[productId] || {}).forEach(([areaId, areaVal]) => {
-              if (areaVal.value !== undefined) {
+              if (areaVal.value !== undefined && areaVal.value !== null) {
                 const value = convertToUnit(areaVal.value, areaVal.unit, product)
                 productVal ||= 0
                 productVal += value
