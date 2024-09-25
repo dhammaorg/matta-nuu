@@ -75,7 +75,8 @@
                  :groupRowsBy="order.group_by_category ? 'category' : null">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
-            <InputText v-model="data.name" class="text-start" />
+            <InputText :value="data.name" @change="data.name = $event.target.value"
+                       class="text-start" />
           </template>
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
