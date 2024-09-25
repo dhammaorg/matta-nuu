@@ -257,7 +257,7 @@ export default {
     },
     newInventory() {
       this.$refs.inventoryForm.show({
-        day: this.selectedDay?.id,
+        day: this.selectedDay?.id || this.sessionDays.find((day) => day.date.isToday())?.id,
       })
     },
   },
