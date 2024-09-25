@@ -80,7 +80,7 @@ export default {
         customButtons: {
           addNote: { text: '+ Note', click: this.newNote },
           addInventory: { text: '+ Inventory', click: this.newInventory },
-          addOrder: { text: '+ Order', click: this.newOrder },
+          addOrder: { text: '+ Order', click: () => this.newOrder() },
         },
         headerToolbar: {
           left: 'addInventory addOrder addNote',
