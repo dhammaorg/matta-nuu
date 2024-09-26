@@ -8,7 +8,8 @@ export default {
       methods: {
         async dbCreate(dbName, object, onSuccess) {
           this.loading = true
-          let { data, error } = await this.$db.from(dbName).insert([this.addUserId(object)]).single()
+          let { data, error } = await this.$db.from(dbName).insert([this.addUserId(object)]).select()
+          data = data[0] // don't know why but .single() does not work here, so getting first element
           if (error) this.toastError(error)
           else {
             data = this.fixData(data, dbName)
@@ -21,11 +22,12 @@ export default {
         },
         async dbUpdate(dbName, object) {
           this.loading = true
+
           let { data, error } = await this.$db.from(dbName)
             .update(this.addUserId(object))
-            .match({ id: object.id })
-            .single()
-
+            .eq('id', object.id)
+            .select()
+          data = data[0] // don't know why but .single() does not work here, so getting first element
           if (error) this.toastError(error)
           else {
             data = this.fixData(data, dbName)
@@ -38,14 +40,14 @@ export default {
           this.loading = true
 
           // Delete the object
-          const { error } = await this.$db.from(dbName).delete().match({ id: object.id }).single()
+          const { error } = await this.$db.from(dbName).delete().eq('id', object.id)
           if (error) this.toastError(error)
           else delete this.$root[dbName][object.id]
 
           this.loading = false
         },
         addUserId(object) {
-          return { ...object, ...{ user_id: supabase.auth.user().id } }
+          return { ...object, ...{ user_id: this.$root.user.id } }
         },
         toastError(error) {
           if (typeof error === 'string') error = { message: 'Error', details: error }
