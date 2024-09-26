@@ -47,12 +47,16 @@ const app = createApp(App)
   .component('HelpMessage', HelpMessage)
 
 router.beforeEach(async (to) => {
-  let user = supabase.auth.user()
+  const { data, error } = await supabase.auth.getSession()
+  if (error) this.toastError(error)
+  let user = data.session?.user
   if (to.path.includes('update-password')) {
     // wait for the user to be signed in in the backend
     while (user == null) {
       await new Promise((r) => setTimeout(r, 400))
-      user = supabase.auth.user()
+      const { data, error } = await supabase.auth.getSession()
+      if (error) this.toastError(error)
+      user = data.session?.user
     }
     app._instance.data.user = user
     return { name: 'profile' }

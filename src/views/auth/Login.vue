@@ -40,10 +40,11 @@ export default {
       }
       if (this.loading) return
       this.loading = true
-      const { user, error } = await supabase.auth.signIn({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: this.user.email,
         password: this.user.password,
       })
+      const { user } = data
       this.loading = false
       if (error) this.toastError(error)
       else {

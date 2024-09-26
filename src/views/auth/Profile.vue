@@ -55,7 +55,7 @@ export default {
         ...{ user_id: this.$root.user.id },
       }).single()
       if (this.newPassword) {
-        error2 = await supabase.auth.update({
+        error2 = await supabase.auth.updateUser({
           password: this.newPassword,
         }).error
       }

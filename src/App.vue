@@ -38,8 +38,10 @@ export default {
       help: false, // Displaying or not help messages
     }
   },
-  created() {
-    this.user = supabase.auth.user()
+  async created() {
+    const { data, error } = await supabase.auth.getSession()
+    if (error) this.toastError(error)
+    this.user = data.session?.user
     this.help = localStorage.getItem('help') === 'true'
   },
   computed: {
