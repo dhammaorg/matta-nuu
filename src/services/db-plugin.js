@@ -25,7 +25,7 @@ export default {
           }, this.handleUpdateOrInsert).subscribe()
           supabase.channel(`inventories-changes-${user.id}`).on('postgres_changes', {
             event: '*', schema: '*', table: 'inventories', filter: `user_id=eq.${user.id}`,
-          }, this.handleSessionChange).subscribe()
+          }, this.handleUpdateOrInsert).subscribe()
           supabase.channel(`orders-changes-${user.id}`).on('postgres_changes', {
             event: '*', schema: '*', table: 'orders', filter: `user_id=eq.${user.id}`,
           }, this.handleUpdateOrInsert).subscribe()
@@ -71,8 +71,8 @@ export default {
               const currentVal = currentObject[attr]
               Object.entries(newVal).forEach(([productId, values]) => {
                 // new produtId added
-                if (!oldVal[productId]) currentVal[productId] = newObject.buys[productId]
-                else {
+                if (!oldVal[productId]) currentVal[productId] = newVal[productId]
+                else if (values) {
                   // check if one day value have changed
                   Object.entries(values).forEach(([dayId, dayValue]) => {
                     if (oldVal[productId][dayId] != dayValue) currentVal[productId][dayId] = dayValue
