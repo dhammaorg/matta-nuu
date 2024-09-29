@@ -231,13 +231,17 @@ export default {
 
       // If the product have only one storage area, then we got the whole stock for
       // this product, and we can compare it with theotical stock
-      if (this.currentProductEdited && this.currentProduct.storage_area_ids.length <= 1) {
+      if (this.$root.userData.inventory_stock_diff_alert
+        && this.currentProductEdited
+        && this.currentProduct.storage_area_ids.length <= 1) {
         const newValue = newStock.values[this.inventory.day]
         const theoricVal = Math.max(0, newValue.theoric)
         // Special case: if theoric is -5 but real stock is 0, then stockDiff will be big,
         // although it does not make sens to display the warning in such case cause
         // user will see theotic = 0, real = 0
-        if (newValue.stockDiff > 0.3 && this.currentValue !== null && (theoricVal !== 0 || newValue.real !== 0)) {
+        if (newValue.stockDiff > this.$root.userData.inventory_stock_diff_threshold_percent / 100
+          && this.currentValue !== null
+          && (theoricVal !== 0 || newValue.real !== 0)) {
           let theoric = `${theoricVal.round()} ${newStock.product_unit}`
           let real = `${newValue.real} ${newStock.product_unit}`
           if (this.currentProduct.packaging_convert_to_piece && this.currentUnit === 'piece') {

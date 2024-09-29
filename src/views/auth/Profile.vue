@@ -27,6 +27,18 @@
       <Textarea placeholder="Address, Phone, Email..." v-model="$root.userData.org_details"
                 :autoResize="true" :rows="2" class="w-100" />
     </div>
+    <Divider align="center" class="mt-4">Inventories</Divider>
+    <div class="p-field-checkbox w-100 mb-3">
+      <Checkbox v-model="$root.userData.inventory_stock_diff_alert" id="stock-diff"
+                :binary="true" />
+      <label for="stock-diff" class="ms-2">Display an alert if the stock entered by the user is too
+        different from the theoretical stock</label>
+    </div>
+    <div class="p-field" v-show="$root.userData.inventory_stock_diff_alert">
+      <label>Alert threshold percent</label>
+      <InputNumber v-model="$root.userData.inventory_stock_diff_threshold_percent" class="w-100"
+                   suffix=" %" />
+    </div>
 
     <Button label="Save" :loading="loading" icon="pi pi-save" class="mt-3" @click="submit"></Button>
   </div>
@@ -36,10 +48,14 @@
 import Message from 'primevue/message'
 import Textarea from 'primevue/textarea'
 import Divider from 'primevue/divider'
+import InputNumber from 'primevue/inputnumber'
+import Checkbox from 'primevue/checkbox'
 import supabase from '@/services/supabase'
 
 export default {
-  components: { Textarea, Message, Divider },
+  components: {
+    Textarea, Message, Divider, InputNumber, Checkbox,
+  },
   data() {
     return {
       loading: false,
