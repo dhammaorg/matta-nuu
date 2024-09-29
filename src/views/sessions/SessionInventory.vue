@@ -81,6 +81,7 @@
         <!-- Stock -->
         <div class="p-inputgroup">
           <InputNumber v-model="inventory.values[currentProduct.id][currentArea.id].value"
+                       @input="currentProductEdited = true"
                        :maxFractionDigits="5"
                        placeholder="Stock" ref="stockInput"
                        @keyup.enter="finishProduct" />
@@ -139,6 +140,7 @@ export default {
       otherArea: { name: 'Other Products', id: 'other' },
       currentArea: undefined,
       productIndex: 0,
+      currentProductEdited: false,
       loading: false,
     }
   },
@@ -229,7 +231,7 @@ export default {
 
       // If the product have only one storage area, then we got the whole stock for
       // this product, and we can compare it with theotical stock
-      if (this.currentProduct.storage_area_ids.length <= 1) {
+      if (this.currentProductEdited && this.currentProduct.storage_area_ids.length <= 1) {
         const newValue = newStock.values[this.inventory.day]
         const theoricVal = Math.max(0, newValue.theoric)
         // Special case: if theoric is -5 but real stock is 0, then stockDiff will be big,
@@ -319,6 +321,7 @@ export default {
       })
     },
     async currentProduct() {
+      this.currentProductEdited = false
       this.focusStockInput()
     },
   },
