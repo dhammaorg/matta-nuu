@@ -55,12 +55,9 @@ export default {
   },
   methods: {
     async logout() {
-      const { error } = await supabase.auth.signOut()
-      if (error) this.toastError(error)
-      else {
-        this.$root.user = null
-        this.$router.push({ name: 'login' })
-      }
+      await supabase.auth.signOut()
+      this.$root.user = null
+      this.$router.push({ name: 'login' })
     },
   },
 }
