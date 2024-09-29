@@ -5,7 +5,8 @@
       You can adjust real values per day
     </p>
     <p>
-      Everything you buy should be displayed here. You can either enter manually bought amount on each
+      Everything you buy should be displayed here. You can either enter manually bought amount on
+      each
       cell, or use the
       <strong>orders</strong> feature to help you manage them
     </p>
@@ -77,7 +78,8 @@
             :class="`cell-stock editor-sm ${day.class} ${day.id}`">
       <!-- Cell View -->
       <template #body="{ data, field }">
-        <div class="cell-content" :class="{ 'negative-value': data.values[field].value.round() < 0 }">
+        <div class="cell-content"
+             :class="{ 'negative-value': data.values[field].value.round() < 0 }">
           <span class="stock-value-container d-flex flex-column align-items-center">
             <span class="stock-value consumption" v-if="data.values[field].consumption > 0"
                   :title="data.values[field].consumptionLabels.join(' | ')">
@@ -93,7 +95,7 @@
                 :style="data.values[field].stockDiff > 0.2 && 'color: var(--orange-600) !important'"
                 :title="data.values[field].stockDiff > 0.2 ? `Theoric stock was ${data.values[field].theoric.round()} ${data.product_unit}` : null">
             <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round()
-            }}</template>
+              }}</template>
             <template v-else>{{ data.values[field].value.round() }}</template>
           </span>
           <span class="stock-value-container"></span>
@@ -132,7 +134,7 @@
 
     <template #groupheader="{ data }">
       <span style="position: sticky; left: .7rem">{{ (data[options.groupBy] || {}).name || "Others"
-      }}</span>
+        }}</span>
     </template>
 
   </DataTable>

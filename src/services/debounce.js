@@ -1,12 +1,8 @@
-export function debounce(fn, delay) {
-  let timeoutID = null
-  return function () {
-    clearTimeout(timeoutID)
-    const args = arguments
-    const that = this
-    timeoutID = setTimeout(() => {
-      fn.apply(that, args)
-    }, delay)
+export function debounce(func, delay) {
+  let timeout
+  return function (...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(this, args), delay)
   }
 }
 

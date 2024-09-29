@@ -1,4 +1,6 @@
 import { convertToUnit } from '@/services/units'
+import supabase from '@/services/supabase'
+import { debounce } from '@/services/debounce'
 
 export default {
   inject: ['sessionDays', 'stockDays', 'sessionInventories'],
@@ -9,8 +11,27 @@ export default {
     }
   },
   mounted() {
-    this.calculateSessionProducts()
-    this.calculateAllStocks()
+    this.reCalculateAll()
+
+    const onNewDataRetrieved = debounce(() => {
+      this.reCalculateAll()
+    }, 300)
+    // we listen for current session change so we recalculate stock if needed
+    supabase.channel(`session-changes-${this.session.id}`).on('postgres_changes', {
+      event: '*', schema: '*', table: 'sessions', filter: `id=eq.${this.session.id}`,
+    }, onNewDataRetrieved).subscribe()
+    supabase.channel(`session-orders-${this.session.id}`).on('postgres_changes', {
+      event: '*', schema: '*', table: 'orders', filter: `session_id=eq.${this.session.id}`,
+    }, onNewDataRetrieved).subscribe()
+    supabase.channel(`session-inventories-${this.session.id}`).on('postgres_changes', {
+      event: '*', schema: '*', table: 'inventories', filter: `session_id=eq.${this.session.id}`,
+    }, onNewDataRetrieved).subscribe()
+    supabase.channel(`products-callback-${this.$root.user.id}`).on('postgres_changes', {
+      event: '*', schema: '*', table: 'products', filter: `user_id=eq.${this.$root.user.id}`,
+    }, onNewDataRetrieved).subscribe()
+    supabase.channel(`recipies-callback-${this.$root.user.id}`).on('postgres_changes', {
+      event: '*', schema: '*', table: 'recipies', filter: `user_id=eq.${this.$root.user.id}`,
+    }, onNewDataRetrieved).subscribe()
   },
   computed: {
     session() {
@@ -39,6 +60,12 @@ export default {
     },
   },
   methods: {
+    reCalculateAll() {
+      this.stocks = []
+      this.sessionProducts = []
+      this.calculateSessionProducts()
+      this.calculateAllStocks()
+    },
     calculateSessionProducts() {
       const result = new Set()
       this.session.rows.forEach((row) => {

@@ -82,8 +82,12 @@ export default {
     user(newUser, oldUser) {
       // New login
       if (newUser && !oldUser) {
+        supabase.removeAllChannels()
         this.resetData()
-        setTimeout(() => this.fetchData(), 0)
+        setTimeout(() => {
+          this.fetchData()
+          this.listenDbChanges(newUser)
+        }, 0)
       }
     },
     help() {
