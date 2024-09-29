@@ -310,6 +310,7 @@ export default {
     products() {
       if (!this.products || this.products.length === 0) return
       this.products.forEach((product) => {
+        product.storage_area_ids ||= [] // in case the product do not have storage set yet
         const areasIds = product.storage_area_ids.length > 0 ? product.storage_area_ids : ['other']
         this.inventory.values[product.id] ||= {}
         areasIds.forEach((areaId) => {
