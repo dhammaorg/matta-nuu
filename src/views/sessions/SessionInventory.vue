@@ -297,7 +297,7 @@ export default {
     },
     destroy() {
       this.$confirm.require({
-        message: 'Are you sure you want to this inventory ?',
+        message: 'Are you sure you want to delete this inventory ?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
