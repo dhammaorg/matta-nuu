@@ -35,7 +35,7 @@
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-      <Button label="Save" icon="pi pi-check" class="p-button-text" @click="save" />
+      <Button label="Add" icon="pi pi-check" class="p-button-text" @click="save" />
     </template>
   </Dialog>
 </template>
