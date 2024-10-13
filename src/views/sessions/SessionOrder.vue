@@ -350,9 +350,13 @@ export default {
 
   .p-inputtextarea {
     border: none;
-    padding: 10px;
+    padding: 0px;
     margin-bottom: 0 !important;
     font-weight: 500;
+  }
+
+  table .p-inputtextarea {
+    padding: 10px;
   }
 }
 </style>
