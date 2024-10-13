@@ -75,8 +75,9 @@
                  :groupRowsBy="order.group_by_category ? 'category' : null">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
-            <InputText :value="data.name" @change="data.name = $event.target.value"
-                       class="text-start" />
+            <Textarea :value="data.name" :autoResize="true" rows="1"
+                      @change="data.name = $event.target.value"
+                      class="product-textarea" />
           </template>
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
@@ -327,6 +328,16 @@ export default {
   background-color: transparent;
 }
 
+.product-textarea {
+  border: none;
+  border-radius: 0;
+  width: 99%;
+
+  &:focus {
+    border: 1px solid black;
+  }
+}
+
 @media print {
   .session-order {
     max-width: 600px;
@@ -342,6 +353,10 @@ export default {
     padding: 0px;
     margin-bottom: 0 !important;
     font-weight: 500;
+  }
+
+  table .p-inputtextarea {
+    padding: 10px;
   }
 }
 </style>
