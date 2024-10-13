@@ -75,8 +75,9 @@
                  :groupRowsBy="order.group_by_category ? 'category' : null">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
-            <InputText :value="data.name" @change="data.name = $event.target.value"
-                       class="text-start" />
+            <Textarea :value="data.name" :autoResize="true" rows="1"
+                      @change="data.name = $event.target.value"
+                      class="border-0" style="width: 99%" />
           </template>
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
