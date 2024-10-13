@@ -77,7 +77,7 @@
           <template #body="{ data }">
             <Textarea :value="data.name" :autoResize="true" rows="1"
                       @change="data.name = $event.target.value"
-                      class="border-0" style="width: 99%" />
+                      class="product-textarea" />
           </template>
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
@@ -328,6 +328,16 @@ export default {
   background-color: transparent;
 }
 
+.product-textarea {
+  border: none;
+  border-radius: 0;
+  width: 99%;
+
+  &:focus {
+    border: 1px solid black;
+  }
+}
+
 @media print {
   .session-order {
     max-width: 600px;
@@ -340,7 +350,7 @@ export default {
 
   .p-inputtextarea {
     border: none;
-    padding: 0px;
+    padding: 10px;
     margin-bottom: 0 !important;
     font-weight: 500;
   }
