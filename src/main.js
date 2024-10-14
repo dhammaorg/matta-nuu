@@ -12,6 +12,7 @@ import ConfirmationService from 'primevue/confirmationservice'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
+import SelectButton from 'primevue/selectbutton'
 import HelpMessage from '@/components/HelpMessage.vue'
 
 import App from './App.vue'
@@ -44,6 +45,7 @@ const app = createApp(App)
   .component('InputText', InputText)
   .component('ConfirmDialog', ConfirmDialog)
   .component('Dropdown', Dropdown)
+  .component('SelectButton', SelectButton)
   .component('HelpMessage', HelpMessage)
 
 router.beforeEach(async (to) => {

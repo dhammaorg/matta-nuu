@@ -32,6 +32,7 @@
     </div>
 
     <!-- Choose Area -->
+    <SelectButton v-model="selectedComponent" :options="components" />
     <template v-if="!currentArea">
       <div v-if="areas.length == 0">
         <h3>No products available. Please check your configuration</h3>
@@ -119,6 +120,7 @@
 import InputNumber from 'primevue/inputnumber'
 import Tag from 'primevue/tag'
 import RadioButton from 'primevue/radiobutton'
+import SelectButton from 'primevue/selectbutton'
 import StockMixin from '@/services/stocks-mixin'
 import InventoryNewDialog from './InventoryNewDialog.vue'
 
@@ -142,6 +144,7 @@ export default {
       productIndex: 0,
       currentProductEdited: false,
       loading: false,
+      components: ["guided mode", "list mode"]
     }
   },
   beforeMount() {
