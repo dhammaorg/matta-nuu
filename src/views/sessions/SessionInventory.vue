@@ -21,18 +21,18 @@
                   @click="save" :loading="loading" />
         </div>
       </div>
-      <h3 v-if="currentArea" class="d-flex align-items-center mt-0 pt-3">
+      <div v-if="currentArea" class="d-flex align-items-center mt-0 pt-3">
         <i class=" me-2 fs-5 pi pi-map-marker"></i>
-        {{ currentArea.name }}
+        <h3>{{ currentArea.name }}</h3>
         <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area"
                 class="p-button-text p-button-secondary"
                 @click="currentArea = null" />
         <Tag v-if="currentCategory" :value="currentCategory" class="ms-1 p-tag-secondary" />
-      </h3>
+        <TwoOptionsButton option1="guided" option2="list" class="ms-auto" />
+      </div>
     </div>
 
     <!-- Choose Area -->
-    <SelectButton v-model="selectedComponent" :options="components" />
     <template v-if="!currentArea">
       <div v-if="areas.length == 0">
         <h3>No products available. Please check your configuration</h3>
@@ -120,7 +120,7 @@
 import InputNumber from 'primevue/inputnumber'
 import Tag from 'primevue/tag'
 import RadioButton from 'primevue/radiobutton'
-import SelectButton from 'primevue/selectbutton'
+import TwoOptionsButton from '@/components/TwoOptionsButton.vue'
 import StockMixin from '@/services/stocks-mixin'
 import InventoryNewDialog from './InventoryNewDialog.vue'
 
@@ -128,7 +128,7 @@ export default {
   inject: ['sessionInventories'],
   mixins: [StockMixin],
   components: {
-    InputNumber, RadioButton, Tag, InventoryNewDialog,
+    InputNumber, RadioButton, TwoOptionsButton, Tag, InventoryNewDialog,
   },
   data() {
     return {
@@ -143,8 +143,7 @@ export default {
       currentArea: undefined,
       productIndex: 0,
       currentProductEdited: false,
-      loading: false,
-      components: ["guided mode", "list mode"]
+      loading: false
     }
   },
   beforeMount() {
