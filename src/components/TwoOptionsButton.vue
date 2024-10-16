@@ -1,5 +1,7 @@
 <template>
-    <SelectButton v-model="selectedOption" :options="possibleOptions" optionLabel="label" />
+    <SelectButton v-model="$root.selectedInventoryMode" :options="availableOptions"
+                  optionLabel="label"
+                  optionValue="value" />
 </template>
 
 <script>
@@ -22,8 +24,7 @@ export default {
     },
     data() {
         return {
-            selectedOption: null,
-            possibleOptions: [{ label: this.option1, value: this.option1 }, { label: this.option2, value: this.option2 }]
+            availableOptions: [{ label: this.option1, value: "option1" }, { label: this.option2, value: "option2" }]
         };
     }
 

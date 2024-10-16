@@ -32,6 +32,7 @@ export default {
       notes: {},
       categories: {},
       inventories: {},
+      selectedInventoryMode: null,
       fullyLoadedSessions: [], // In list mode we load only name and id. Full object is fetch in Session route
       user: null, // current user, null if nobody is loggued in
       userData: {}, // users preferences
@@ -42,6 +43,7 @@ export default {
     const { data, error } = await supabase.auth.getSession()
     if (error) this.toastError(error)
     this.user = data.session?.user
+    this.selectedInventoryMode = localStorage.getItem('selectedInventoryMode') ?? 'option1'
     this.help = localStorage.getItem('help') === 'true'
   },
   computed: {
@@ -89,6 +91,9 @@ export default {
           this.listenDbChanges(newUser)
         }, 0)
       }
+    },
+    selectedInventoryMode() {
+      localStorage.setItem('selectedInventoryMode', this.selectedInventoryMode)
     },
     help() {
       localStorage.setItem('help', this.help)
