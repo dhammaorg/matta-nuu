@@ -80,7 +80,8 @@
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
           <template #body="{ data }">
-            <InputNumber v-model="data.value" :maxFractionDigits="2" />
+            <InputNumber v-model="data.value" :maxFractionDigits="2"
+                         @input="onInputChange($event, data)" />
           </template>
         </Column>
         <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center"
@@ -91,6 +92,16 @@
           </template>
         </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
+        <Column field="price" header="Price" class="price text-center d-print-none">
+          <template #body="{ data }">
+            <div v-if="data && data.price && data.price.length > 0">
+              {{ data.price }} €
+            </div>
+            <div v-else>
+              <i class="pi pi-exclamation-triangle"></i>
+            </div>
+          </template>
+        </Column>
         <Column field="id" class="d-print-none actions w-auto">
           <template #body="{ data }">
             <Button icon="pi pi-times" class="p-button-text p-0" @click="deleteRow(data)" />
@@ -109,11 +120,23 @@
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
           <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product"
-                        @keyup.enter="addProduct"
-                        :showClear="false" :editable="false" />
+                        @keyup.enter="addProduct" :showClear="false" :editable="false" />
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct"
                   class="flex-shrink-0" />
         </div>
+      </div>
+
+      <div class="d-flex flex-row-reverse mt-3 d-print-none">
+        <div class="w-25 text-center order-total py-3">
+          <span class=""><b>{{ orderTotal }} € </b></span>
+          <i v-if="displayMissingProductsPrices && displayMissingProductsPrices.length > 0"
+             class="pi pi-exclamation-triangle" v-tooltip="displayMissingProductsPrices"
+             type="text"></i>
+        </div>
+        <div class="w-auto order-total py-3">
+          <div><b>Order Total</b></div>
+        </div>
+
       </div>
 
       <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer"
@@ -134,6 +157,7 @@ import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 import { convertToBestUnit } from '@/services/units'
 import InputUnit from '@/components/InputUnit.vue'
+import InputText from 'primevue/inputtext'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
@@ -149,6 +173,8 @@ export default {
       newProduct: '',
       loading: false,
       isCalculating: false,
+      orderTotal: '',
+      displayMissingProductsPrices: '',
     }
   },
   async mounted() {
@@ -234,9 +260,11 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
+              price: this.addPrice(Math.ceil(value), product.id),
             }
           }
         })
+        this.updateOrderTotal()
         this.isCalculating = false
       }, 10)
     },
@@ -266,10 +294,48 @@ export default {
           unit: this.newProduct.unit,
         }
       }
+      this.updateOrderTotal()
       this.newProduct = ''
     },
     deleteRow(row) {
       delete this.order.values[row.id]
+      this.updateOrderTotal()
+    },
+    onInputChange(event, data) {
+      data.price = this.addPrice(event.value, data.id)
+      this.updateOrderTotal()
+    },
+    addPrice(amount, productId) {
+      const price = this.computePrice(amount, productId)
+      return price ? price : null
+    },
+    computePrice(amount, productId) {
+      const price = this.$root.getCurrentProductPriceValue(this.$root.getProduct(productId))
+      return price ? (amount * price).toFixed(2) : null
+    },
+    updateOrderTotal() {
+      this.orderTotal = 0
+      let missingProductsPrices = []
+
+      Object.values(this.order.values).forEach(item => {
+        if (!item.price || isNaN(item.price)) {
+          missingProductsPrices.push(item.name)
+        } else {
+          this.orderTotal = Number(this.orderTotal) + Number(item.price)
+        }
+      });
+
+      let missingProductsMessage = ""
+      let count = 0
+      missingProductsPrices.forEach(element => {
+        missingProductsMessage = missingProductsMessage + element + ", "
+        count++
+      });
+
+      if (missingProductsMessage.length > 0)
+        this.displayMissingProductsPrices = count + " product(s) do not have a price : " + missingProductsMessage.substring(0, missingProductsMessage.length - 2)
+      else
+        this.displayMissingProductsPrices = ''
     },
   },
 }
@@ -281,7 +347,9 @@ export default {
 }
 
 ::v-deep td.needed,
-::v-deep td.actions {
+::v-deep td.actions,
+::v-deep td.price,
+.order-total {
   background-color: var(--indigo-50);
 }
 
