@@ -70,23 +70,40 @@ export default {
             this.product.prices.push({})
         },
         async savePrice() {
-            if (this.product.prices) {
-                this.product.prices = this.product.prices
-                    .filter((p) => p.date && p.value)
-                    .sort((a, b) => b.date - a.date);
+            if (!this.product.prices) return;
 
-                if (this.product.id) {
-                    this.dbUpdate('products', this.product)
-                }
-                this.$emit('updatedPrices', this.product.prices);
+            this.product.prices = this.product.prices
+                .filter((p) => p.date)
+                .sort((a, b) => b.date - a.date);
+
+            if (!this.product.prices.length) {
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: `You must fill the date field`,
+                    life: 4000,
+                });
+                return;
+            }
+            if (this.product.id) {
+                await this.dbUpdate('products', this.product)
+                this.$emit('updatedPrices', this.product.prices)
                 this.visible = false
-                this.product.prices = [{}]
-                this.product = {}
+                this.product = { prices: [{}] }
 
             }
         },
         removeRow(price) {
-            this.product.prices = this.product.prices.filter((p) => p.date !== price.date)
+            if (this.product.prices.length > 1) {
+                this.product.prices = this.product.prices.filter((p) => p.date !== price.date)
+            } else {
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: `You can not delete the last item`,
+                    life: 4000,
+                })
+            }
         },
     },
 }

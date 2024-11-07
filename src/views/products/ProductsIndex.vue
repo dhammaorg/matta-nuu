@@ -64,9 +64,11 @@
       </Column>
 
       <!-- Price -->
-      <Column field="price" header="Price" style="max-width: 14rem">
+      <Column field="price" header="Price" style="max-width: 10rem">
         <template #body="{ data }">
-          <InputNumber :value="$root.getCurrentProductPriceValue(data)"
+          <InputNumber
+                       v-if="data && data.prices && data.prices.length > 0"
+                       v-model="data.prices[0].value"
                        @blur="updateValue(Number($event.target.value), data)"
                        :maxFractionDigits="2" class="w-50" />
           <div class="w-50">{{ "€/" + data.unit }}</div>
@@ -117,6 +119,7 @@ export default {
       loading: false,
       filters: {},
       productsChanged: [],
+      productPriceValue: null,
     }
   },
   created() {
@@ -141,6 +144,11 @@ export default {
         supplier_id: { value: null, matchMode: FilterMatchMode.EQUALS },
         category_id: { value: null, matchMode: FilterMatchMode.EQUALS },
         storage_area_ids: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      }
+    },
+    initPrices(product) {
+      if (!this.$root.getCurrentProductPriceValue(product) || !this.$root.getCurrentProductPriceDate(product)) {
+        this.$root.addProductPrice(null, product)
       }
     },
     onCellEditComplete(event) {

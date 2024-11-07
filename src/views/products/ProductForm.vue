@@ -54,7 +54,7 @@
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
         <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{
           product.unit
-        }}" to 1 piece in orders</label>
+          }}" to 1 piece in orders</label>
       </div>
 
       <div class="p-field w-100 mt-0 mb-3">
@@ -111,10 +111,9 @@ export default {
     },
     async saveProduct() {
       if (this.product.name) {
-        if (!(this.product?.prices?.[0]?.value ?? null)
-          || !(this.product?.prices?.[0]?.date ?? null))
+        if (!(this.productPriceValue === this.$root.getCurrentProductPriceValue(this.product))) {
           this.$root.addProductPrice(this.productPriceValue, this.product)
-
+        }
         if (this.product.id) {
           this.dbUpdate('products', this.product)
         } else {
