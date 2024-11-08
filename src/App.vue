@@ -224,34 +224,6 @@ export default {
     getCurrentProductPriceDate(product) {
       return product?.prices?.[0]?.date ?? null;
     },
-    addProductPrice(productPriceValue, product) {
-      if (!Array.isArray(product.prices)) {
-        product.prices = [];
-      }
-
-      const newPrice = {
-        date: new Date(),
-        value: productPriceValue,
-      };
-
-      const existingPrice = product.prices.find(price => this.isSameDay(new Date(price.date), newPrice.date));
-
-      if (existingPrice) {
-        existingPrice.value = newPrice.value;
-      } else {
-        product.prices.push(newPrice);
-      }
-
-      product.prices = product.prices.filter((p) => p.date).sort((a, b) => b.date - a.date);
-
-    },
-    isSameDay(date1, date2) {
-      return (
-        date1.getDate() === date2.getDate() &&
-        date1.getMonth() === date2.getMonth() &&
-        date1.getFullYear() === date2.getFullYear()
-      );
-    },
   },
 }
 </script>

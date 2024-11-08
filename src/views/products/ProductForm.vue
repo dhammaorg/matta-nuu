@@ -23,7 +23,7 @@
       </div>
 
       <div class="p-field">
-        <label>Price <span v-if="productPriceDate">(since {{ productPriceDate }})</span></label>
+        <label>Price <span v-if="productPriceDate">({{ productPriceDate }})</span></label>
         <div class="p-inputgroup">
           <InputNumber v-model="productPriceValue"
                        placeholder="Price"
@@ -111,8 +111,8 @@ export default {
     },
     async saveProduct() {
       if (this.product.name) {
-        if (!(this.productPriceValue === this.$root.getCurrentProductPriceValue(this.product))) {
-          this.$root.addProductPrice(this.productPriceValue, this.product)
+        if (this.productPriceValue == null || !(this.productPriceValue === this.$root.getCurrentProductPriceValue(this.product))) {
+          this.addProductPrice(this.productPriceValue, this.product)
         }
         if (this.product.id) {
           this.dbUpdate('products', this.product)
@@ -122,6 +122,23 @@ export default {
         }
         this.visible = false
         this.product = {}
+      }
+    },
+    addProductPrice(productPriceValue, product) {
+      if (!Array.isArray(product.prices)) {
+        product.prices = [];
+      }
+      const newPrice = {
+        date: new Date(),
+        value: productPriceValue,
+      };
+
+      const mostRecentPrice = product.prices[0]
+
+      if (mostRecentPrice) {
+        mostRecentPrice.value = newPrice.value;
+      } else {
+        product.prices.push(newPrice);
       }
     },
     handleUpdatedPrices(updatedProductPrices) {
