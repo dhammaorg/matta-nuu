@@ -208,20 +208,7 @@ export default {
       return orderTotal.toFixed(2)
     },
     missingProductPrices() {
-      let missingProductsMessage = ""
-      let count = 0
-
-      this.values.forEach(item => {
-        if (!item.price || isNaN(item.price) || item.price == 0) {
-          missingProductsMessage = missingProductsMessage + "- " + item.name + "<br/>"
-          count++
-        }
-      });
-
-      return missingProductsMessage.length > 0
-        ? count + " product(s) do(es) not have a price : <br/>" + missingProductsMessage
-        : ''
-
+      return this.$root.getOrderMissingProductPrices(this.values)
     },
   },
   methods: {
