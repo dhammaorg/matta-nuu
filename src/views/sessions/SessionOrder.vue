@@ -123,8 +123,8 @@
       <div class="d-flex flex-row-reverse mt-3 d-print-none">
         <div class="w-25 text-center order-total py-3">
           <span class=""><b>{{ orderTotalPrice }} € </b></span>
-          <i v-if="missingProducts && missingProducts.length > 0" class="pi pi-exclamation-triangle"
-             v-tooltip="missingProducts" type="text"></i>
+          <i v-if="missingProductPrices && missingProductPrices.length > 0"
+             class="pi pi-exclamation-triangle" v-tooltip="missingProductPrices" type="text"></i>
         </div>
         <div class="w-auto order-total py-3">
           <div><b>Order Total</b></div>
@@ -207,7 +207,7 @@ export default {
       });
       return orderTotal.toFixed(2)
     },
-    missingProducts() {
+    missingProductPrices() {
       let missingProductsMessage = ""
       let count = 0
 
@@ -276,7 +276,7 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
-              price: this.computeProductPrice(Math.ceil(value), product.id),
+              price: this.$root.computePrice(Math.ceil(value), product.id),
             }
           }
         })
@@ -311,10 +311,6 @@ export default {
       }
       this.newProduct = ''
     },
-    computeProductPrice(amount, productId) {
-      const price = this.$root.computePrice(amount, productId)
-      return price ? price : null
-    },
     deleteRow(row) {
       delete this.order.values[row.id]
     },
@@ -324,7 +320,7 @@ export default {
       deep: true,
       handler(newValue, oldValue) {
         newValue.forEach(item => {
-          item.price = this.computeProductPrice(item.value, item.id)
+          item.price = this.$root.computePrice(item.value, item.id)
         });
       },
     },
