@@ -80,8 +80,7 @@
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
           <template #body="{ data }">
-            <InputNumber v-model="data.value" :maxFractionDigits="2"
-                         @input="onInputChange($event, data)" />
+            <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
         <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center"
@@ -94,12 +93,7 @@
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
         <Column field="price" header="Price" class="price text-center d-print-none">
           <template #body="{ data }">
-            <div v-if="data && data.price && data.price.length > 0">
-              {{ data.price }} €
-            </div>
-            <div v-else>
-              <i class="pi pi-exclamation-triangle"></i>
-            </div>
+            {{ data.price }}
           </template>
         </Column>
         <Column field="id" class="d-print-none actions w-auto">
@@ -128,10 +122,9 @@
 
       <div class="d-flex flex-row-reverse mt-3 d-print-none">
         <div class="w-25 text-center order-total py-3">
-          <span class=""><b>{{ orderTotal }} € </b></span>
-          <i v-if="displayMissingProductsPrices && displayMissingProductsPrices.length > 0"
-             class="pi pi-exclamation-triangle" v-tooltip="displayMissingProductsPrices"
-             type="text"></i>
+          <span class=""><b>{{ orderTotalPrice }} € </b></span>
+          <i v-if="missingProducts && missingProducts.length > 0" class="pi pi-exclamation-triangle"
+             v-tooltip="missingProducts" type="text"></i>
         </div>
         <div class="w-auto order-total py-3">
           <div><b>Order Total</b></div>
@@ -173,8 +166,6 @@ export default {
       newProduct: '',
       loading: false,
       isCalculating: false,
-      orderTotal: '',
-      displayMissingProductsPrices: '',
     }
   },
   async mounted() {
@@ -206,6 +197,31 @@ export default {
         }
         return aValue.localeCompare(bValue)
       })
+    },
+    orderTotalPrice() {
+      let orderTotal = 0
+      this.values.forEach(item => {
+        if (item.price && !isNaN(item.price)) {
+          orderTotal = Number(orderTotal) + Number(item.price)
+        }
+      });
+      return orderTotal.toFixed(2)
+    },
+    missingProducts() {
+      let missingProductsMessage = ""
+      let count = 0
+
+      this.values.forEach(item => {
+        if (!item.price || isNaN(item.price) || item.price == 0) {
+          missingProductsMessage = missingProductsMessage + "- " + item.name + "<br/>"
+          count++
+        }
+      });
+
+      return missingProductsMessage.length > 0
+        ? count + " product(s) do(es) not have a price : <br/>" + missingProductsMessage
+        : ''
+
     },
   },
   methods: {
@@ -260,11 +276,10 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
-              price: this.addPrice(Math.ceil(value), product.id),
+              price: this.computeProductPrice(Math.ceil(value), product.id),
             }
           }
         })
-        this.updateOrderTotal()
         this.isCalculating = false
       }, 10)
     },
@@ -294,48 +309,24 @@ export default {
           unit: this.newProduct.unit,
         }
       }
-      this.updateOrderTotal()
       this.newProduct = ''
+    },
+    computeProductPrice(amount, productId) {
+      const price = this.$root.computePrice(amount, productId)
+      return price ? price : null
     },
     deleteRow(row) {
       delete this.order.values[row.id]
-      this.updateOrderTotal()
     },
-    onInputChange(event, data) {
-      data.price = this.addPrice(event.value, data.id)
-      this.updateOrderTotal()
-    },
-    addPrice(amount, productId) {
-      const price = this.computePrice(amount, productId)
-      return price ? price : null
-    },
-    computePrice(amount, productId) {
-      const price = this.$root.getCurrentProductPriceValue(this.$root.getProduct(productId))
-      return price ? (amount * price).toFixed(2) : null
-    },
-    updateOrderTotal() {
-      this.orderTotal = 0
-      let missingProductsPrices = []
-
-      Object.values(this.order.values).forEach(item => {
-        if (!item.price || isNaN(item.price)) {
-          missingProductsPrices.push(item.name)
-        } else {
-          this.orderTotal = Number(this.orderTotal) + Number(item.price)
-        }
-      });
-
-      let missingProductsMessage = ""
-      let count = 0
-      missingProductsPrices.forEach(element => {
-        missingProductsMessage = missingProductsMessage + element + ", "
-        count++
-      });
-
-      if (missingProductsMessage.length > 0)
-        this.displayMissingProductsPrices = count + " product(s) do not have a price : " + missingProductsMessage.substring(0, missingProductsMessage.length - 2)
-      else
-        this.displayMissingProductsPrices = ''
+  },
+  watch: {
+    'values': {
+      deep: true,
+      handler(newValue, oldValue) {
+        newValue.forEach(item => {
+          item.price = this.computeProductPrice(item.value, item.id)
+        });
+      },
     },
   },
 }

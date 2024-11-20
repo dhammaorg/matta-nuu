@@ -224,6 +224,10 @@ export default {
     getCurrentProductPriceDate(product) {
       return product?.prices?.[0]?.date ?? null;
     },
+    computePrice(quantity, productId) {
+      const price = this.getCurrentProductPriceValue(this.getProduct(productId))
+      return price ? (Number(quantity) * Number(price)).toFixed(2) : null
+    },
   },
 }
 </script>
