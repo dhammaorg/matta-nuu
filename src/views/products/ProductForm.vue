@@ -54,7 +54,7 @@
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
         <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{
           product.unit
-        }}" to 1 piece in orders</label>
+          }}" to 1 piece in orders</label>
       </div>
 
       <div class="p-field w-100 mt-0 mb-3">
@@ -143,19 +143,14 @@ export default {
       }
     },
     handleUpdatedPrices(updatedProductPrices) {
-      // this.product.prices = updatedProductPrices
-      // this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product)
-      // this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product))
+      this.product.prices = updatedProductPrices
+      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product)
+      this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product))
     },
     formatDate(dateString) {
       return dateString ? new Intl.DateTimeFormat('default', { dateStyle: 'short' }).format(new Date(dateString)) : null;
     },
   },
-  // computed: {
-  //   productPriceValue() {
-  //     return this.$root.getCurrentProductPriceValue(this.product)
-  //   },
-  // },
   watch: {
     'product.packaging_conditioning': function (newVal, oldVal) {
       //  reset convert_to_piece to false when no packaging_conditioning is present
