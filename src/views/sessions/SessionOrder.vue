@@ -93,6 +93,11 @@
           </template>
         </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
+        <Column field="price" header="Price" class="price text-center d-print-none">
+          <template #body="{ data }">
+            {{ data.price }}
+          </template>
+        </Column>
         <Column field="id" class="d-print-none actions w-auto">
           <template #body="{ data }">
             <Button icon="pi pi-times" class="p-button-text p-0" @click="deleteRow(data)" />
@@ -117,6 +122,18 @@
         </div>
       </div>
 
+      <div class="d-flex flex-row-reverse mt-3 d-print-none">
+        <div class="w-25 text-center order-total py-3">
+          <span class=""><b>{{ orderTotalPrice }} € </b></span>
+          <i v-if="missingProductPrices && missingProductPrices.length > 0"
+             class="pi pi-exclamation-triangle" v-tooltip="missingProductPrices" type="text"></i>
+        </div>
+        <div class="w-auto order-total py-3">
+          <div><b>Order Total</b></div>
+        </div>
+
+      </div>
+
       <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer"
                 class="mt-3 w-100" />
     </div>
@@ -135,6 +152,7 @@ import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 import { convertToBestUnit } from '@/services/units'
 import InputUnit from '@/components/InputUnit.vue'
+import InputText from 'primevue/inputtext'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
@@ -181,6 +199,18 @@ export default {
         }
         return aValue.localeCompare(bValue)
       })
+    },
+    orderTotalPrice() {
+      let orderTotal = 0
+      this.values.forEach(item => {
+        if (item.price && !isNaN(item.price)) {
+          orderTotal = Number(orderTotal) + Number(item.price)
+        }
+      });
+      return orderTotal.toFixed(2)
+    },
+    missingProductPrices() {
+      return this.$root.getOrderMissingProductPrices(this.values)
     },
   },
   methods: {
@@ -235,6 +265,7 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
+              price: this.$root.computePrice(Math.ceil(value), product.id),
             }
           }
         })
@@ -273,6 +304,16 @@ export default {
       delete this.order.values[row.id]
     },
   },
+  watch: {
+    'values': {
+      deep: true,
+      handler(newValue, oldValue) {
+        newValue.forEach(item => {
+          item.price = this.$root.computePrice(item.value, item.id)
+        });
+      },
+    },
+  },
 }
 </script>
 
@@ -282,7 +323,9 @@ export default {
 }
 
 ::v-deep td.needed,
-::v-deep td.actions {
+::v-deep td.actions,
+::v-deep td.price,
+.order-total {
   background-color: var(--indigo-50);
 }
 

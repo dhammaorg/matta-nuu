@@ -232,7 +232,67 @@ export default {
     getSupplier(id) {
       return this.suppliers[id] || {}
     },
+    getCurrentProductPriceValue(product) {
+      return product?.prices?.[0]?.value ?? null;
+    },
+    getCurrentProductPriceDate(product) {
+      return product?.prices?.[0]?.date ?? null;
+    },
+    computePrice(quantity, productId) {
+      const price = this.getCurrentProductPriceValue(this.getProduct(productId))
+      return price ? (Number(quantity) * Number(price)).toFixed(2) : null
+    },
+    getRecipiePrice(recipieId) {
+      const recipie = this.getRecipie(recipieId)
+      let totalPrice = 0, price = 0
+      if (recipie && recipie.products) {
+        recipie.products.forEach(product => {
+          price = this.$root.computePrice(product.amount, product.id)
+          if (price && !isNaN(price)) {
+            totalPrice = Number(totalPrice) + Number(price)
+          }
+        });
+      }
+      return (totalPrice / recipie.people_count).toFixed(2)
+    },
+    getRecipieMissingProductPrices(recipieId) {
+      const recipie = this.getRecipie(recipieId)
+      let missingProductsMessage = ""
+      let count = 0, price = 0
+
+      if (recipie && recipie.products) {
+        recipie.products.forEach(product => {
+          price = this.$root.computePrice(product.amount, product.id)
+          if (!price || isNaN(price) || price == 0) {
+            missingProductsMessage = missingProductsMessage + "- " + this.$root.getProduct(product.id).name + "<br/>"
+            count++
+          }
+        });
+      }
+
+      return missingProductsMessage.length > 0
+        ? count + " product(s) do(es) not have a price : <br/>" + missingProductsMessage
+        : ''
+
+    },
+    getOrderMissingProductPrices(orderValues) {
+      let missingProductsMessage = ""
+      let count = 0
+
+      orderValues.forEach(item => {
+        if (!item.price || isNaN(item.price) || item.price == 0) {
+          missingProductsMessage = missingProductsMessage + "- " + item.name + "<br/>"
+          count++
+        }
+      });
+
+      return missingProductsMessage.length > 0
+        ? count + " product(s) do(es) not have a price : <br/>" + missingProductsMessage
+        : ''
+
+    },
   },
+
 }
 </script>
 
