@@ -91,9 +91,11 @@
           </template>
         </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
-        <Column field="price" header="Price" class="price text-center d-print-none">
+        <Column field="unitPrice" header="Unit price" class="price text-center d-print-none">
+        </Column>
+        <Column field="total " header="Total" class="price text-center d-print-none">
           <template #body="{ data }">
-            {{ data.price }}
+            {{ data.total }} €
           </template>
         </Column>
         <Column field="id" class="d-print-none actions w-auto">
@@ -151,6 +153,7 @@ import StockMixin from '@/services/stocks-mixin'
 import { convertToBestUnit } from '@/services/units'
 import InputUnit from '@/components/InputUnit.vue'
 import InputText from 'primevue/inputtext'
+import { convertToUnit } from '@/services/units'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
@@ -201,8 +204,8 @@ export default {
     orderTotalPrice() {
       let orderTotal = 0
       this.values.forEach(item => {
-        if (item.price && !isNaN(item.price)) {
-          orderTotal = Number(orderTotal) + Number(item.price)
+        if (item.total && !isNaN(item.total)) {
+          orderTotal = Number(orderTotal) + Number(item.total)
         }
       });
       return orderTotal.toFixed(2)
@@ -263,7 +266,7 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
-              price: this.$root.computePrice(Math.ceil(value), product.id),
+              unitPrice: this.displayUnitPrice(product.id),
             }
           }
         })
@@ -294,6 +297,7 @@ export default {
           id: this.newProduct.id,
           name: this.newProduct.name,
           unit: this.newProduct.unit,
+          unitPrice: this.displayUnitPrice(this.newProduct.id),
         }
       }
       this.newProduct = ''
@@ -301,13 +305,16 @@ export default {
     deleteRow(row) {
       delete this.order.values[row.id]
     },
+    displayUnitPrice(productId) {
+      return this.$root.getCurrentProductPriceValue(productId) + " €/" + this.$root.getProduct(productId).unit
+    },
   },
   watch: {
     'values': {
       deep: true,
       handler(newValue, oldValue) {
         newValue.forEach(item => {
-          item.price = this.$root.computePrice(item.value, item.id)
+          item.total = this.$root.computePrice(convertToUnit(item.value, item.unit, this.$root.getProduct(item.id)), item.id) ?? 0
         });
       },
     },

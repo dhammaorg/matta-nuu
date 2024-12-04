@@ -218,14 +218,16 @@ export default {
     getSupplier(id) {
       return this.suppliers[id] || {}
     },
-    getCurrentProductPriceValue(product) {
-      return product?.prices?.[0]?.value ?? null;
+    getCurrentProductPriceValue(productId) {
+      return this.getProduct(productId)?.prices?.[0]?.value ?? null;
     },
-    getCurrentProductPriceDate(product) {
-      return product?.prices?.[0]?.date ?? null;
+    getCurrentProductPriceDate(productId) {
+      return this.getProduct(productId)?.prices?.[0]?.date ?? null;
     },
     computePrice(quantity, productId) {
-      const price = this.getCurrentProductPriceValue(this.getProduct(productId))
+      if (!quantity)
+        return null
+      const price = this.getCurrentProductPriceValue(productId)
       return price ? (Number(quantity) * Number(price)).toFixed(2) : null
     },
     getRecipiePrice(recipieId) {
@@ -266,7 +268,7 @@ export default {
       let count = 0
 
       orderValues.forEach(item => {
-        if (!item.price || isNaN(item.price) || item.price == 0) {
+        if (!item.total || isNaN(item.total) || item.total == 0) {
           missingProductsMessage = missingProductsMessage + "- " + item.name + "<br/>"
           count++
         }
