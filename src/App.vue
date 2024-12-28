@@ -224,6 +224,45 @@ export default {
     getCurrentProductPriceDate(productId) {
       return this.getProduct(productId)?.prices?.[0]?.date ?? null;
     },
+    addProductPrice(price, product) {
+      if (!Array.isArray(product.prices)) {
+        product.prices = [];
+      }
+      // Convert price.date from database which is String to javascript Date
+      product.prices.forEach(price => {
+        price.date = new Date(price.date)
+      });
+
+      const newPrice = {
+        date: new Date(),
+        value: price,
+      };
+
+      const mostRecentPrice = product.prices[0]
+
+      if (this.isSameDay(newPrice.date, mostRecentPrice.date)) {
+        mostRecentPrice.value = newPrice.value;
+      } else {
+        product.prices.push(newPrice);
+      }
+
+      product.prices = product.prices
+        .filter((p) => p.date)
+        .sort((a, b) => b.date - a.date);
+    },
+    isSameDay(date1, date2) {
+      return (
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate()
+      );
+    },
+    isFutureDate(date) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      date.setHours(0, 0, 0, 0)
+      return date > today
+    },
     computePrice(quantity, productId) {
       if (!quantity)
         return null

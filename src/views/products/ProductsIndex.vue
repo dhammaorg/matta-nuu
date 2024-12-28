@@ -69,6 +69,7 @@
           <InputNumber
                        v-if="data && data.prices && data.prices.length > 0"
                        v-model="data.prices[0].value"
+                       @blur="handleBlur(data)"
                        :maxFractionDigits="2" class="w-50" />
           <div class="w-50">{{ "€/" + data.unit }}</div>
         </template>
@@ -162,6 +163,9 @@ export default {
     },
     recipiesUsingProduct(product) {
       return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
+    },
+    handleBlur(product) {
+      this.$root.addProductPrice(product.prices[0].value, product)
     },
   }
 }

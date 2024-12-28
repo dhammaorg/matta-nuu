@@ -113,7 +113,7 @@ export default {
     async saveProduct() {
       if (this.product.name) {
         if (this.productPriceValue == null || !(this.productPriceValue === this.$root.getCurrentProductPriceValue(this.product.id))) {
-          this.addProductPrice(this.productPriceValue, this.product)
+          this.$root.addProductPrice(this.productPriceValue, this.product)
         }
         if (this.product.id) {
           this.dbUpdate('products', this.product)
@@ -123,23 +123,6 @@ export default {
         }
         this.visible = false
         this.product = {}
-      }
-    },
-    addProductPrice(price, product) {
-      if (!Array.isArray(product.prices)) {
-        product.prices = [];
-      }
-      const newPrice = {
-        date: new Date(),
-        value: price,
-      };
-
-      const mostRecentPrice = product.prices[0]
-
-      if (mostRecentPrice) {
-        mostRecentPrice.value = newPrice.value;
-      } else {
-        product.prices.push(newPrice);
       }
     },
     handleUpdatedPrices(updatedProductPrices) {

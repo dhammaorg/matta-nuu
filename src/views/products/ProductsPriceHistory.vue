@@ -85,6 +85,17 @@ export default {
                 });
                 return;
             }
+            for (const element of this.product.prices) {
+                if (this.$root.isFutureDate(element.date)) {
+                    this.$toast.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: `Dates can not be in the future`,
+                        life: 4000,
+                    });
+                    return;
+                }
+            }
             if (this.product.id) {
                 await this.dbUpdate('products', this.product)
                 this.$emit('updatedPrices', this.product.prices)
