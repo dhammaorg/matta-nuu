@@ -240,7 +240,7 @@ export default {
 
       const mostRecentPrice = product.prices[0]
 
-      if (this.isSameDay(newPrice.date, mostRecentPrice.date)) {
+      if (newPrice.date.equals(mostRecentPrice.date)) {
         mostRecentPrice.value = newPrice.value;
       } else {
         product.prices.push(newPrice);
@@ -249,19 +249,6 @@ export default {
       product.prices = product.prices
         .filter((p) => p.date)
         .sort((a, b) => b.date - a.date);
-    },
-    isSameDay(date1, date2) {
-      return (
-        date1.getFullYear() === date2.getFullYear() &&
-        date1.getMonth() === date2.getMonth() &&
-        date1.getDate() === date2.getDate()
-      );
-    },
-    isFutureDate(date) {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      date.setHours(0, 0, 0, 0)
-      return date > today
     },
     computePrice(quantity, productId) {
       if (!quantity)

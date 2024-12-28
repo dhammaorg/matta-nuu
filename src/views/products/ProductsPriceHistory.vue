@@ -86,7 +86,7 @@ export default {
                 return;
             }
             for (const element of this.product.prices) {
-                if (this.$root.isFutureDate(element.date)) {
+                if (element.date.isTodayOrAfter() && !element.date.isToday()) {
                     this.$toast.add({
                         severity: 'error',
                         summary: 'Error',
