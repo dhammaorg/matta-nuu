@@ -65,7 +65,7 @@
       <div class="content">
         <h3 class="mb-4">{{ currentProduct.name }}</h3>
         <!-- Unit -->
-        <div v-if="currentProduct.packaging_convert_to_piece"
+        <div v-if="currentProduct.packaging_convert_to_piece && currentProduct.unit != 'piece'"
              class="d-flex align-items-center mb-4 justify-content-center">
           <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit"
                        id="unit-default" name="unit"
