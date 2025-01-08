@@ -140,7 +140,7 @@ export default {
             const areas = []
             Object.entries(inventory.values[productId] || {}).forEach(([areaId, areaVal]) => {
               if (areaVal.value !== undefined && areaVal.value !== null) {
-                const value = convertToUnit(areaVal.value, areaVal.unit, product)
+                const value = (areaVal.unit === 'piece' && product.unit === 'piece') ? areaVal.value : convertToUnit(areaVal.value, areaVal.unit, product);
                 productVal ||= 0
                 productVal += value
                 const area = this.$root.getCategory(areaId)
