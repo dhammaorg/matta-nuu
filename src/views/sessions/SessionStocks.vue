@@ -188,6 +188,7 @@ export default {
       }
 
       result = result.sort((a, b) => {
+        if (!a.product_name || !b.product_name) return 0
         if (this.options.groupBy) {
           // sort first by group option, then by name
           const aValue = a[this.options.groupBy].name || 'xxxx'
