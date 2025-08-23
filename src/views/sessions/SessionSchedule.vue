@@ -36,8 +36,10 @@
           </template>
         </Column>
         <!-- Event Header -->
-        <Column v-for="(event, index) in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end header-group event-editor" :class="`event-${event.id}`">
+        <Column v-for="(event, index) in session.events" :colspan="event.days.length"
+                :key="event.id"
+                class="event-start event-end header-group event-editor"
+                :class="`event-${event.id}`">
           <template #header>
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
@@ -52,7 +54,8 @@
                 <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
                         class="p-button-sm p-button-success p-button-text"
                         v-tooltip.top="'Save as template'" v-if="!session.is_template" />
-                <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event, session.is_template)"
+                <Button icon="pi pi-pencil"
+                        @click="$refs.eventForm.show(event, session.is_template)"
                         class="p-button-sm p-button-text" />
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
                         class="p-button-sm p-button-danger p-button-text"
@@ -100,7 +103,8 @@
           <span v-if="$root.getProduct(data.product_id).unit">({{
             $root.getProduct(data.product_id).unit }})</span>
         </span>
-        <span v-else-if="data.type == 'recipie'">{{ $root.getRecipie(data.recipie_id).name }}</span>
+        <span v-else-if="data.type == 'recipie'">{{
+          $root.getRecipie(data.recipie_id).name }}</span>
         <span v-else class="variable-row-label">{{ data.label }}</span>
         <span class="btn-on-hover d-print-none">
           <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash"
@@ -119,8 +123,7 @@
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in sessionDays" :key="`cell-${day.id}`" :field="day.id"
-            :class="day.class">
+    <Column v-for="day in sessionDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class">
       <!-- Cell Show -->
       <template #body="{ data, field }">
         <template v-if="data.values[field]">
@@ -131,7 +134,8 @@
           </label>
           <label v-if="data.type == 'recipies' && data.values[field].recipie_id">
             {{ $root.getRecipie(data.values[field].recipie_id).name }}
-            <span class="pi pi-clock d-print-none" v-tooltip="'Needed to be prepared the day before'"
+            <span class="pi pi-clock d-print-none"
+                  v-tooltip="'Needed to be prepared the day before'"
                   style="font-size: 0.7rem"
                   v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"></span>
           </label>
@@ -146,7 +150,8 @@
         <div :class="inCellEditorClass(data)">
           <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id"
                         class="w-100" />
-          <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
+          <InputRecipie v-else-if="data.type == 'recipies'"
+                        v-model="data.values[field].recipie_id" />
           <div class="p-inputgroup">
             <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus
                          :maxFractionDigits="2" />
@@ -204,6 +209,8 @@ export default {
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show({}, this.session.is_template)
     this.$root.setPrintMode('landscape')
+    this.fixRemovedItem()
+
   },
   computed: {
     session() {
@@ -214,6 +221,37 @@ export default {
     },
   },
   methods: {
+    fixRemovedItem() {
+      this.session.rows = this.session.rows.filter(row => {
+        if (row.type === "recipie") {
+          const recipie = this.$root.getRecipie(row.recipie_id);
+          if (recipie && isNaN(recipie.id))
+            return false
+
+        } else if (row.type === "recipies") {
+          Object.entries(row.values).forEach(([key, value]) => {
+            if (!value.recipie_id || isNaN(this.$root.getRecipie(value.recipie_id)?.id)) {
+              delete value.recipie_id;
+            }
+          });
+
+        } else if (row.type === "product") {
+          const product = this.$root.getProduct(row.product_id);
+          if (!product.id || isNaN(product.id))
+            return false
+
+        } else if (row.type === "products") {
+          Object.entries(row.values).forEach(([key, value]) => {
+            if (!value.product_id || isNaN(this.$root.getProduct(value.product_id)?.id)) {
+              delete value.product_id;
+            }
+          });
+        }
+        return true;
+      });
+
+      this.dbUpdate('sessions', this.session)
+    },
     disableAddDayFor(event) {
       // Allow events to overlap only for one day (in case event1 ends on the morning and event2 starts on the afternoon)
       const newDate = event.start_date.addDays(event.days.length - 1)
