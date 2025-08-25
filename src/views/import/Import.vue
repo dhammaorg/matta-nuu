@@ -24,7 +24,8 @@
       </div>
 
       <div class="p-field mt-4">
-        <Button label="Import" icon="pi pi-cloud-download" @click="importData" :loading="importing" />
+        <Button label="Import" icon="pi pi-cloud-download" @click="importData"
+                :loading="importing" />
       </div>
 
       <template v-for="object in objects" :key="object">
@@ -131,7 +132,6 @@ export default {
           this.prepareToImport('recipies', recipie)
         }
       })
-
       // Import Products
       Array.from(productsToImport).filter((r) => !!r).forEach((product) => {
         const existingProduct = this.$root.productsArray.find((p) => p.name == product.name && p.unit == product.unit)
@@ -163,7 +163,9 @@ export default {
             newRow = this.mapId(row, 'recipies', 'recipie_id')
           } else if (row.type === 'recipies') {
             Object.entries(row.values).forEach(([key, value]) => {
-              newRow.values[key] = this.mapId(value, 'recipies', 'recipie_id')
+              if (value) {
+                newRow.values[key] = this.mapId(value, 'recipies', 'recipie_id')
+              }
             })
           }
           return row
@@ -182,7 +184,7 @@ export default {
       const { data, error } = await this.$db.from(dbname).insert(this.prepared[type])
       if (error) this.toastError(error)
       else {
-        data.forEach((objectCreated) => {
+        (data || []).forEach((objectCreated) => {
           this.imported[type].push(objectCreated.name)
           this.$root[dbname][objectCreated.id] = objectCreated
         })
