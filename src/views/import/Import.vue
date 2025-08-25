@@ -163,9 +163,7 @@ export default {
             newRow = this.mapId(row, 'recipies', 'recipie_id')
           } else if (row.type === 'recipies') {
             Object.entries(row.values).forEach(([key, value]) => {
-              if (value) {
-                newRow.values[key] = this.mapId(value, 'recipies', 'recipie_id')
-              }
+              newRow.values[key] = this.mapId(value, 'recipies', 'recipie_id')
             })
           }
           return row
@@ -191,6 +189,7 @@ export default {
       }
     },
     mapId(data, type, propId) {
+      if (!data) return
       const oldId = data[propId]
       const oldObject = this.target[type].find((p) => p.id === oldId)
       if (!oldObject) return data
