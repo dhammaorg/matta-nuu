@@ -281,8 +281,8 @@ export default {
   max-width: 800px;
 }
 
-::v-deep td.needed,
-::v-deep td.actions {
+:deep(td.needed),
+:deep(td.actions) {
   background-color: var(--indigo-50);
 }
 
@@ -291,7 +291,7 @@ export default {
   background-color: var(--surface-b);
 }
 
-::v-deep .p-input-group .p-dropdown {
+:deep(.p-input-group .p-dropdown) {
   background-color: var(--surface-b);
 }
 
@@ -307,7 +307,7 @@ export default {
   }
 }
 
-::v-deep .order-options {
+:deep(.order-options) {
 
   .p-button,
   .p-inputtext {
@@ -315,16 +315,16 @@ export default {
   }
 }
 
-::v-deep td,
-::v-deep th {
+:deep(td),
+:deep(th) {
   min-width: 100px !important;
 }
 
-::v-deep .form-cell.unit .p-inputtext {
+:deep(.form-cell.unit .p-inputtext) {
   justify-content: flex-end;
 }
 
-::v-deep .p-rowgroup-header td {
+:deep(.p-rowgroup-header td) {
   background-color: transparent;
 }
 
@@ -345,8 +345,7 @@ export default {
   }
 
   .card {
-    margin-top: 2rem;
-  }
+    margin-top: 2rem;}
 
   .p-inputtextarea {
     border: none;

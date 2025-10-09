@@ -122,7 +122,7 @@ $background-color: var(--indigo-500);
 $active-color: white;
 $inactive-color: var(--indigo-100);
 
-::v-deep .p-tabmenu .p-tabmenu-nav {
+:deep(.p-tabmenu .p-tabmenu-nav) {
   .p-tabmenuitem .p-menuitem-link {
     border-color: $background-color !important;
     padding-top: 1.5rem;
