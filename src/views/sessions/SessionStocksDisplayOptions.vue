@@ -1,12 +1,10 @@
 <template>
   <Button type="button" icon="pi pi-sliders-h" class="p-button-sm p-button-secondary"
-          :class="{ 'p-button-warning': filtersPresent > 0 }"
-          :badge="filtersPresent.length > 0 ? filtersPresent.toString() : null"
-          label="Filters / Display" @click="show" />
+    :class="{ 'p-button-warning': filtersPresent > 0 }"
+    :badge="filtersPresent.length > 0 ? filtersPresent.toString() : null" label="Filters / Display" @click="show" />
 
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }"
-          header="Configure Filters and Display options"
-          :modal="true" class="p-fluid recipie-dialog">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Configure Filters and Display options"
+    :modal="true" class="p-fluid recipie-dialog">
     <div class="mb-4">
       <!-- Group by -->
       <h5>Group by</h5>
@@ -28,18 +26,15 @@
     <h5>Filter products</h5>
     <div class="p-field mb-3">
       <label v-if="options.supplierId">By Supplier</label>
-      <InputSupplier v-model="options.supplierId" showClear class="w-100" placeholder="By Supplier"
-                     :btnAdd="false" />
+      <InputSupplier v-model="options.supplierId" showClear class="w-100" placeholder="By Supplier" :btnAdd="false" />
     </div>
     <div class="p-field mb-3">
       <label v-if="options.categoryId">By Category</label>
-      <InputCategory v-model="options.categoryId" type="Product" showClear class="w-100"
-                     placeholder="By Category"
-                     :btnAdd="false" />
+      <InputCategory v-model="options.categoryId" type="Product" showClear class="w-100" placeholder="By Category"
+        :btnAdd="false" />
     </div>
     <div class="mb-3">
-      <Checkbox v-model="options.onlyProductsWithSupplier" id="onlyProductsWithSupplierInput"
-                :binary="true" />
+      <Checkbox v-model="options.onlyProductsWithSupplier" id="onlyProductsWithSupplierInput" :binary="true" />
       <label for="onlyProductsWithSupplierInput" class="ms-2">Only with supplier</label>
     </div>
 
@@ -51,7 +46,7 @@
     <!-- Actions -->
     <template #footer>
       <Button v-if="filtersPresent" @click="clearAll" label="Clear all filters"
-              class="p-button-warning float-start"></Button>
+        class="p-button-warning float-start"></Button>
       <Button label="Cancel" @click="visible = false" class="p-button-text"></Button>
       <Button label="Apply" icon="pi pi-check" @click="apply"></Button>
     </template>

@@ -25,7 +25,7 @@ export function convertToBestUnit(unit, value) {
   if (unitConfig.child && value < 1) {
     return { unit: unitChild(unit), value: value * unitConfig.factor }
   }
-  if (unitConfig.parent && (value * unitConfig.factor > 1)) {
+  if (unitConfig.parent && value * unitConfig.factor > 1) {
     return { unit: unitParent(unit), value: value * unitConfig.factor }
   }
   return { unit, value }

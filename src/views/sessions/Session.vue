@@ -1,8 +1,7 @@
 <template>
   <SessionMenu ref="menu" />
 
-  <img class="page-background" src="@/assets/undraw_cart.svg"
-       v-if="$route.name == 'session_orders'" />
+  <img class="page-background" src="@/assets/undraw_cart.svg" v-if="$route.name == 'session_orders'" />
 
   <HelpMessage v-if="$route.name == 'session_orders'">
     <strong>Orders</strong> let you easily get the list of products you need to order

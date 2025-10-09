@@ -1,6 +1,5 @@
 <template>
-  <Button type="button" icon="pi pi-plus" class="p-button-sm" label="Row"
-          @click="$refs.addRowMenu.toggle($event)" />
+  <Button type="button" icon="pi pi-plus" class="p-button-sm" label="Row" @click="$refs.addRowMenu.toggle($event)" />
   <TieredMenu ref="addRowMenu" :model="rowTypes" :popup="true">
     <template #item="{ item }">
       <a class="p-menuitem-link" v-tooltip.right="item.help">

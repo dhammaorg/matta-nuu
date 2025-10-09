@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Product"
-          :modal="true" class="p-fluid product-dialog">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Product" :modal="true"
+    class="p-fluid product-dialog">
     <div class="p-field">
       <InputText v-model.trim="product.name" required="true" placeholder="Name" autofocus />
     </div>
@@ -31,7 +31,7 @@
         <label>Packaging Conditioning</label>
         <div class="p-inputgroup">
           <InputNumber v-model="product.packaging_conditioning" placeholder="Packaging Conditioning"
-                       :maxFractionDigits="5" />
+            :maxFractionDigits="5" />
           <span class="p-inputgroup-addon" style="width: 4rem;">{{ product.unit }}</span>
         </div>
       </div>
@@ -39,20 +39,19 @@
       <div class="p-field-checkbox w-100 mb-3" v-if="product.packaging_conditioning">
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
         <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit
-        }}" to 1 piece in orders</label>
+          }}" to 1 piece in orders</label>
       </div>
 
       <div class="p-field w-100 mt-0">
         <label>Storage Areas</label>
         <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_area_ids"
-                       placeholder="Storage Areas" />
+          placeholder="Storage Areas" />
       </div>
     </div>
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
-              @click="saveProduct" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveProduct" />
     </template>
   </Dialog>
 </template>

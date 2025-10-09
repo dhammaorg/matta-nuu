@@ -6,60 +6,53 @@
         <i class="pi pi-search" />
         <InputText v-model="filters['global'].value" placeholder="Search..." />
       </span>
-      <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save"
-              :loading="loading" />
+      <Button label="Save" icon="pi pi-save" class="p-button-success float-end" @click="save" :loading="loading" />
     </div>
 
-    <DataTable :value="$root.productsArray" showGridlines :scrollable="true"
-               scrollHeight="calc(100vh - 11rem)"
-               class="editable-cells-table session-table products-table" v-model:filters="filters"
-               sortField="name" :sortOrder="1" filterDisplay="menu">
+    <DataTable :value="$root.productsArray" showGridlines :scrollable="true" scrollHeight="calc(100vh - 11rem)"
+      class="editable-cells-table session-table products-table" v-model:filters="filters" sortField="name"
+      :sortOrder="1" filterDisplay="menu">
 
       <!-- Name -->
-      <Column field="name" header="Name" class="product-column w-auto justify-content-start"
-              :sortable="true" style="max-width: 20rem">
+      <Column field="name" header="Name" class="product-column w-auto justify-content-start" :sortable="true"
+        style="max-width: 20rem">
         <template #body="{ data }">
           {{ data.name }} ({{ data.unit }})
         </template>
       </Column>
 
       <!-- Category -->
-      <Column field="category_id" header="Category" :sortable="true" style="max-width: 12rem"
-              filterField="category_id" :showFilterMatchModes="false"
-              :filterMenuStyle="{ 'width': '14rem' }">
+      <Column field="category_id" header="Category" :sortable="true" style="max-width: 12rem" filterField="category_id"
+        :showFilterMatchModes="false" :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
           <InputCategory type="Product" v-model="data.category_id" placeholder="" />
         </template>
         <template #filter="{ filterModel }">
-          <InputCategory type="Product" v-model="filterModel.value" class="p-column-filter"
-                         :btnAdd="false" :showClear="false" />
+          <InputCategory type="Product" v-model="filterModel.value" class="p-column-filter" :btnAdd="false"
+            :showClear="false" />
         </template>
       </Column>
 
       <!-- Supplier -->
-      <Column field="supplier_id" header="Supplier" :sortable="true" style="max-width: 14rem"
-              filterField="supplier_id" :showFilterMatchModes="false"
-              :filterMenuStyle="{ 'width': '14rem' }">
+      <Column field="supplier_id" header="Supplier" :sortable="true" style="max-width: 14rem" filterField="supplier_id"
+        :showFilterMatchModes="false" :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
           <InputSupplier v-model="data.supplier_id" placeholder="" />
         </template>
         <template #filter="{ filterModel }">
-          <InputSupplier v-model="filterModel.value" class="p-column-filter"
-                         :btnAdd="false" :showClear="false" />
+          <InputSupplier v-model="filterModel.value" class="p-column-filter" :btnAdd="false" :showClear="false" />
         </template>
       </Column>
 
       <!-- Storage Areas -->
-      <Column field="storage_area_ids" header="Storage Areas" :sortable="true"
-              style="max-width: 14rem"
-              filterField="storage_area_ids" :showFilterMatchModes="false"
-              :filterMenuStyle="{ 'width': '14rem' }">
+      <Column field="storage_area_ids" header="Storage Areas" :sortable="true" style="max-width: 14rem"
+        filterField="storage_area_ids" :showFilterMatchModes="false" :filterMenuStyle="{ 'width': '14rem' }">
         <template #body="{ data }">
           <InputCategory type="StorageArea" :multiple="true" v-model="data.storage_area_ids" />
         </template>
         <template #filter="{ filterModel }">
           <InputCategory type="StorageArea" v-model="filterModel.value" class="p-column-filter"
-                         placeholder="Storage Areas" :btnAdd="false" :showClear="false" />
+            placeholder="Storage Areas" :btnAdd="false" :showClear="false" />
         </template>
       </Column>
 
@@ -67,17 +60,16 @@
       <Column class="text-end" style="max-width: 40px" header="Actions">
         <template #body="{ data }">
           <Button icon="pi pi-pencil" class="p-button-text" @click="$refs.form.show(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteProduct(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteProduct(data)" />
         </template>
       </Column>
 
       <!-- Recipies -->
       <Column field="recipies" header="Used by" class="recipies">
         <template #body="{ data }">
-          <Chip v-for="recipie in recipiesUsingProduct(data)" :key="`${data.id}_${recipie.id}`"
-                :label="recipie.name" icon="pi pi-pencil" class="edit-recipie-chip"
-                @click="$refs.recipieForm.show(recipie)" v-tooltip="'Edit this recipie'" />
+          <Chip v-for="recipie in recipiesUsingProduct(data)" :key="`${data.id}_${recipie.id}`" :label="recipie.name"
+            icon="pi pi-pencil" class="edit-recipie-chip" @click="$refs.recipieForm.show(recipie)"
+            v-tooltip="'Edit this recipie'" />
         </template>
       </Column>
     </DataTable>

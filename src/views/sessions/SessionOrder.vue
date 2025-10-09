@@ -17,10 +17,8 @@
       </div>
       <div class="d-print-none">
         <Button class="p-button-text p-button-danger" icon="pi pi-trash" @click="destroy" />
-        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print"
-                @click="print()" />
-        <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save"
-                :loading="loading" />
+        <Button label="Print" class="me-2" :disabled="values.length == 0" icon="pi pi-print" @click="print()" />
+        <Button label="Save" class="p-button-success" icon="pi pi-save" @click="save" :loading="loading" />
       </div>
     </div>
 
@@ -43,7 +41,7 @@
         <span class="p-inputgroup-addon">Quantities until (last day included)</span>
         <InputDay v-model="order.target_day" :days="sessionDays" />
         <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate"
-                :loading="isCalculating" />
+          :loading="isCalculating" />
       </div>
       <div class="p-inputgroup mb-3 justify-content-center">
         <Checkbox v-model="order.group_by_category" :binary="true" />
@@ -66,18 +64,15 @@
         </div>
       </div>
 
-      <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header"
-                class="w-100 mb-3" />
+      <Textarea v-model="order.header" :autoResize="true" rows="1" placeholder="Header" class="w-100 mb-3" />
 
-      <DataTable :value="values" class="mb-3 border border-bottom-0"
-                 :class="{ 'p-datatable-sm': values.length > 15 }"
-                 :rowGroupMode="order.group_by_category ? 'subheader' : null"
-                 :groupRowsBy="order.group_by_category ? 'category' : null">
+      <DataTable :value="values" class="mb-3 border border-bottom-0" :class="{ 'p-datatable-sm': values.length > 15 }"
+        :rowGroupMode="order.group_by_category ? 'subheader' : null"
+        :groupRowsBy="order.group_by_category ? 'category' : null">
         <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
           <template #body="{ data }">
-            <Textarea :value="data.name" :autoResize="true" rows="1"
-                      @change="data.name = $event.target.value"
-                      class="product-textarea" />
+            <Textarea :value="data.name" :autoResize="true" rows="1" @change="data.name = $event.target.value"
+              class="product-textarea" />
           </template>
         </Column>
         <Column field="value" header="Amount" class="text-center" body-class="form-cell">
@@ -85,8 +80,7 @@
             <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
-        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center"
-                body-class="form-cell">
+        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
           <template #body="{ data }">
             <InputUnit v-model="data.unit" :only-siblings="true" class="d-print-none" />
             <div class="text-center d-none d-print-block">{{ data.unit }}</div>
@@ -110,15 +104,13 @@
 
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
-          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product"
-                        @keyup.enter="addProduct" :showClear="false" :editable="false" />
-          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct"
-                  class="flex-shrink-0" />
+          <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product" @keyup.enter="addProduct"
+            :showClear="false" :editable="false" />
+          <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" class="flex-shrink-0" />
         </div>
       </div>
 
-      <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer"
-                class="mt-3 w-100" />
+      <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer" class="mt-3 w-100" />
     </div>
 
   </div>
@@ -345,7 +337,8 @@ export default {
   }
 
   .card {
-    margin-top: 2rem;}
+    margin-top: 2rem;
+  }
 
   .p-inputtextarea {
     border: none;

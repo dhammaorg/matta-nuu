@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
-          :header="isEditing ? 'Update Inventory' : 'Start a full Inventory'">
+    :header="isEditing ? 'Update Inventory' : 'Start a full Inventory'">
 
     <!-- Date -->
     <div class="p-field">
@@ -13,22 +13,19 @@
     <!-- Storage Areas -->
     <div class="p-field">
       <label>Restrict to some storage areas</label>
-      <InputCategory type="StorageArea" :multiple="true" v-model="inventory.storage_area_ids"
-                     :btnAdd="false" />
+      <InputCategory type="StorageArea" :multiple="true" v-model="inventory.storage_area_ids" :btnAdd="false" />
     </div>
 
     <!-- Suppliers -->
     <div class="p-field">
       <label>Restrict to some suppliers</label>
-      <InputSupplier :multiple="true" v-model="inventory.supplier_ids"
-                     :btnAdd="false" />
+      <InputSupplier :multiple="true" v-model="inventory.supplier_ids" :btnAdd="false" />
     </div>
 
     <!-- Product Categories -->
     <div class="p-field">
       <label>Restrict to some categories</label>
-      <InputCategory type="Product" :multiple="true" v-model="inventory.product_category_ids"
-                     :btnAdd="false" />
+      <InputCategory type="Product" :multiple="true" v-model="inventory.product_category_ids" :btnAdd="false" />
     </div>
 
     <template #footer>

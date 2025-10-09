@@ -53,7 +53,8 @@ const routes = [
         path: 'overview',
         name: 'session_overview',
         component: SessionOverview,
-      }, {
+      },
+      {
         path: 'schedule',
         name: 'session_schedule',
         component: SessionSchedule,

@@ -5,12 +5,11 @@
     <h2 class="text-center mt-0">Register</h2>
     <form>
       <InputText placeholder="Account Name" v-model="accountName" class="w-100 mb-3" required />
-      <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3"
-                 autocomplete="email" name="email" required />
+      <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3" autocomplete="email" name="email"
+        required />
       <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
-                 autocomplete="new-password" name="password" required />
-      <Button label="Create my account" :loading="loading" class="w-100" @click.prevent="signUp"
-              type="submit" />
+        autocomplete="new-password" name="password" required />
+      <Button label="Create my account" :loading="loading" class="w-100" @click.prevent="signUp" type="submit" />
     </form>
   </div>
 </template>

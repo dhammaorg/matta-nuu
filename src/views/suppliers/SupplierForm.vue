@@ -1,9 +1,8 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Supplier"
-          :modal="true" class="p-fluid supplier-dialog">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Supplier" :modal="true"
+    class="p-fluid supplier-dialog">
     <div class="p-field">
-      <InputText id="name" v-model.trim="supplier.name" required="true" placeholder="Name"
-                 autofocus />
+      <InputText id="name" v-model.trim="supplier.name" required="true" placeholder="Name" autofocus />
     </div>
 
     <div class="p-field">
@@ -16,7 +15,7 @@
     <div class="p-field">
       <label>Contact Details</label>
       <Textarea v-model="supplier.contact_details" :autoResize="true" rows="2"
-                placeholder="Name, Address, Phone, Email..." />
+        placeholder="Name, Address, Phone, Email..." />
     </div>
 
     <div class="p-field">
@@ -26,14 +25,12 @@
 
     <div class="p-field">
       <label>Default Footer</label>
-      <Textarea v-model="supplier.order_footer" :autoResize="true" rows="1"
-                placeholder="With kind regards" />
+      <Textarea v-model="supplier.order_footer" :autoResize="true" rows="1" placeholder="With kind regards" />
     </div>
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
-              @click="saveSupplier" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveSupplier" />
     </template>
   </Dialog>
 </template>

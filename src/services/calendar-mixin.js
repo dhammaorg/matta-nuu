@@ -7,7 +7,9 @@ export default {
   },
   mounted() {
     // delay display of real component so we can display laoding throbber
-    setTimeout(() => { this.isMounted = true }, 0)
+    setTimeout(() => {
+      this.isMounted = true
+    }, 0)
   },
   updated() {
     const today = document.querySelector('.today')

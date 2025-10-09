@@ -7,7 +7,8 @@ export function debounce(func, delay) {
 }
 
 export function debounceDirective(el, binding) {
-  if (binding.value !== binding.oldValue) { // change debounce only if interval has changed
+  if (binding.value !== binding.oldValue) {
+    // change debounce only if interval has changed
     el.oninput = debounce(() => {
       el.dispatchEvent(new Event('change'))
     }, parseInt(binding.value) || 500)

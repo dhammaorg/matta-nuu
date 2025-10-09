@@ -8,8 +8,7 @@
 
   <div class="page-content">
     <div class="table-header">
-      <Button v-tooltip.top="'New Recipie'" icon="pi pi-plus" class="p-button-rounded"
-              @click="$refs.form.show()" />
+      <Button v-tooltip.top="'New Recipie'" icon="pi pi-plus" class="p-button-rounded" @click="$refs.form.show()" />
       <h2>Recipies</h2>
       <span class="p-input-icon-left search">
         <i class="pi pi-search" />
@@ -17,31 +16,29 @@
       </span>
     </div>
 
-    <DataTable :value="$root.recipiesArray" dataKey="id"
-               :paginator="true" :rows="20" v-model:filters="filters" filterDisplay="menu">
+    <DataTable :value="$root.recipiesArray" dataKey="id" :paginator="true" :rows="20" v-model:filters="filters"
+      filterDisplay="menu">
 
       <Column field="name" header="Name" :sortable="true"></Column>
 
       <!-- Category -->
-      <Column field="category_ids" header="Categories" :sortable="true"
-              filterField="category_ids" :showFilterMatchModes="false">
+      <Column field="category_ids" header="Categories" :sortable="true" filterField="category_ids"
+        :showFilterMatchModes="false">
         <template #body="{ data }">
-          <Chip v-for="catId in data.category_ids" :key="catId" class="me-2"
-                :label="$root.getCategory(catId).name" />
+          <Chip v-for="catId in data.category_ids" :key="catId" class="me-2" :label="$root.getCategory(catId).name" />
         </template>
         <template #filter="{ filterModel }">
-          <InputCategory type="Recipie" v-model="filterModel.value" class="p-column-filter"
-                         :btnAdd="false" :showClear="false" />
+          <InputCategory type="Recipie" v-model="filterModel.value" class="p-column-filter" :btnAdd="false"
+            :showClear="false" />
         </template>
       </Column>
 
       <!-- Actions -->
       <Column class="text-end">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                  @click="$refs.form.show(data)" v-tooltip="'Edit'" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteRecipie(data)" />
+          <Button icon="pi pi-pencil" class="p-button-text p-button-primary" @click="$refs.form.show(data)"
+            v-tooltip="'Edit'" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteRecipie(data)" />
         </template>
       </Column>
     </DataTable>

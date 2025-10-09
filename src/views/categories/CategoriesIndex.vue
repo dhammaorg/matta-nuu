@@ -3,7 +3,7 @@
 
     <div class="table-header">
       <Button icon="pi pi-plus" class="p-button-rounded" v-tooltip.top="'New Template'"
-              @click="$refs.form.show({ name: filters['global'].value, type })" />
+        @click="$refs.form.show({ name: filters['global'].value, type })" />
       <h2>{{ headerLabel }}</h2>
       <span class="p-input-icon-left search">
         <i class="pi pi-search" />
@@ -11,15 +11,13 @@
       </span>
     </div>
 
-    <DataTable :value="categories" dataKey="id"
-               :paginator="true" :rows="20" :filters="filters">
+    <DataTable :value="categories" dataKey="id" :paginator="true" :rows="20" :filters="filters">
       <Column field="name" header="Name" />
       <Column class="text-end">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                  @click="$refs.form.show(data)" v-tooltip="'Edit'" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteTemplate(data)" />
+          <Button icon="pi pi-pencil" class="p-button-text p-button-primary" @click="$refs.form.show(data)"
+            v-tooltip="'Edit'" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteTemplate(data)" />
         </template>
       </Column>
     </Datatable>

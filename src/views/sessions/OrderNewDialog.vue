@@ -1,6 +1,5 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
-          header="New Order">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid" header="New Order">
 
     <div class="p-field" v-if="$root.suppliersArray.length > 0">
       <InputSupplier v-model="order.supplier_id" />

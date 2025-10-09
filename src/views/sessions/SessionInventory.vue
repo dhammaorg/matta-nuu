@@ -1,32 +1,27 @@
 <template>
   <div class="d-flex flex-column h-100 pb-4 mx-auto justify-content-between"
-       style="max-width: 600px; max-height: 800px;">
+    style="max-width: 600px; max-height: 800px;">
 
     <!-- Header -->
     <div class="header">
       <div class="d-flex">
         <h1 class="m-0">
           <span class="d-none d-md-inline">Inventory - </span>
-          {{ this.stockDays.find((d) => d.id == inventory.day)?.dateHeader }}
+          {{this.stockDays.find((d) => d.id == inventory.day)?.dateHeader}}
         </h1>
         <div class="ms-auto">
-          <Button icon="pi pi-pencil" title="Edit"
-                  class="p-button-text p-button-secondary"
-                  @click="$refs.form.show(inventory)" />
-          <Button icon="pi pi-trash" title="Delete"
-                  class="p-button-text p-button-danger me-3"
-                  @click="destroy" :loading="loading" />
-          <Button icon="pi pi-save" title="Save"
-                  class="p-button-success"
-                  @click="save" :loading="loading" />
+          <Button icon="pi pi-pencil" title="Edit" class="p-button-text p-button-secondary"
+            @click="$refs.form.show(inventory)" />
+          <Button icon="pi pi-trash" title="Delete" class="p-button-text p-button-danger me-3" @click="destroy"
+            :loading="loading" />
+          <Button icon="pi pi-save" title="Save" class="p-button-success" @click="save" :loading="loading" />
         </div>
       </div>
       <h3 v-if="currentArea" class="d-flex align-items-center mt-0 pt-3">
         <i class=" me-2 fs-5 pi pi-map-marker"></i>
         {{ currentArea.name }}
-        <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area"
-                class="p-button-text p-button-secondary"
-                @click="currentArea = null" />
+        <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area" class="p-button-text p-button-secondary"
+          @click="currentArea = null" />
         <Tag v-if="currentCategory" :value="currentCategory" class="ms-1 p-tag-secondary" />
       </h3>
     </div>
@@ -42,10 +37,8 @@
           <span v-else-if="noneAreaCompleted">Choose the Area to Start</span>
           <span v-else>Choose the Next Area</span>
         </h3>
-        <div v-for="area in areas" :key="area.id"
-             @click="startArea(area)"
-             class="storage-area-card border mb-3 rounded-3 p-3"
-             :class="{ completed: isAreaCompleted(area) }">
+        <div v-for="area in areas" :key="area.id" @click="startArea(area)"
+          class="storage-area-card border mb-3 rounded-3 p-3" :class="{ completed: isAreaCompleted(area) }">
           <i v-if="isAreaCompleted(area)" class="pi-check-circle pi me-2"></i>
           <i v-else class="pi-circle pi me-2"></i>
           {{ area.name }}
@@ -66,13 +59,12 @@
         <h3 class="mb-4">{{ currentProduct.name }}</h3>
         <!-- Unit -->
         <div v-if="currentProduct.packaging_convert_to_piece && currentProduct.unit != 'piece'"
-             class="d-flex align-items-center mb-4 justify-content-center">
-          <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit"
-                       id="unit-default" name="unit"
-                       :value="currentProduct.unit" />
+          class="d-flex align-items-center mb-4 justify-content-center">
+          <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit" id="unit-default" name="unit"
+            :value="currentProduct.unit" />
           <label for="unit-default" class="ms-2 me-4">{{ currentProduct.unit }}</label>
-          <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit"
-                       id="unit-piece" name="unit" value="piece" />
+          <RadioButton v-model="inventory.values[currentProduct.id][currentArea.id].unit" id="unit-piece" name="unit"
+            value="piece" />
           <label for="unit-piece" class="ms-2">
             piece ({{ currentProduct.packaging_conditioning }}{{ currentProduct.unit }})
             <Tag :value="currentProduct.packaging_reference" class="ms-2 p-tag-secondary" />
@@ -81,10 +73,8 @@
         <!-- Stock -->
         <div class="p-inputgroup">
           <InputNumber v-model="inventory.values[currentProduct.id][currentArea.id].value"
-                       @input="currentProductEdited = true"
-                       :maxFractionDigits="5"
-                       placeholder="Stock" ref="stockInput"
-                       @keyup.enter="finishProduct" />
+            @input="currentProductEdited = true" :maxFractionDigits="5" placeholder="Stock" ref="stockInput"
+            @keyup.enter="finishProduct" />
           <span class="p-inputgroup-addon" style="width: 5rem;">
             {{ inventory.values[currentProduct.id][currentArea.id].unit }}
           </span>
@@ -92,8 +82,8 @@
         <!-- Theoritical Stock -->
         <div class="fst-italic mt-4">
           <template v-if="currentProduct.storage_area_ids.length <= 1">Theoritical Stock</template>
-          <template v-else>Total Theoritical Stock ({{ currentProduct.storage_area_ids.map(id =>
-            $root.getCategory(id).name).join(' + ') }})</template>
+          <template v-else>Total Theoritical Stock ({{currentProduct.storage_area_ids.map(id =>
+            $root.getCategory(id).name).join(' + ')}})</template>
           = {{ currentTheoriticalStock }}
         </div>
       </div>
@@ -101,12 +91,10 @@
       <!-- Navigation -->
       <div class="footer d-flex align-items-center justify-content-between">
         <Button label="Prev" icon="pi pi-chevron-left" class="p-button-secondary"
-                @click="productIndex = Math.max(productIndex - 1, 0)"
-                :disabled="productIndex == 0" />
+          @click="productIndex = Math.max(productIndex - 1, 0)" :disabled="productIndex == 0" />
         <div>{{ productIndex + 1 }} / {{ currentProducts.length }}</div>
 
-        <Button v-if="productIndex == currentProducts.length - 1" label="Finish"
-                @click="finishProduct" />
+        <Button v-if="productIndex == currentProducts.length - 1" label="Finish" @click="finishProduct" />
         <Button v-else label="Next" icon="pi pi-chevron-right" @click="finishProduct" />
       </div>
     </template>

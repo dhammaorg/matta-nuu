@@ -19,15 +19,14 @@
     </div>
     <div class="d-flex">
       <template v-if="['session_orders', 'session_order'].includes($route.name)">
-        <Button label="New Order" icon="pi pi-plus"
-                class="btn-new-order p-button-outlined p-button-sm"
-                @click="$refs.orderForm.show()" style="margin-left: 4.5rem" />
+        <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm"
+          @click="$refs.orderForm.show()" style="margin-left: 4.5rem" />
       </template>
       <template v-else-if="['session_schedule', 'session_stocks'].includes($route.name)">
-        <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-2"
-                @click="undo" :disabled="history.length <= 1" v-if="history" />
-        <Button icon="pi pi-save" label="Save" class="p-button-success"
-                @click="save" :loading="saving" :disabled="!unsavedChanges" />
+        <Button type="button" icon="pi pi-undo" label="Undo" class="p-button-sm me-2" @click="undo"
+          :disabled="history.length <= 1" v-if="history" />
+        <Button icon="pi pi-save" label="Save" class="p-button-success" @click="save" :loading="saving"
+          :disabled="!unsavedChanges" />
       </template>
     </div>
 

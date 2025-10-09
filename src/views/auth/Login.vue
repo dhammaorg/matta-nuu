@@ -9,12 +9,10 @@
       <router-link :to="{ name: 'register' }" class="ms-1">Create now!</router-link>
     </div>
     <form>
-      <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3" name="email"
-                 autocomplete="email" />
-      <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3"
-                 @keyup.enter="signIn" autocomplete="current-password" />
-      <Button label="Sign In" type="submit" :loading="loading" class="w-100"
-              @click.prevent="signIn" />
+      <InputText placeholder="Email" v-model="user.email" class="w-100 mb-3" name="email" autocomplete="email" />
+      <InputText placeholder="Password" type="password" v-model="user.password" class="w-100 mb-3" @keyup.enter="signIn"
+        autocomplete="current-password" />
+      <Button label="Sign In" type="submit" :loading="loading" class="w-100" @click.prevent="signIn" />
       <div class="mt-3 text-center">
         <router-link :to="{ name: 'reset-password' }">Forgot your password?</router-link>
       </div>

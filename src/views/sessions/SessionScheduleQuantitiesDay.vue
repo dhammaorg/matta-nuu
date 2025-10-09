@@ -1,8 +1,7 @@
 <template>
   <div class="day-quantities" v-if="recipies.length > 0">
 
-    <div
-         class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
+    <div class="p-datatable p-component p-datatable-responsive-stack p-datatable-gridlines p-datatable-sm">
       <div class="p-datatable-wrapper">
         <table class="p-datatable-table">
           <thead class="p-datatable-thead" role="rowgroup">
@@ -21,8 +20,7 @@
               </th>
             </tr>
           </thead>
-          <tbody class="p-datatable-tbody" v-for="recipie in recipies"
-                 :key="`recipie-${recipie.id}`">
+          <tbody class="p-datatable-tbody" v-for="recipie in recipies" :key="`recipie-${recipie.id}`">
             <tr class="p-rowgroup-header">
               <td :colspan="numbers.length + 2">
                 <h3 class="recipie-name">

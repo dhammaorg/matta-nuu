@@ -17,21 +17,71 @@ export default {
       this.reCalculateAll()
     }, 300)
     // we listen for current session change so we recalculate stock if needed
-    supabase.channel(`session-changes-${this.session.id}`).on('postgres_changes', {
-      event: '*', schema: '*', table: 'sessions', filter: `id=eq.${this.session.id}`,
-    }, onNewDataRetrieved).subscribe()
-    supabase.channel(`session-orders-${this.session.id}`).on('postgres_changes', {
-      event: '*', schema: '*', table: 'orders', filter: `session_id=eq.${this.session.id}`,
-    }, onNewDataRetrieved).subscribe()
-    supabase.channel(`session-inventories-${this.session.id}`).on('postgres_changes', {
-      event: '*', schema: '*', table: 'inventories', filter: `session_id=eq.${this.session.id}`,
-    }, onNewDataRetrieved).subscribe()
-    supabase.channel(`products-callback-${this.$root.user.id}`).on('postgres_changes', {
-      event: '*', schema: '*', table: 'products', filter: `user_id=eq.${this.$root.user.id}`,
-    }, onNewDataRetrieved).subscribe()
-    supabase.channel(`recipies-callback-${this.$root.user.id}`).on('postgres_changes', {
-      event: '*', schema: '*', table: 'recipies', filter: `user_id=eq.${this.$root.user.id}`,
-    }, onNewDataRetrieved).subscribe()
+    supabase
+      .channel(`session-changes-${this.session.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: '*',
+          table: 'sessions',
+          filter: `id=eq.${this.session.id}`,
+        },
+        onNewDataRetrieved
+      )
+      .subscribe()
+    supabase
+      .channel(`session-orders-${this.session.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: '*',
+          table: 'orders',
+          filter: `session_id=eq.${this.session.id}`,
+        },
+        onNewDataRetrieved
+      )
+      .subscribe()
+    supabase
+      .channel(`session-inventories-${this.session.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: '*',
+          table: 'inventories',
+          filter: `session_id=eq.${this.session.id}`,
+        },
+        onNewDataRetrieved
+      )
+      .subscribe()
+    supabase
+      .channel(`products-callback-${this.$root.user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: '*',
+          table: 'products',
+          filter: `user_id=eq.${this.$root.user.id}`,
+        },
+        onNewDataRetrieved
+      )
+      .subscribe()
+    supabase
+      .channel(`recipies-callback-${this.$root.user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: '*',
+          table: 'recipies',
+          filter: `user_id=eq.${this.$root.user.id}`,
+        },
+        onNewDataRetrieved
+      )
+      .subscribe()
   },
   computed: {
     session() {
@@ -39,12 +89,15 @@ export default {
     },
     orders() {
       /* We exclude current edited order */
-      const orderIdToIgnore = this.order && this.order.id ? this.order.id : this.$route.params.order_id
-      return Object.values(this.$root.orders)
-        .filter((order) => order.report_values_in_stocks
-          && order.values
-          && order.session_id === this.session.id
-          && order.id != orderIdToIgnore)
+      const orderIdToIgnore =
+        this.order && this.order.id ? this.order.id : this.$route.params.order_id
+      return Object.values(this.$root.orders).filter(
+        (order) =>
+          order.report_values_in_stocks &&
+          order.values &&
+          order.session_id === this.session.id &&
+          order.id != orderIdToIgnore
+      )
     },
     missingProductsPerDay() {
       const missingProducts = {}
@@ -76,14 +129,20 @@ export default {
             result.add(value.product_id)
           })
         } else if (row.type === 'recipie') {
-          this.recipieProducts(row.recipie_id).forEach((product) => { result.add(product.id) })
+          this.recipieProducts(row.recipie_id).forEach((product) => {
+            result.add(product.id)
+          })
         } else if (row.type === 'recipies') {
           Object.values(row.values).forEach((value) => {
-            this.recipieProducts(value.recipie_id).forEach((product) => { result.add(product.id) })
+            this.recipieProducts(value.recipie_id).forEach((product) => {
+              result.add(product.id)
+            })
           })
         }
       })
-      this.sessionProducts = Array.from(result).filter((r) => !!r).sort()
+      this.sessionProducts = Array.from(result)
+        .filter((r) => !!r)
+        .sort()
     },
     calculateAllStocks() {
       this.sessionProducts.forEach((productId) => {
@@ -113,22 +172,29 @@ export default {
           let bought = manuallyBought || 0
           const ordered = []
           const boughtLabels = []
-          if (manuallyBought) boughtLabels.push(`+${manuallyBought} ${product.unit} FromManualStock bought`)
-          this.orders.filter((order) => order.delivery_day === day.id).forEach((order) => {
-            if (order.values[productId] && order.values[productId].value) {
-              // in the order, 2500g is converted to 2.5kg, so need to convert it back here
-              const value = convertToUnit(order.values[productId].value, order.values[productId].unit, product)
-              bought += value
-              ordered.push({ value, id: order.id, name: order.name })
-              boughtLabels.push(`+${value} ${product.unit} from ${order.name}`)
-            }
-          })
+          if (manuallyBought)
+            boughtLabels.push(`+${manuallyBought} ${product.unit} FromManualStock bought`)
+          this.orders
+            .filter((order) => order.delivery_day === day.id)
+            .forEach((order) => {
+              if (order.values[productId] && order.values[productId].value) {
+                // in the order, 2500g is converted to 2.5kg, so need to convert it back here
+                const value = convertToUnit(
+                  order.values[productId].value,
+                  order.values[productId].unit,
+                  product
+                )
+                bought += value
+                ordered.push({ value, id: order.id, name: order.name })
+                boughtLabels.push(`+${value} ${product.unit} from ${order.name}`)
+              }
+            })
 
           // Consumption is always the same, so reusing previously calculated value if exists
           let { consumption } = values[day.id] || {}
           let { consumptionLabels } = values[day.id] || {}
           if (consumption === undefined) {
-            ({ consumption, consumptionLabels } = this.consumption(productId, day))
+            ;({ consumption, consumptionLabels } = this.consumption(productId, day))
           }
 
           // Real stocks / Inventories
@@ -140,7 +206,10 @@ export default {
             const areas = []
             Object.entries(inventory.values[productId] || {}).forEach(([areaId, areaVal]) => {
               if (areaVal.value !== undefined && areaVal.value !== null) {
-                const value = (areaVal.unit === 'piece' && product.unit === 'piece') ? areaVal.value : convertToUnit(areaVal.value, areaVal.unit, product);
+                const value =
+                  areaVal.unit === 'piece' && product.unit === 'piece'
+                    ? areaVal.value
+                    : convertToUnit(areaVal.value, areaVal.unit, product)
                 productVal ||= 0
                 productVal += value
                 const area = this.$root.getCategory(areaId)
@@ -149,7 +218,8 @@ export default {
             })
             let title = 'Stock from inventory'
             if (areas.length > 0) title += ` (${areas.join(', ')})`
-            if (productVal !== undefined) realFromInventories.push({ value: productVal, title, id: inventory.id })
+            if (productVal !== undefined)
+              realFromInventories.push({ value: productVal, title, id: inventory.id })
           })
           let real = realFromManualStock
           if (realFromInventories.length > 0) {
@@ -166,7 +236,7 @@ export default {
           // for initial stock, even if we supply a realStock we still want to take into account
           // the bought value
           if (day.id === 'initial') value = (real || 0) + bought
-          else value = (real != null) ? real : theoric
+          else value = real != null ? real : theoric
 
           // stockDiff - the real stock is quite different from theoretical stock.
           // we use the total previous consumption since last inventory to determine the thresold
@@ -176,13 +246,15 @@ export default {
             let inThePast = true
             Object.entries(values).forEach(([iteratorDayId, iteratorValue]) => {
               if (inThePast) {
-                if (iteratorValue.consumption) totalConsFromLastInventory += iteratorValue.consumption
+                if (iteratorValue.consumption)
+                  totalConsFromLastInventory += iteratorValue.consumption
                 inThePast = iteratorDayId !== day.id
                 if (iteratorValue.real != null && inThePast) totalConsFromLastInventory = 0
               }
             })
             // + 0.0000001 is to avoid division by 0
-            if (totalConsFromLastInventory === 0) stockDiff = Math.abs(real - theoric) / (Math.max(real, theoric) + 0.0000001)
+            if (totalConsFromLastInventory === 0)
+              stockDiff = Math.abs(real - theoric) / (Math.max(real, theoric) + 0.0000001)
             else stockDiff = Math.abs(real - theoric) / totalConsFromLastInventory
           }
           // 5 3  5-3/5
@@ -251,8 +323,12 @@ export default {
         if (['recipie', 'recipies'].includes(row.type)) {
           const dayRecipieId = row.type === 'recipie' ? row.recipie_id : dayValue.recipie_id
           const dayRecipie = this.$root.getRecipie(dayRecipieId)
-          if (row.type.includes('recipie') && dayRecipie.id && (!dayRecipie.prepare_day_before || day.index === 0)) {
-            (dayRecipie.products || []).forEach((recipieProduct) => {
+          if (
+            row.type.includes('recipie') &&
+            dayRecipie.id &&
+            (!dayRecipie.prepare_day_before || day.index === 0)
+          ) {
+            ;(dayRecipie.products || []).forEach((recipieProduct) => {
               if (recipieProduct.id === productId) {
                 const value = (dayAmount / dayRecipie.people_count) * recipieProduct.amount
                 labels.push(`-${value.round()} by ${dayRecipie.name}`)
@@ -263,12 +339,19 @@ export default {
 
           // Check recipie planned for next day that need to be prepared on the day before
           const dayAfterValue = row.values[`Event${day.event.id}_${day.index + 1}`] || {}
-          const dayAfterRecipieId = row.type == 'recipie' ? row.recipie_id : dayAfterValue.recipie_id
+          const dayAfterRecipieId =
+            row.type == 'recipie' ? row.recipie_id : dayAfterValue.recipie_id
           const dayAfterRecipie = this.$root.getRecipie(dayAfterRecipieId)
-          if (row.type.includes('recipie') && dayAfterRecipie && dayAfterRecipie.prepare_day_before && dayAfterValue.amount) {
-            (dayAfterRecipie.products || []).forEach((recipieProduct) => {
+          if (
+            row.type.includes('recipie') &&
+            dayAfterRecipie &&
+            dayAfterRecipie.prepare_day_before &&
+            dayAfterValue.amount
+          ) {
+            ;(dayAfterRecipie.products || []).forEach((recipieProduct) => {
               if (recipieProduct.id === productId) {
-                const value = (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
+                const value =
+                  (dayAfterValue.amount / dayAfterRecipie.people_count) * recipieProduct.amount
                 labels.push(`-${value.round()} by ${dayAfterRecipie.name}`)
                 result += value
               }

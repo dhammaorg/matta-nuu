@@ -1,6 +1,5 @@
 <template>
-  <Message v-if="$root.help" severity="success" :closable="false" icon="pi pi-question"
-           class="help-message">
+  <Message v-if="$root.help" severity="success" :closable="false" icon="pi pi-question" class="help-message">
     <slot></slot>
   </Message>
 </template>

@@ -9,7 +9,7 @@
 
     <div class="table-header">
       <Button icon="pi pi-plus" class="p-button-rounded" v-tooltip.top="'New Template'"
-              @click="$refs.newSessionModal.open({ is_template: true })" />
+        @click="$refs.newSessionModal.open({ is_template: true })" />
       <h2>Templates</h2>
       <span class="p-input-icon-left search">
         <i class="pi pi-search" />
@@ -17,18 +17,15 @@
       </span>
     </div>
 
-    <DataTable :value="$root.templatesArray" dataKey="id"
-               :paginator="true" :rows="20" :filters="filters">
+    <DataTable :value="$root.templatesArray" dataKey="id" :paginator="true" :rows="20" :filters="filters">
       <Column field="name" header="Template Name" />
       <Column class="text-end">
         <template #body="{ data }">
           <router-link :to="{ name: 'session_schedule', params: { id: data.id } }">
             <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'" />
           </router-link>
-          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
-                  @click="duplicateTemplate(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteTemplate(data)" />
+          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'" @click="duplicateTemplate(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteTemplate(data)" />
         </template>
       </Column>
     </Datatable>

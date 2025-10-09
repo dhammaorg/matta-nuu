@@ -1,20 +1,17 @@
 <template>
   <div class="mb-3">
-    <Button label="New Order" icon="pi pi-plus" class="me-2"
-            @click="$refs.orderForm.show()" />
+    <Button label="New Order" icon="pi pi-plus" class="me-2" @click="$refs.orderForm.show()" />
     <span class="p-input-icon-left float-end">
       <i class="pi pi-search" />
       <InputText v-model="filters['global'].value" placeholder="Search..." />
     </span>
   </div>
 
-  <DataTable :value="orders" dataKey="id"
-             :paginator="true" :rows="20"
-             sortField="delivery_day_date" :sortOrder="-1" removableSort
-             v-model:filters="filters" filterDisplay="menu">
+  <DataTable :value="orders" dataKey="id" :paginator="true" :rows="20" sortField="delivery_day_date" :sortOrder="-1"
+    removableSort v-model:filters="filters" filterDisplay="menu">
 
-    <Column field="delivery_day_label" header="Delivery Date" bodyClass="text-capitalize"
-            :sortable="true" sort-field="delivery_day_date">
+    <Column field="delivery_day_label" header="Delivery Date" bodyClass="text-capitalize" :sortable="true"
+      sort-field="delivery_day_date">
     </Column>
 
     <Column field="name" header="Name" header-class="text-start"></Column>
@@ -23,15 +20,13 @@
         {{ $root.getSupplier(data.supplier_id).name }}
       </template>
       <template #filter="{ filterModel }">
-        <InputSupplier v-model="filterModel.value" class="p-column-filter"
-                       :btnAdd="false" :showClear="false" />
+        <InputSupplier v-model="filterModel.value" class="p-column-filter" :btnAdd="false" :showClear="false" />
       </template>
     </Column>
 
     <Column class="text-end">
       <template #body="{ data }">
-        <router-link
-                     :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id } }">
+        <router-link :to="{ name: 'session_order', params: { id: $route.params.id, order_id: data.id } }">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary" />
         </router-link>
         <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="destroy(data)" />

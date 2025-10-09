@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Recipie Details"
-          :modal="true" class="p-fluid recipie-dialog">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Recipie Details" :modal="true"
+    class="p-fluid recipie-dialog">
     <div class="p-field">
       <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus />
     </div>
@@ -12,24 +12,23 @@
     <div class="ingredients my-4 py-2">
       <div class="fw-bold mb-3">
         <span>Ingredients for</span>
-        <InputNumber v-model="recipie.people_count" class="d-inline-block w-auto mx-2"
-                     inputStyle="width: 4rem" inputClass="text-center" />
+        <InputNumber v-model="recipie.people_count" class="d-inline-block w-auto mx-2" inputStyle="width: 4rem"
+          inputClass="text-center" />
         <span>People</span>
       </div>
       <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
         <div class="p-inputgroup">
           <InputProduct v-model="product.id" :showClear="false" :editable="true"
-                        style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
+            style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
           <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
-                       inputClass="border-start-0 input-amount" />
+            inputClass="border-start-0 input-amount" />
           <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit
-          }}</span>
+            }}</span>
         </div>
-        <Button icon="pi pi-times" class="p-button-text p-button-danger"
-                @click="removeProduct(product)" />
+        <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeProduct(product)" />
       </div>
       <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto mt-2" label="Ingredient"
-              @click="recipie.products.push({})"></Button>
+        @click="recipie.products.push({})"></Button>
     </div>
 
     <div class="p-field-checkbox">
@@ -39,8 +38,7 @@
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
-              @click="saveRecipie" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveRecipie" />
     </template>
   </Dialog>
 </template>

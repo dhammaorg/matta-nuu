@@ -8,39 +8,127 @@ export default {
         listenDbChanges(user) {
           if (!user) return
           // Don't know why, but having a loop with a object of tableName does not work...
-          supabase.channel(`products-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'products', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`recipies-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'recipies', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`suppliers-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'suppliers', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`categories-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'categories', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`notes-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'notes', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`inventories-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'inventories', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`orders-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'orders', filter: `user_id=eq.${user.id}`,
-          }, this.handleUpdateOrInsert).subscribe()
-          supabase.channel(`sessions-changes-${user.id}`).on('postgres_changes', {
-            event: '*', schema: '*', table: 'sessions', filter: `user_id=eq.${user.id}`,
-          }, this.handleSessionChange).subscribe()
+          supabase
+            .channel(`products-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'products',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`recipies-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'recipies',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`suppliers-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'suppliers',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`categories-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'categories',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`notes-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'notes',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`inventories-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'inventories',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`orders-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'orders',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleUpdateOrInsert
+            )
+            .subscribe()
+          supabase
+            .channel(`sessions-changes-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: '*',
+                table: 'sessions',
+                filter: `user_id=eq.${user.id}`,
+              },
+              this.handleSessionChange
+            )
+            .subscribe()
 
           // Watch delete events separatly because filtering by user_id does not work
           // so listening to all deletes
-          supabase.channel(`db-deletion-${user.id}`).on('postgres_changes', {
-            event: 'DELETE', schema: 'public',
-          }, (payload) => {
-            // console.log(payload.eventType, payload.table, payload.old.id)
-            delete this[payload.table][payload.old.id]
-          }).subscribe()
+          supabase
+            .channel(`db-deletion-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: 'DELETE',
+                schema: 'public',
+              },
+              (payload) => {
+                // console.log(payload.eventType, payload.table, payload.old.id)
+                delete this[payload.table][payload.old.id]
+              }
+            )
+            .subscribe()
         },
         handleUpdateOrInsert(payload) {
           // console.log(payload.eventType, payload)
@@ -75,7 +163,8 @@ export default {
                 else if (values) {
                   // check if one day value have changed
                   Object.entries(values).forEach(([dayId, dayValue]) => {
-                    if (oldVal[productId][dayId] != dayValue) currentVal[productId][dayId] = dayValue
+                    if (oldVal[productId][dayId] != dayValue)
+                      currentVal[productId][dayId] = dayValue
                   })
                 }
               })
@@ -85,7 +174,12 @@ export default {
         deepEqual(obj1, obj2) {
           if (obj1 === obj2) return true
 
-          if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+          if (
+            typeof obj1 !== 'object' ||
+            typeof obj2 !== 'object' ||
+            obj1 === null ||
+            obj2 === null
+          ) {
             return false
           }
 
@@ -102,7 +196,10 @@ export default {
         },
         async dbCreate(tableName, object, onSuccess) {
           this.loading = true
-          let { data, error } = await this.$db.from(tableName).insert([this.addUserId(object)]).select()
+          let { data, error } = await this.$db
+            .from(tableName)
+            .insert([this.addUserId(object)])
+            .select()
           data = data[0] // don't know why but .single() does not work here, so getting first element
           if (error) this.toastError(error)
           else {
@@ -117,7 +214,8 @@ export default {
         async dbUpdate(tableName, object) {
           this.loading = true
 
-          let { data, error } = await this.$db.from(tableName)
+          let { data, error } = await this.$db
+            .from(tableName)
             .update(this.addUserId(object))
             .eq('id', object.id)
             .select()
@@ -149,18 +247,29 @@ export default {
             this.$router.push({ name: 'login' })
           } else {
             this.$toast.add({
-              severity: 'error', summary: error.message, detail: error.details, life: 8000,
+              severity: 'error',
+              summary: error.message,
+              detail: error.details,
+              life: 8000,
             })
           }
         },
         toastSuccess(object, action) {
-          const message = object.name ? `${object.name} successfully ${action}` : `Successfully ${action}`
+          const message = object.name
+            ? `${object.name} successfully ${action}`
+            : `Successfully ${action}`
           this.$toast.add({
-            severity: 'success', summary: 'Success', detail: message, life: 4000,
+            severity: 'success',
+            summary: 'Success',
+            detail: message,
+            life: 4000,
           })
         },
         fixData(data, tableName = '') {
-          if (tableName === 'sessions') (data.events || []).forEach((e) => { e.start_date = new Date(e.start_date) })
+          if (tableName === 'sessions')
+            (data.events || []).forEach((e) => {
+              e.start_date = new Date(e.start_date)
+            })
           return data
         },
       },

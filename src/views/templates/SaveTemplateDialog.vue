@@ -1,6 +1,6 @@
 <template>
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }"
-          header="Create Event Template" :modal="true" class="p-fluid">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Create Event Template" :modal="true"
+    class="p-fluid">
 
     <div class="p-field">
       <InputText v-model="template.name" placeholder="Template Name" />
@@ -19,9 +19,8 @@
     <hr>
 
     <DataTable :value="$root.templatesArray" dataKey="id" class="table-clickable mt-3"
-               :paginator="$root.templatesArray.length > 10" :rows="10"
-               v-if="$root.templatesArray.length > 0"
-               @row-click="overrideTemplate($event)">
+      :paginator="$root.templatesArray.length > 10" :rows="10" v-if="$root.templatesArray.length > 0"
+      @row-click="overrideTemplate($event)">
       <Column field="name" header="Or override existing template" />
     </Datatable>
   </Dialog>

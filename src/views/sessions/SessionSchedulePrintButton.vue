@@ -1,16 +1,13 @@
 <template>
-  <Button type="button" icon="pi pi-print" class="p-button-sm p-button-rounded"
-          @click="visible = true" />
+  <Button type="button" icon="pi pi-print" class="p-button-sm p-button-rounded" @click="visible = true" />
 
-  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
-          header="Print">
+  <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid" header="Print">
 
-    <SelectButton v-model="printOption" :options="printOptions" class="mb-3"
-                  optionLabel="label" optionValue="value" />
+    <SelectButton v-model="printOption" :options="printOptions" class="mb-3" optionLabel="label" optionValue="value" />
 
     <div class="p-field mb-3" v-if="$root.session.events.length > 1">
-      <MultiSelect v-model="eventsToPrint" :options="$root.session.events"
-                   placeholder="Select Events to Print" optionLabel="name" :multiple="true" />
+      <MultiSelect v-model="eventsToPrint" :options="$root.session.events" placeholder="Select Events to Print"
+        optionLabel="name" :multiple="true" />
     </div>
 
     <template v-if="printOption == 'schedule'">

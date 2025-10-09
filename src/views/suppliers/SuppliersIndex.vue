@@ -3,8 +3,7 @@
 
   <div class="page-content">
     <div class="table-header">
-      <Button v-tooltip.top="'Add Supplier'" icon="pi pi-plus" class="p-button-rounded"
-              @click="$refs.form.show()" />
+      <Button v-tooltip.top="'Add Supplier'" icon="pi pi-plus" class="p-button-rounded" @click="$refs.form.show()" />
       <h2>Suppliers</h2>
       <span class="p-input-icon-left search">
         <i class="pi pi-search" />
@@ -12,16 +11,14 @@
       </span>
     </div>
 
-    <DataTable :value="$root.suppliersArray" dataKey="id"
-               :paginator="true" :rows="20" :filters="filters">
+    <DataTable :value="$root.suppliersArray" dataKey="id" :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
         <template #body="{ data }">
-          <Button icon="pi pi-pencil" class="p-button-text p-button-primary"
-                  @click="$refs.form.show(data)" v-tooltip="'Edit'" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteSupplier(data)" />
+          <Button icon="pi pi-pencil" class="p-button-text p-button-primary" @click="$refs.form.show(data)"
+            v-tooltip="'Edit'" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteSupplier(data)" />
         </template>
       </Column>
     </DataTable>
@@ -48,7 +45,7 @@ export default {
     deleteSupplier(supplier) {
       this.$confirm.require({
         message: `
-          Are you sure you want to delete ${supplier.name} ? 
+          Are you sure you want to delete ${supplier.name} ?
           All references to this supplier will be lost`,
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',

@@ -1,22 +1,19 @@
 <template>
-  <MultiSelect v-if="multiple"
-               :options="categories" optionLabel="name" optionValue="id"
-               v-bind="$attrs">
+  <MultiSelect v-if="multiple" :options="categories" optionLabel="name" optionValue="id" v-bind="$attrs">
     <template #footer v-if="btnAdd">
       <div class="p-multiselect-header">
         <Button icon="pi pi-plus" :label="btnAddLabel" class="p-button-sm"
-                @click="$refs.form.show({ name: filterValue, type })" />
+          @click="$refs.form.show({ name: filterValue, type })" />
       </div>
     </template>
   </MultiSelect>
 
-  <Dropdown v-else :options="categories" optionLabel="name" optionValue="id" :showClear="true"
-            :filter="true" filterPlaceholder="" class="w-100" v-bind="$attrs"
-            @filter="filterValue = $event.value">
+  <Dropdown v-else :options="categories" optionLabel="name" optionValue="id" :showClear="true" :filter="true"
+    filterPlaceholder="" class="w-100" v-bind="$attrs" @filter="filterValue = $event.value">
     <template #footer v-if="btnAdd">
       <div class="p-dropdown-header">
         <Button icon="pi pi-plus" :label="btnAddLabel" class="p-button-sm"
-                @click="$refs.form.show({ name: filterValue, type })" />
+          @click="$refs.form.show({ name: filterValue, type })" />
       </div>
     </template>
   </Dropdown>

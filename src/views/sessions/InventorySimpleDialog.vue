@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" :style="{ width: '600px' }" :modal="true" class="p-fluid"
-          header="New Simple Inventory" position="top" :maximizable="true">
+    header="New Simple Inventory" position="top" :maximizable="true">
 
     <!-- Date -->
     <div class="p-field">
@@ -11,14 +11,11 @@
     <div class="fw-bold mb-3 mt-4">Products Stocks at the end of the day</div>
     <div v-for="stock in inventory" class="d-flex mb-2" :key="stock" ref="rows">
       <div class="p-inputgroup">
-        <InputProduct v-model="stock.product_id" :showClear="false" :editable="false"
-                      :showCreateButton="false" class="product-input"
-                      :filterProducts="productsFor(stock)"
-                      style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
-        <InputNumber v-model="stock.value" :maxFractionDigits="5" placeholder="Stock"
-                     inputClass="border-start-0" />
-        <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day"
-              v-tooltip.top="'Theoretical stock'">
+        <InputProduct v-model="stock.product_id" :showClear="false" :editable="false" :showCreateButton="false"
+          class="product-input" :filterProducts="productsFor(stock)"
+          style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
+        <InputNumber v-model="stock.value" :maxFractionDigits="5" placeholder="Stock" inputClass="border-start-0" />
+        <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day" v-tooltip.top="'Theoretical stock'">
           {{ $parent.theoricStockFor(stock.product_id, day) }}
         </span>
         <span class="p-inputgroup-addon" style="width: 5rem;">{{
@@ -26,8 +23,7 @@
       </div>
       <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeRow(stock)" />
     </div>
-    <Button icon="pi pi-plus" class="p-button-rounded p-button-primary p-button-sm mt-2"
-            @click="newRow" />
+    <Button icon="pi pi-plus" class="p-button-rounded p-button-primary p-button-sm mt-2" @click="newRow" />
 
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />

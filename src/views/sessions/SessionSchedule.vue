@@ -11,56 +11,46 @@
     <Spinner />
   </div>
 
-  <DataTable :value="session.rows" dataKey="id" showGridlines
-             v-if="session.events.length > 0 && isMounted"
-             :scrollable="true" scrollHeight="calc(100vh - 11rem)"
-             :class="{ 'hide-dates': !displayDates }"
-             @rowReorder="session.rows = $event.value"
-             editMode="cell" class="editable-cells-table session-table schedule-table"
-             @cell-edit-complete="onCellEditComplete"
-             :rowClass="rowClass">
+  <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0 && isMounted"
+    :scrollable="true" scrollHeight="calc(100vh - 11rem)" :class="{ 'hide-dates': !displayDates }"
+    @rowReorder="session.rows = $event.value" editMode="cell" class="editable-cells-table session-table schedule-table"
+    @cell-edit-complete="onCellEditComplete" :rowClass="rowClass">
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell transparent hide-print" frozen :rowspan="displayDates ? 3 : 2"
-                :colspan="2">
+        <Column class="top-left-cell transparent hide-print" frozen :rowspan="displayDates ? 3 : 2" :colspan="2">
           <template #header>
             <PrintButton />
             <div class="d-flex flex-column ms-4">
               <NewRowButton @add-row="addRow" />
-              <Button type="button" icon="pi pi-plus" label="Event"
-                      class="mt-2 p-button-sm p-button-outlined"
-                      @click="$refs.eventForm.show()" v-if="!session.is_template" />
+              <Button type="button" icon="pi pi-plus" label="Event" class="mt-2 p-button-sm p-button-outlined"
+                @click="$refs.eventForm.show()" v-if="!session.is_template" />
 
             </div>
           </template>
         </Column>
         <!-- Event Header -->
         <Column v-for="(event, index) in session.events" :colspan="event.days.length" :key="event.id"
-                class="event-start event-end header-group event-editor" :class="`event-${event.id}`">
+          class="event-start event-end header-group event-editor" :class="`event-${event.id}`">
           <template #header>
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
                 {{ event.name }}
-                <span v-if="event.people_count"
-                      class="fw-normal ms-2 xs d-inline-flex align-items-center">
+                <span v-if="event.people_count" class="fw-normal ms-2 xs d-inline-flex align-items-center">
                   {{ event.people_count }}
                   <span class="pi pi-users xs ms-1"></span>
                 </span>
               </span>
               <span class="d-print-none btn-on-hover">
                 <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
-                        class="p-button-sm p-button-success p-button-text"
-                        v-tooltip.top="'Save as template'" v-if="!session.is_template" />
+                  class="p-button-sm p-button-success p-button-text" v-tooltip.top="'Save as template'"
+                  v-if="!session.is_template" />
                 <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event, session.is_template)"
-                        class="p-button-sm p-button-text" />
+                  class="p-button-sm p-button-text" />
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
-                        class="p-button-sm p-button-danger p-button-text"
-                        v-if="!session.is_template" />
-                <Button icon="pi pi-plus" label="Day"
-                        class="p-button-sm p-button-secondary btn-add-day"
-                        @click="event.days.push(`Day ${event.days.length}`)"
-                        :disabled="disableAddDayFor(event)" />
+                  class="p-button-sm p-button-danger p-button-text" v-if="!session.is_template" />
+                <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
+                  @click="event.days.push(`Day ${event.days.length}`)" :disabled="disableAddDayFor(event)" />
               </span>
             </div>
           </template>
@@ -68,8 +58,7 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`"
-                :class="[day.class, 'day-date']">
+        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, 'day-date']">
           <template #header>
             <span>{{ day.dateHeader }}</span>
           </template>
@@ -77,14 +66,11 @@
       </Row>
       <Row>
         <!-- Day Name Header -->
-        <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class"
-                class="day-label">
+        <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class" class="day-label">
           <template #header>
-            <InputText :value="day.label" @change="day.event.days[day.index] = $event.target.value"
-                       class="day-input" />
+            <InputText :value="day.label" @change="day.event.days[day.index] = $event.target.value" class="day-input" />
             <Button icon="pi pi-trash" class="btn-on-hover p-button-danger p-button-text p-0"
-                    v-if="day.class.includes('event-end') && day.event.days.length > 1"
-                    @click="day.event.days.pop()" />
+              v-if="day.class.includes('event-end') && day.event.days.length > 1" @click="day.event.days.pop()" />
           </template>
         </Column>
       </Row>
@@ -103,24 +89,21 @@
         <span v-else-if="data.type == 'recipie'">{{ $root.getRecipie(data.recipie_id).name }}</span>
         <span v-else class="variable-row-label">{{ data.label }}</span>
         <span class="btn-on-hover d-print-none">
-          <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash"
-                        @click.stop
-                        title="Printable ?" class="p-button-sm" />
+          <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash" @click.stop
+            title="Printable ?" class="p-button-sm" />
           <Button icon="pi pi-trash" @click.prevent="deleteRow(data)"
-                  class=" p-button-small p-button-danger p-button-text" />
+            class=" p-button-small p-button-danger p-button-text" />
         </span>
       </template>
       <template #editor="{ data }">
-        <InputProduct v-if="data.type == 'product'" v-model="data.product_id"
-                      class="editor-sm w-100" />
+        <InputProduct v-if="data.type == 'product'" v-model="data.product_id" class="editor-sm w-100" />
         <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie_id" />
         <InputText v-else v-model="data.label" placeholder="Row Name" />
       </template>
     </Column>
 
     <!-- Cells -->
-    <Column v-for="day in sessionDays" :key="`cell-${day.id}`" :field="day.id"
-            :class="day.class">
+    <Column v-for="day in sessionDays" :key="`cell-${day.id}`" :field="day.id" :class="day.class">
       <!-- Cell Show -->
       <template #body="{ data, field }">
         <template v-if="data.values[field]">
@@ -132,11 +115,11 @@
           <label v-if="data.type == 'recipies' && data.values[field].recipie_id">
             {{ $root.getRecipie(data.values[field].recipie_id).name }}
             <span class="pi pi-clock d-print-none" v-tooltip="'Needed to be prepared the day before'"
-                  style="font-size: 0.7rem"
-                  v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"></span>
+              style="font-size: 0.7rem"
+              v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"></span>
           </label>
           <div class="amount"
-               v-if="data.type == 'recipies' && data.values[field].recipie_id || data.type == 'products' && data.values[field].product_id || ['recipie', 'product'].includes(data.type)">
+            v-if="data.type == 'recipies' && data.values[field].recipie_id || data.type == 'products' && data.values[field].product_id || ['recipie', 'product'].includes(data.type)">
             {{ data.values[field].amount }}
           </div>
         </template>
@@ -144,19 +127,16 @@
       <!-- Cell Edit -->
       <template #editor="{ data, field }">
         <div :class="inCellEditorClass(data)">
-          <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id"
-                        class="w-100" />
+          <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id" class="w-100" />
           <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
           <div class="p-inputgroup">
-            <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus
-                         :maxFractionDigits="2" />
+            <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus :maxFractionDigits="2" />
             <span class="p-inputgroup-addon rounded-0 p-0" v-show="data.values[field].product_id">
               {{ $root.getProduct(data.values[field].product_id).unit }}
             </span>
-            <Button icon="pi pi-sync" v-show="data.values[field].recipie_id"
-                    class="p-button-secondary"
-                    @click="updateRecipieAmounts(data.values[field], day.event.people_count)"
-                    v-tooltip="'Update recipie to fit with event number of people'" />
+            <Button icon="pi pi-sync" v-show="data.values[field].recipie_id" class="p-button-secondary"
+              @click="updateRecipieAmounts(data.values[field], day.event.people_count)"
+              v-tooltip="'Update recipie to fit with event number of people'" />
           </div>
         </div>
       </template>
@@ -164,9 +144,8 @@
 
   </DataTable>
 
-  <EventForm ref="eventForm" @save="createOrUpdateEvent($event)"
-             :disabled-dates="sessionDays.map(d => d.date)"
-             :default-date="sessionDays.length > 1 ? sessionDays.at(-1).date.addDays(1) : null" />
+  <EventForm ref="eventForm" @save="createOrUpdateEvent($event)" :disabled-dates="sessionDays.map(d => d.date)"
+    :default-date="sessionDays.length > 1 ? sessionDays.at(-1).date.addDays(1) : null" />
 
   <SaveTemplate ref="saveTemplate" />
 </template>

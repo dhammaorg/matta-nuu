@@ -1,13 +1,10 @@
 <template>
   <Dialog v-model:visible="visible" :style="{ width: '600px' }"
-          :header="isNew ? 'Add an Event to the Session' : 'Edit Event'"
-          :modal="true" class="p-fluid">
+    :header="isNew ? 'Add an Event to the Session' : 'Edit Event'" :modal="true" class="p-fluid">
     <div class="p-field" v-if="isNew">
       <label v-if="template">Template</label>
       <Dropdown :options="$root.templatesArray" optionLabel="name" v-model="template"
-                placeholder="Use a template (optional)" :filter="true" showClear
-                filterPlaceholder=""
-                class="w-100" />
+        placeholder="Use a template (optional)" :filter="true" showClear filterPlaceholder="" class="w-100" />
     </div>
 
     <div class="p-field">
@@ -20,7 +17,7 @@
       <div class="p-inputgroup">
         <InputNumber v-model="event.people_count" class="w-auto" @input="amountChanged = true" />
         <span class="p-inputgroup-addon" v-if="!isNew && event.people_count && amountChanged"
-              v-tooltip.top="'Example : if you change number of people from 20 to 40, all amounts will be multiplied by 2'">
+          v-tooltip.top="'Example : if you change number of people from 20 to 40, all amounts will be multiplied by 2'">
           <Checkbox v-model="updateAmounts" :binary="true" />
           <label class="m-0 ms-2">Proportionally update amounts</label>
         </span>
@@ -30,7 +27,7 @@
     <div class="p-field" v-if="!isTemplate">
       <label>Start Date</label>
       <Calendar v-model="event.start_date" required="true" dateFormat="d MM yy" icon="pi pi-calendar"
-                :disabledDates="disabledDates" />
+        :disabledDates="disabledDates" />
     </div>
 
     <template #footer>

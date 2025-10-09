@@ -9,7 +9,7 @@
   <div class="page-content">
     <div class="table-header">
       <Button v-tooltip.top="'New Session'" icon="pi pi-plus" class="p-button-rounded"
-              @click="$refs.newSessionModal.open()" />
+        @click="$refs.newSessionModal.open()" />
       <h2>Sessions</h2>
       <span class="p-input-icon-left search">
         <i class="pi pi-search" />
@@ -17,8 +17,7 @@
       </span>
     </div>
 
-    <DataTable :value="$root.sessionsArray" dataKey="id"
-               :paginator="true" :rows="20" :filters="filters">
+    <DataTable :value="$root.sessionsArray" dataKey="id" :paginator="true" :rows="20" :filters="filters">
 
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
@@ -26,10 +25,9 @@
           <router-link :to="{ name: 'session_overview', params: { id: data.id } }">
             <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'" />
           </router-link>
-          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
-                  @click="duplicateSession(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger"
-                  @click="deleteSession(data)" v-tooltip="'Delete'" />
+          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'" @click="duplicateSession(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteSession(data)"
+            v-tooltip="'Delete'" />
         </template>
       </Column>
     </DataTable>

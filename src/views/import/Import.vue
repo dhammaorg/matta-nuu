@@ -2,30 +2,26 @@
   <div class="page-content">
     <h1 class="mt-0">Import data from another account</h1>
     <div class="p-field">
-      <Dropdown :options="accounts" optionLabel="account_name" optionValue="user_id"
-                v-model="targetUserId"
-                placeholder="Select account" :filter="true" filterPlaceholder="" class="w-100" />
+      <Dropdown :options="accounts" optionLabel="account_name" optionValue="user_id" v-model="targetUserId"
+        placeholder="Select account" :filter="true" filterPlaceholder="" class="w-100" />
     </div>
 
     <div v-if="targetUserId">
       <Divider />
       <div class="p-field mt-3">
         <label>Templates to import</label>
-        <Multiselect :options="target.templates" optionLabel="name"
-                     v-model="selected.templates" class="w-100" />
+        <Multiselect :options="target.templates" optionLabel="name" v-model="selected.templates" class="w-100" />
         <small>All recipies and products used by those templates will be imported as well</small>
       </div>
 
       <div class="p-field">
         <label>Recipies to import</label>
-        <Multiselect :options="target.recipies" optionLabel="name"
-                     v-model="selected.recipies" class="w-100" />
+        <Multiselect :options="target.recipies" optionLabel="name" v-model="selected.recipies" class="w-100" />
         <small>All products used by those recipies will be imported as well</small>
       </div>
 
       <div class="p-field mt-4">
-        <Button label="Import" icon="pi pi-cloud-download" @click="importData"
-                :loading="importing" />
+        <Button label="Import" icon="pi pi-cloud-download" @click="importData" :loading="importing" />
       </div>
 
       <template v-for="object in objects" :key="object">

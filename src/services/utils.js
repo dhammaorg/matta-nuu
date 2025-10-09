@@ -20,9 +20,11 @@ export function utils() {
     return this >= new Date()
   }
   Date.prototype.equals = function (date) {
-    return this.getDate() === date.getDate()
-      && this.getMonth() === date.getMonth()
-      && this.getFullYear() === date.getFullYear()
+    return (
+      this.getDate() === date.getDate() &&
+      this.getMonth() === date.getMonth() &&
+      this.getFullYear() === date.getFullYear()
+    )
   }
 
   Number.prototype.round = function (decimals = 2) {
