@@ -28,7 +28,7 @@
               inputClass="border-start-0 input-amount" />
             <span class="p-inputgroup-addon" style="width: 5rem;">{{
               $root.getProduct(product.id).unit
-            }}</span>
+              }}</span>
           </div>
           <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeProduct(product)" />
         </div>
@@ -112,7 +112,7 @@ export default {
       visible: false,
       loading: false,
       recipie: {},
-      tab: 'timeline',
+      tab: 'ingredients',
       editorConfig: {
         menubar: false,
         plugins: 'advlist anchor autolink charmap image insertdatetime link lists media preview searchreplace table emoticons code',
