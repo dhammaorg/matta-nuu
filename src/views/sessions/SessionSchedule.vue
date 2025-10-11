@@ -83,8 +83,7 @@
       <template #body="{ data }">
         <span v-if="data.type == 'product'">
           {{ $root.getProduct(data.product_id).name }}
-          <span v-if="$root.getProduct(data.product_id).unit">({{
-            $root.getProduct(data.product_id).unit }})</span>
+          <span v-if="$root.getProduct(data.product_id).unit">({{ $root.getProduct(data.product_id).unit }})</span>
         </span>
         <span v-else-if="data.type == 'recipie'">{{ $root.getRecipie(data.recipie_id).name }}</span>
         <span v-else class="variable-row-label">{{ data.label }}</span>
@@ -141,7 +140,6 @@
         </div>
       </template>
     </Column>
-
   </DataTable>
 
   <EventForm ref="eventForm" @save="createOrUpdateEvent($event)" :disabled-dates="sessionDays.map(d => d.date)"
@@ -163,6 +161,7 @@ import PrintButton from './SessionSchedulePrintButton.vue'
 import SaveTemplate from '@/views/templates/SaveTemplateDialog.vue'
 import Spinner from '@/components/Spinner.vue'
 import CalendarMixin from '@/services/calendar-mixin'
+import ScheduleMenu from './SessionScheduleMenu.vue'
 
 export default {
   inject: ['sessionDays'],
@@ -179,10 +178,10 @@ export default {
     PrintButton,
     SaveTemplate,
     Spinner,
+    ScheduleMenu,
   },
   mounted() {
     if (this.session.events.length === 0) this.$refs.eventForm.show({}, this.session.is_template)
-    this.$root.setPrintMode('landscape')
   },
   computed: {
     session() {

@@ -299,6 +299,7 @@ html {
   @media print {
     overflow: visible !important;
     height: auto !important;
+    padding: 0 !important;
   }
 }
 

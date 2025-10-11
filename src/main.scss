@@ -290,3 +290,13 @@ hr {
 label[for] {
   cursor: pointer;
 }
+
+// TinyMCE menu popups, should be above the dialogs
+.tox .tox-menu,
+.tox-tinymce-aux {
+  z-index: 30000 !important;
+}
+.tox-statusbar__path,
+.tox-statusbar__right-container {
+  display: none !important;
+}

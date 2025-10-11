@@ -26,12 +26,11 @@ export default {
   background-color: white;
   font-weight: normal;
   overflow: auto;
-  padding: 0 2rem;
+  padding: 2rem;
 }
 
 @media print {
   .quantities-container {
-    padding: 0;
     overflow: visible;
   }
 }
