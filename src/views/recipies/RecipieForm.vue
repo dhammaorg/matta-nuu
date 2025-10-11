@@ -6,7 +6,7 @@
     </div>
 
     <div class="p-field mb-3">
-      <InputCategory v-model="recipie.category_ids" type="Recipie" :multiple="true" />
+      <InputCategory v-model="recipie.category_ids" type="Recipie" placeholder="Categories" :multiple="true" />
     </div>
 
     <SelectButton v-model="tab" :options="tabOptions" class="mb-3" optionLabel="label" optionValue="value" />
@@ -28,7 +28,7 @@
               inputClass="border-start-0 input-amount" />
             <span class="p-inputgroup-addon" style="width: 5rem;">{{
               $root.getProduct(product.id).unit
-              }}</span>
+            }}</span>
           </div>
           <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeProduct(product)" />
         </div>
