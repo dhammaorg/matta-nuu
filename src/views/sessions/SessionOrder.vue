@@ -32,20 +32,26 @@
       <div class="p-inputgroup mb-3">
         <span class="p-inputgroup-addon text-start">Delivery Date</span>
         <InputDay v-model="order.delivery_day" :days="stockDays" />
-        <span class="p-inputgroup-addon w-auto">
+      </div>
+      <div class="p-inputgroup mb-3">
+        <span class="p-inputgroup-addon">Quantities until (last day included)</span>
+        <InputDay v-model="order.target_day" :days="sessionDays" />
+      </div>
+      <div class="p-inputgroup mb-3">
+        <span class="p-inputgroup-addon">Restrict to some categories</span>
+        <InputCategory type="Product" :multiple="true" v-model="order.product_category_ids" :btnAdd="false" />
+      </div>
+      <div class="d-flex mb-3 gap-5">
+        <span class="d-flex align-items-center">
+          <Checkbox v-model="order.group_by_category" :binary="true" />
+          <label class="ms-2">Group by category</label>
+        </span>
+        <span class="d-flex align-items-center">
           <Checkbox v-model="order.report_values_in_stocks" :binary="true" />
           <label class="ms-2">Report values in Stocks</label>
         </span>
-      </div>
-      <div class="p-inputgroup mb-4">
-        <span class="p-inputgroup-addon">Quantities until (last day included)</span>
-        <InputDay v-model="order.target_day" :days="sessionDays" />
-        <Button label="Calculate" icon="pi pi-refresh" class="p-button-secondary" @click="calculate"
+        <Button label="Calculate" icon="pi pi-refresh" class="ms-auto p-button-secondary" @click="calculate"
           :loading="isCalculating" />
-      </div>
-      <div class="p-inputgroup mb-3 justify-content-center">
-        <Checkbox v-model="order.group_by_category" :binary="true" />
-        <label class="ms-2">Group by category</label>
       </div>
     </div>
 
@@ -127,12 +133,13 @@ import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 import { convertToBestUnit } from '@/services/units'
 import InputUnit from '@/components/InputUnit.vue'
+import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea, InputUnit,
+    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea, InputUnit, InputCategory,
   },
   data() {
     return {
@@ -207,8 +214,10 @@ export default {
         this.order.values = {}
         this.stocks.forEach(({ product_id, values }) => {
           const product = this.$root.getProduct(product_id)
-
           if (product.supplier_id !== this.order.supplier_id) return
+          if (this.order.product_category_ids.length > 0 &&
+            !this.order.product_category_ids.includes(product.category_id)) return
+
           const needed = 0 - (values[this.order.target_day] || {}).value
 
           if (needed > 0) {
@@ -279,7 +288,6 @@ export default {
 }
 
 .p-inputgroup-addon {
-  width: 130px;
   background-color: var(--surface-b);
 }
 
@@ -288,8 +296,8 @@ export default {
 }
 
 .order-options {
-  max-width: 80%;
   margin: 0 auto;
+  width: 80%;
   font-size: .9rem;
 
   .p-checkbox {
@@ -302,8 +310,13 @@ export default {
 :deep(.order-options) {
 
   .p-button,
+  .p-multiselect,
   .p-inputtext {
     font-size: .9rem;
+  }
+
+  .p-multiselect {
+    color: #495057;
   }
 }
 

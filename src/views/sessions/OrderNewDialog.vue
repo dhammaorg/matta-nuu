@@ -17,6 +17,12 @@
       <InputDay v-model="order.delivery_day" :days="stockDays" class="w-100" />
     </div>
 
+    <!-- Product Categories -->
+    <div class="p-field">
+      <label>Restrict to some categories</label>
+      <InputCategory type="Product" :multiple="true" v-model="order.product_category_ids" :btnAdd="false" />
+    </div>
+
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Create Order" @click="createOrder" />
@@ -27,10 +33,11 @@
 <script>
 import InputDay from '@/components/InputDay.vue'
 import InputSupplier from '../../components/InputSupplier.vue'
+import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  components: { InputDay, InputSupplier },
+  components: { InputDay, InputSupplier, InputCategory },
   data() {
     return {
       visible: false,
@@ -45,6 +52,7 @@ export default {
           session_id: this.$root.session.id,
           report_values_in_stocks: true,
           group_by_category: true,
+          product_category_ids: [],
           delivery_day: this.stockDays.at(0).id,
         },
         ...data,
