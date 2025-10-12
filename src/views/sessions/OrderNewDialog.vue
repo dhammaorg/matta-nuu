@@ -23,6 +23,15 @@
       <InputCategory type="Product" :multiple="true" v-model="order.product_category_ids" :btnAdd="false" />
     </div>
 
+    <!-- Increase by -->
+    <div class="p-field">
+      <label>Increase amounts by</label>
+      <div class="p-inputgroup">
+        <InputNumber v-model="order.increase_by_percent" :maxFractionDigits="2" />
+        <span class="p-inputgroup-addon">%</span>
+      </div>
+    </div>
+
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
       <Button label="Create Order" @click="createOrder" />
@@ -34,10 +43,11 @@
 import InputDay from '@/components/InputDay.vue'
 import InputSupplier from '../../components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
+import InputNumber from 'primevue/inputnumber'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
-  components: { InputDay, InputSupplier, InputCategory },
+  components: { InputDay, InputSupplier, InputCategory, InputNumber },
   data() {
     return {
       visible: false,
@@ -52,6 +62,7 @@ export default {
           session_id: this.$root.session.id,
           report_values_in_stocks: true,
           group_by_category: true,
+          increase_by_percent: 0,
           product_category_ids: [],
           delivery_day: this.stockDays.at(0).id,
         },

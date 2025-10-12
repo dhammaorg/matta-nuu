@@ -41,6 +41,11 @@
         <span class="p-inputgroup-addon">Restrict to some categories</span>
         <InputCategory type="Product" :multiple="true" v-model="order.product_category_ids" :btnAdd="false" />
       </div>
+      <div class="p-inputgroup mb-3">
+        <span class="p-inputgroup-addon">Increase amounts by</span>
+        <InputNumber v-model="order.increase_by_percent" :maxFractionDigits="2" />
+        <span class="p-inputgroup-addon">%</span>
+      </div>
       <div class="d-flex mb-3 gap-5">
         <span class="d-flex align-items-center">
           <Checkbox v-model="order.group_by_category" :binary="true" />
@@ -227,6 +232,9 @@ export default {
             if (product.packaging_convert_to_piece) {
               value = Math.ceil(needed / product.packaging_conditioning)
               unit = 'piece'
+            }
+            if (this.order.increase_by_percent > 0) {
+              value = value * (1 + this.order.increase_by_percent / 100)
             }
             const category = this.$root.getCategory(product.category_id)
             this.order.values[product_id] = {
