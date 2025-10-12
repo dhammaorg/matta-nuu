@@ -188,6 +188,10 @@ export default {
     }
   }
 
+  .instructions-content li {
+    margin-bottom: 1rem;
+  }
+
   .quantities-table {
     width: auto;
 
