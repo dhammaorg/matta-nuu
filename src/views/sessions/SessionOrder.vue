@@ -227,15 +227,19 @@ export default {
 
           if (needed > 0) {
             let targetValue = needed
-            if (product.packaging_conditioning) targetValue = Math.ceil(needed / product.packaging_conditioning) * product.packaging_conditioning
+            if (this.order.increase_by_percent > 0) {
+              targetValue = targetValue * (1 + this.order.increase_by_percent / 100)
+            }
+
+            if (product.packaging_conditioning)
+              targetValue = Math.ceil(targetValue / product.packaging_conditioning) * product.packaging_conditioning
             let { unit, value } = convertToBestUnit(product.unit, targetValue)
+
             if (product.packaging_convert_to_piece) {
-              value = Math.ceil(needed / product.packaging_conditioning)
+              value = Math.ceil(targetValue / product.packaging_conditioning)
               unit = 'piece'
             }
-            if (this.order.increase_by_percent > 0) {
-              value = value * (1 + this.order.increase_by_percent / 100)
-            }
+
             const category = this.$root.getCategory(product.category_id)
             this.order.values[product_id] = {
               id: product.id,

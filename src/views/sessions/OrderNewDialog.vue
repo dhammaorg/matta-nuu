@@ -62,7 +62,6 @@ export default {
           session_id: this.$root.session.id,
           report_values_in_stocks: true,
           group_by_category: true,
-          increase_by_percent: 0,
           product_category_ids: [],
           delivery_day: this.stockDays.at(0).id,
         },
