@@ -8,7 +8,7 @@
       <h3 v-for="recipie in recipies" :key="`recipie-${recipie.id}`" class="text-center my-2">
         {{ recipie.name }} <span v-if="recipie.forDayAfter"> ({{ event.days[dayIndex + 1] }})</span>
       </h3>
-      <div class="timeline mt-5">
+      <div class="timeline mt-5 pt-4">
         <div v-for="step in timeline" :key="step" class="d-flex align-items-baseline gap-3">
           <label style="font-family: ui-monospace">{{ step.time }}</label>
           <div class="step-text" v-html="step.text"></div>
@@ -175,6 +175,10 @@ export default {
   min-height: 297mm;
   page-break-inside: avoid;
   padding: 0 3rem;
+
+  .day-title {
+    page-break-after: always;
+  }
 
   .day-title,
   .recipie-section {
