@@ -97,6 +97,8 @@
             <div class="text-center d-none d-print-block">{{ data.unit }}</div>
           </template>
         </Column>
+        <Column v-if="order.increase_by_percent > 0" field="neededIncreased" :header="`+${order.increase_by_percent}%`"
+          class="needed text-center d-print-none" />
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
         <Column field="id" class="d-print-none actions w-auto">
           <template #body="{ data }">
@@ -226,11 +228,12 @@ export default {
           const needed = 0 - (values[this.order.target_day] || {}).value
 
           if (needed > 0) {
-            let targetValue = needed
+            let neededIncreased = needed
             if (this.order.increase_by_percent > 0) {
-              targetValue = targetValue * (1 + this.order.increase_by_percent / 100)
+              neededIncreased = needed * (1 + this.order.increase_by_percent / 100)
             }
 
+            let targetValue = neededIncreased
             if (product.packaging_conditioning)
               targetValue = Math.ceil(targetValue / product.packaging_conditioning) * product.packaging_conditioning
             let { unit, value } = convertToBestUnit(product.unit, targetValue)
@@ -248,6 +251,7 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
+              neededIncreased: `${neededIncreased.toFixed(3)} ${product.unit}`,
             }
           }
         })
