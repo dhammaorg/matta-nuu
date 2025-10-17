@@ -58,12 +58,12 @@ export default {
     show(data) {
       this.order = {
         ...{
-          target_day: this.sessionDays.at(-1).id,
+          target_day: this.stockDays.find((day) => day.date.isToday())?.id || this.sessionDays.at(-1).id,
           session_id: this.$root.session.id,
           report_values_in_stocks: true,
           group_by_category: true,
           product_category_ids: [],
-          delivery_day: this.stockDays.at(0).id,
+          delivery_day: this.stockDays.find((day) => day.date.isToday())?.id || this.stockDays.at(0).id,
         },
         ...data,
       }
