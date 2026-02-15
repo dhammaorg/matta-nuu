@@ -17,7 +17,7 @@
           <Button icon="pi pi-save" title="Save" class="p-button-success" @click="save" :loading="loading" />
         </div>
       </div>
-      <h3 v-if="currentArea" class="d-flex align-items-center mt-0 pt-3">
+      <h3 v-if="currentArea && !isOnlyOtherArea" class="d-flex align-items-center mt-0 pt-3">
         <i class=" me-2 fs-5 pi pi-map-marker"></i>
         {{ currentArea.name }}
         <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area" class="p-button-text p-button-secondary"
@@ -207,6 +207,9 @@ export default {
     noneAreaCompleted() {
       return this.isAreaCompleteds.length === 0
     },
+    isOnlyOtherArea() {
+      return this.areas.length === 1 && this.areas[0].id === 'other'
+    },
   },
   methods: {
     startArea(area) {
@@ -319,6 +322,12 @@ export default {
     async currentProduct() {
       this.currentProductEdited = false
       this.focusStockInput()
+    },
+    areas() {
+      // Auto-navigate if there's only one area and it's the otherArea
+      if (this.isOnlyOtherArea && !this.currentArea && !this.isAreaCompleted(this.areas[0])) {
+        this.startArea(this.areas[0])
+      }
     },
   },
 }
