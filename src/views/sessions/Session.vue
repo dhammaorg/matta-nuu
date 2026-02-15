@@ -1,5 +1,5 @@
 <template>
-  <SessionMenu ref="menu" />
+  <SessionMenu v-if="!$root.isPublicMode" ref="menu" />
 
   <img class="page-background" src="@/assets/undraw_cart.svg" v-if="$route.name == 'session_orders'" />
 
@@ -112,7 +112,7 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
-    if (this.$refs.menu.unsavedChangesWarning) {
+    if (this.$refs.menu && this.$refs.menu.unsavedChangesWarning) {
       this.$confirm.require({
         message: 'You have unsaved changes !',
         acceptLabel: 'Quit without saving',

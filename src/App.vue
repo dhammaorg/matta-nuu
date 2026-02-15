@@ -71,6 +71,9 @@ export default {
     dataFetched() {
       return this.dataFetchedCount === 6
     },
+    isPublicMode() {
+      return this.$route && (this.$route.name === 'inventories_public' || this.$route.query?.public === 'true')
+    },
   },
   watch: {
     products: {

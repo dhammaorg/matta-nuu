@@ -290,7 +290,11 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: async () => {
           this.dbDestroy('inventories', this.inventory)
-          this.$router.push({ name: 'session_overview', params: { id: this.$route.params.id } })
+          if (this.$root.isPublicMode) {
+            this.$router.push({ name: 'inventories_public', params: { id: this.$route.params.id } })
+          } else {
+            this.$router.push({ name: 'session_overview', params: { id: this.$route.params.id } })
+          }
         },
       })
     },
@@ -320,14 +324,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.header {}
-
 .content {
   text-align: center;
   padding-bottom: 20%;
 }
-
-.footer {}
 
 .storage-area-card {
   background-color: white;

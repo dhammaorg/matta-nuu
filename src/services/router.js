@@ -6,7 +6,9 @@ import SessionSchedule from '@/views/sessions/SessionSchedule.vue'
 import SessionStocks from '@/views/sessions/SessionStocks.vue'
 import SessionOrdersIndex from '@/views/sessions/SessionOrdersIndex.vue'
 import SessionOrder from '@/views/sessions/SessionOrder.vue'
+import SessionInventories from '@/views/sessions/SessionInventories.vue'
 import SessionInventory from '@/views/sessions/SessionInventory.vue'
+import SessionInventoriesPublic from '@/views/sessions/SessionInventoriesPublic.vue'
 import RecipiesIndex from '@/views/recipies/RecipiesIndex.vue'
 import ProductsIndex from '@/views/products/ProductsIndex.vue'
 import SuppliersIndex from '@/views/suppliers/SuppliersIndex.vue'
@@ -75,9 +77,19 @@ const routes = [
         component: SessionOrder,
       },
       {
+        path: 'inventories',
+        name: 'session_inventories',
+        component: SessionInventories,
+      },
+      {
         path: 'inventory/:inventory_id',
         name: 'session_inventory',
         component: SessionInventory,
+      },
+      {
+        path: 'inventories-public',
+        name: 'inventories_public',
+        component: SessionInventoriesPublic,
       },
     ],
   },
@@ -110,7 +122,7 @@ const routes = [
     path: '/import',
     name: 'import',
     component: Import,
-  },
+  }
 ]
 
 const router = createRouter({

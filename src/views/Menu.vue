@@ -1,5 +1,17 @@
 <template>
-  <Menubar :model="navItems" class="d-print-none">
+  <!-- Simplified menu for public mode -->
+  <div v-if="$root.isPublicMode" class="p-menubar d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <img src="../assets/logo.png" height="50" style="margin-top: -5px" />
+    </div>
+    <span v-if="$route.name === 'inventories_public'">{{ this.$root.userData.account_name }}</span>
+    <Button v-else label="Inventories" icon="pi pi-home" class="p-button-text"
+      @click="$router.push({ name: 'inventories_public', params: { id: $root.session.id } })" />
+    <Button icon="pi pi-sign-out" class="p-button-text" @click="logout" />
+  </div>
+
+  <!-- Standard Menu -->
+  <Menubar v-else :model="navItems" class="d-print-none">
     <template #start>
       <div class="d-flex align-items-center">
         <img src="../assets/logo.png" class="me-4" height="50" style="margin-top: -5px" />
