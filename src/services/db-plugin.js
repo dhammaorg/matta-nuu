@@ -1,5 +1,7 @@
 import supabase from '@/services/supabase'
 
+const DB_TIMEOUT = 1000 // 10 seconds
+
 export default {
   install: (app) => {
     app.config.globalProperties.$db = supabase
@@ -194,49 +196,112 @@ export default {
 
           return true
         },
+        isNetworkError(error) {
+          if (!error) return false
+          const errorMessage = error.message?.toLowerCase() || ''
+          const errorCode = error.code?.toLowerCase() || ''
+          const errorDetails = error.details?.toLowerCase() || ''
+          return (
+            errorMessage.includes('failed to fetch') ||
+            errorMessage.includes('networkerror') ||
+            errorMessage.includes('network request failed') ||
+            errorMessage.includes('load failed') ||
+            errorCode === 'err_internet_disconnected' ||
+            errorCode === 'err_network_changed' ||
+            errorCode === 'err_connection_refused' ||
+            errorDetails.includes('fetch') ||
+            (!navigator.onLine && (errorMessage.includes('fetch') || errorMessage.includes('network')))
+          )
+        },
+        async executeWithTimeout(dbPromise) {
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timeout')), DB_TIMEOUT)
+          )
+          try {
+            const result = await Promise.race([dbPromise, timeoutPromise])
+            // Check if Supabase returned an error that might be network-related
+            if (result?.error && this.isNetworkError(result.error)) {
+              throw {
+                message: 'No internet connection',
+                details: 'Please check your internet connection and try again.',
+              }
+            }
+            return result
+          } catch (error) {
+            if (this.isNetworkError(error)) {
+              throw {
+                message: 'No internet connection',
+                details: 'Please check your internet connection and try again.',
+              }
+            }
+            if (error.message === 'Request timeout') {
+              throw {
+                message: 'Connection timeout',
+                details: 'The request took too long. Please check your internet connection and try again.',
+              }
+            }
+            throw error
+          }
+        },
         async dbCreate(tableName, object, onSuccess) {
           this.loading = true
-          let { data, error } = await this.$db
-            .from(tableName)
-            .insert([this.addUserId(object)])
-            .select()
-          data = data[0] // don't know why but .single() does not work here, so getting first element
-          if (error) this.toastError(error)
-          else {
-            data = this.fixData(data, tableName)
-            this.$root[tableName][data.id] = data
-            this.toastSuccess(data, 'created')
-            if (onSuccess) onSuccess(data)
+          try {
+            const dbPromise = this.$db
+              .from(tableName)
+              .insert([this.addUserId(object)])
+              .select()
+            const { data, error } = await this.executeWithTimeout(dbPromise)
+            if (error) this.toastError(error)
+            else {
+              // don't know why but .single() does not work here, so getting first element with data[0]
+              const fixedData = this.fixData(data[0], tableName)
+              this.$root[tableName][fixedData.id] = fixedData
+              this.toastSuccess(fixedData, 'created')
+              if (onSuccess) onSuccess(fixedData)
+              return fixedData
+            }
+            return null
+          } catch (error) {
+            this.toastError(error)
+            return null
+          } finally {
+            this.loading = false
           }
-          this.loading = false
-          return data
         },
         async dbUpdate(tableName, object) {
           this.loading = true
-
-          let { data, error } = await this.$db
-            .from(tableName)
-            .update(this.addUserId(object))
-            .eq('id', object.id)
-            .select()
-          data = data[0] // don't know why but .single() does not work here, so getting first element
-          if (error) this.toastError(error)
-          else {
-            data = this.fixData(data, tableName)
-            this.$root[tableName][object.id] = data
-            this.toastSuccess(data, 'updated')
+          try {
+            const dbPromise = this.$db
+              .from(tableName)
+              .update(this.addUserId(object))
+              .eq('id', object.id)
+              .select()
+            const { data, error } = await this.executeWithTimeout(dbPromise)
+            if (error) this.toastError(error)
+            else {
+              // don't know why but .single() does not work here, so getting first element with data[0]
+              const fixedData = this.fixData(data[0], tableName)
+              this.$root[tableName][object.id] = fixedData
+              this.toastSuccess(fixedData, 'updated')
+            }
+          } catch (error) {
+            this.toastError(error)
+          } finally {
+            this.loading = false
           }
-          this.loading = false
         },
         async dbDestroy(tableName, object) {
           this.loading = true
-
-          // Delete the object
-          const { error } = await this.$db.from(tableName).delete().eq('id', object.id)
-          if (error) this.toastError(error)
-          else delete this.$root[tableName][object.id]
-
-          this.loading = false
+          try {
+            const dbPromise = this.$db.from(tableName).delete().eq('id', object.id)
+            const { error } = await this.executeWithTimeout(dbPromise)
+            if (error) this.toastError(error)
+            else delete this.$root[tableName][object.id]
+          } catch (error) {
+            this.toastError(error)
+          } finally {
+            this.loading = false
+          }
         },
         addUserId(object) {
           return { ...object, ...{ user_id: this.$root.user.id } }
