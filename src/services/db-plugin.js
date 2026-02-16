@@ -1,6 +1,6 @@
 import supabase from '@/services/supabase'
 
-const DB_TIMEOUT = 1000 // 10 seconds
+const DB_TIMEOUT = 15000 // 15 seconds
 
 export default {
   install: (app) => {
