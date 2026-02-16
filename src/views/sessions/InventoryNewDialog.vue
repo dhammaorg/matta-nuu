@@ -77,7 +77,10 @@ export default {
     async createInventory() {
       this.dbCreate('inventories', this.inventory, (inventory) => {
         this.visible = false
-        this.$router.push({ name: 'session_inventory', params: { id: this.$route.params.id, inventory_id: inventory.id } })
+        this.$router.push({
+          name: 'session_inventory', params: { id: this.$route.params.id, inventory_id: inventory.id },
+          query: { public: this.$root.isPublicMode }
+        })
         this.inventory = {}
       })
     },
