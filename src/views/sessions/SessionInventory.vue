@@ -74,7 +74,7 @@
         <div class="p-inputgroup">
           <InputNumber v-model="inventory.values[currentProduct.id][currentArea.id].value"
             @input="currentProductEdited = true" :maxFractionDigits="5" placeholder="Stock" ref="stockInput"
-            @keyup.enter="finishProduct" inputmode="decimal" />
+            @keyup.enter="finishProduct" inputmode="numeric" />
           <span class="p-inputgroup-addon" style="width: 5rem;">
             {{ inventory.values[currentProduct.id][currentArea.id].unit }}
           </span>
