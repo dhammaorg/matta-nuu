@@ -4,12 +4,21 @@
     <div class="d-flex gap-4 flex-wrap" v-else>
       <div v-for="template in inventoryTemplates" :key="template.id" class="card w-100 d-flex flex-column">
         <h3 class="mt-0">{{ template.template_name }}</h3>
-        <div class="text-muted mb-4 flex-grow-1">
+        <div class="text-muted mb-4">
           {{ template.template_description }}
         </div>
         <Button label="Start" @click="createFromTemplate(template)" class="w-100" />
       </div>
+
+      <div class="card w-100 d-flex flex-column">
+        <h3 class="mt-0">Custom Inventory</h3>
+        <div class="text-muted mb-4">
+          For specific situations
+        </div>
+        <Button label="Start" @click="$refs.inventoryForm.show()" class="w-100 p-button-secondary" />
+      </div>
     </div>
+
 
     <template v-if="realInventories.length > 0">
       <h2 class="mb-4 mt-5 text-center">Previous Inventories</h2>
