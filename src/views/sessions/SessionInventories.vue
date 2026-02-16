@@ -1,7 +1,7 @@
 <template>
   <div class="page-content mb-5">
     <h2 class="mb-3 mt-0">Templates</h2>
-    <div class="text-muted mb-2">URL to share with people doing the inventories</div>
+    <div class="text-muted mb-2">Preconfigured inventories. URL to share with people doing the inventories</div>
     <div class="mb-4"><a :href="publicUrl" target="_blank">{{ publicUrl }}</a></div>
     <div class="mb-3">
       <Button label="New Inventory Template" icon="pi pi-plus" class="me-2" @click="$refs.templateForm.show()" />
