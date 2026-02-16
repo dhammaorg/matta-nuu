@@ -10,12 +10,6 @@
 
     <Divider />
 
-    <!-- Storage Areas -->
-    <div class="p-field">
-      <label>Restrict to some storage areas</label>
-      <InputCategory type="StorageArea" :multiple="true" v-model="inventory.storage_area_ids" :btnAdd="false" />
-    </div>
-
     <!-- Suppliers -->
     <div class="p-field">
       <label>Restrict to some suppliers</label>
@@ -26,6 +20,12 @@
     <div class="p-field">
       <label>Restrict to some categories</label>
       <InputCategory type="Product" :multiple="true" v-model="inventory.product_category_ids" :btnAdd="false" />
+    </div>
+
+    <!-- Storage Areas -->
+    <div class="p-field">
+      <label>Restrict to some storage areas</label>
+      <InputCategory type="StorageArea" :multiple="true" v-model="inventory.storage_area_ids" :btnAdd="false" />
     </div>
 
     <template #footer>
