@@ -80,7 +80,7 @@
           </span>
         </div>
         <!-- Theoritical Stock -->
-        <div class="fst-italic mt-4">
+        <div class="fst-italic mt-4" v-if="!currentProduct.fixed_stock">
           <template v-if="currentProduct.storage_area_ids.length <= 1">Theoritical Stock</template>
           <template v-else>Total Theoritical Stock ({{currentProduct.storage_area_ids.map(id =>
             $root.getCategory(id).name).join(' + ')}})</template>

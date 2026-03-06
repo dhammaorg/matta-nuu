@@ -15,7 +15,7 @@
           class="product-input" :filterProducts="productsFor(stock)"
           style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
         <InputNumber v-model="stock.value" :maxFractionDigits="5" placeholder="Stock" inputClass="border-start-0" />
-        <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day" v-tooltip.top="'Theoretical stock'">
+        <span class="p-inputgroup-addon" style="width: 5rem;" v-if="day && !$root.getProduct(stock.product_id).fixed_stock" v-tooltip.top="'Theoretical stock'">
           {{ $parent.theoricStockFor(stock.product_id, day) }}
         </span>
         <span class="p-inputgroup-addon" style="width: 5rem;">{{

@@ -140,6 +140,9 @@ export default {
           })
         }
       })
+      this.$root.productsArray.forEach((p) => {
+        if (p.fixed_stock) result.add(p.id)
+      })
       this.sessionProducts = Array.from(result)
         .filter((r) => !!r)
         .sort()

@@ -39,13 +39,26 @@
       <div class="p-field-checkbox w-100 mb-3" v-if="product.packaging_conditioning">
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
         <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit
-          }}" to 1 piece in orders</label>
+        }}" to 1 piece in orders</label>
       </div>
 
-      <div class="p-field w-100 mt-0">
+      <div class="p-field w-100 mt-0 mb-3">
         <label>Storage Areas</label>
         <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_area_ids"
           placeholder="Storage Areas" />
+      </div>
+
+      <div class="p-field-checkbox w-100 mb-3">
+        <Checkbox id="fixed_stock" v-model="product.fixed_stock" :binary="true" />
+        <label for="fixed_stock" class="ms-2">Fixed Stock</label>
+      </div>
+
+      <div class="p-field w-100 mt-0" v-if="product.fixed_stock">
+        <label>Fixed Stock Value</label>
+        <div class="p-inputgroup">
+          <InputNumber v-model="product.fixed_stock_value" placeholder="Target stock level" :maxFractionDigits="5" />
+          <span class="p-inputgroup-addon" style="width: 4rem;">{{ product.unit }}</span>
+        </div>
       </div>
     </div>
 
@@ -96,8 +109,10 @@ export default {
   },
   watch: {
     'product.packaging_conditioning': function (newVal, oldVal) {
-      //  reset convert_to_piece to false when no packaging_conditioning is present
       if (!newVal) this.product.packaging_convert_to_piece = false
+    },
+    'product.fixed_stock': function (newVal) {
+      if (!newVal) this.product.fixed_stock_value = null
     },
   },
 }

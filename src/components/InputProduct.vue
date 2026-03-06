@@ -43,6 +43,7 @@ export default {
   computed: {
     options() {
       return [...this.$root.productsArray]
+        .filter((p) => !p.fixed_stock)
         .filter((p) => this.filterProducts === null || this.filterProducts.includes(p.id))
         .sort((a, b) => a.name.localeCompare(b.name))
     },

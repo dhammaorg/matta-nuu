@@ -225,7 +225,8 @@ export default {
           if (this.order.product_category_ids.length > 0 &&
             !this.order.product_category_ids.includes(product.category_id)) return
 
-          const needed = 0 - (values[this.order.target_day] || {}).value
+          const targetStock = product.fixed_stock ? (product.fixed_stock_value || 0) : 0
+          const needed = targetStock - (values[this.order.target_day] || {}).value
 
           if (needed > 0) {
             let neededIncreased = needed
