@@ -170,7 +170,7 @@ export default {
         // sort first by category, then by name
         const aValue = this.$root.getCategory(a.category_id).name || 'xxxx'
         const bValue = this.$root.getCategory(b.category_id).name || 'xxxx'
-        if (!aValue || aValue === bValue) {
+        if ((!aValue || aValue === bValue) && a.name && b.name) {
           return a.name.localeCompare(b.name)
         }
         return aValue.localeCompare(bValue)
