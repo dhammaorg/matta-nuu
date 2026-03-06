@@ -38,7 +38,7 @@
           <span v-else>Choose the Next Area</span>
         </h3>
         <div v-for="area in areas" :key="area.id" @click="startArea(area)"
-          class="storage-area-card border mb-3 rounded-3 p-3" :class="{ completed: isAreaCompleted(area) }">
+          class="storage-area-card border mb-3 rounded-3 p-3" :class="{ completed: allProductsForAreaCompleted(area) }">
           <i v-if="isAreaCompleted(area)" class="pi-check-circle pi me-2"></i>
           <i v-else class="pi-circle pi me-2"></i>
           {{ area.name }}
@@ -268,6 +268,9 @@ export default {
     },
     isAreaCompleted(area) {
       return this.inventory.completed_storage_areas_ids.includes(area.id.toString())
+    },
+    allProductsForAreaCompleted(area) {
+      return this.completedProductsForArea(area).length === this.productsForArea(area).length
     },
     productsForArea(area) {
       return this.products.filter((product) => {
