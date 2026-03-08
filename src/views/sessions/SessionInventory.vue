@@ -1,10 +1,10 @@
 <template>
-  <div class="d-flex flex-column h-100 pb-4 mx-auto justify-content-between"
-    style="max-width: 600px; max-height: 800px;">
+  <div class="d-flex flex-column h-100 pb-4 mx-auto justify-content-between" style="max-width: 600px;"
+    :style="{ maxHeight: inventoryMode === 'step' ? '800px' : 'none' }">
 
     <!-- Header -->
     <div class="header">
-      <div class="d-flex">
+      <div class="d-flex" v-if="!currentArea || isOnlyOtherArea">
         <h1 class="m-0">
           <span class="d-none d-md-inline">Inventory - </span>
           {{this.stockDays.find((d) => d.id == inventory.day)?.dateHeader}}
@@ -17,13 +17,17 @@
           <Button icon="pi pi-save" title="Save" class="p-button-success" @click="save" :loading="loading" />
         </div>
       </div>
-      <h3 v-if="currentArea && !isOnlyOtherArea" class="d-flex align-items-center mt-0 pt-3">
-        <i class=" me-2 fs-5 pi pi-map-marker"></i>
-        {{ currentArea.name }}
-        <Button v-if="areas.length > 1" icon="pi pi-pencil" title="Change Area" class="p-button-text p-button-secondary"
+      <div v-if="currentArea" class="d-flex justify-content-between align-items-center mt-0 pt-3 mb-3">
+        <Button v-if="!isOnlyOtherArea" icon="pi pi-arrow-left" title="Back" class="p-button-secondary"
           @click="currentArea = null" />
-        <Tag v-if="currentCategory" :value="currentCategory" class="ms-1 p-tag-secondary" />
-      </h3>
+        <h3 v-if="!isOnlyOtherArea" class="d-flex align-items-center m-0">
+          <i class="me-2 fs-5 pi pi-map-marker"></i>
+          {{ currentArea.name }}
+        </h3>
+        <SelectButton v-model="inventoryMode"
+          :options="[{ id: 'step', label: '1-by-1' }, { id: 'list', label: 'List' }]" aria-labelledby="inventoryMode"
+          optionLabel="label" optionValue="id" />
+      </div>
     </div>
 
     <!-- Choose Area -->
@@ -52,9 +56,9 @@
       </div>
     </template>
 
-    <!-- Fill Area Stocks -->
-    <template v-if="currentArea && (inventory.values[currentProduct.id] || {})[currentArea?.id]">
-      <!-- Stock & Unit inputs -->
+    <!-- Fill Area Stocks - Step Mode -->
+    <template
+      v-if="currentArea && inventoryMode === 'step' && (inventory.values[currentProduct.id] || {})[currentArea?.id]">
       <div class="content">
         <h3 class="mb-4">{{ currentProduct.name }}</h3>
         <!-- Unit -->
@@ -93,9 +97,40 @@
         <Button label="Prev" icon="pi pi-chevron-left" class="p-button-secondary"
           @click="productIndex = Math.max(productIndex - 1, 0)" :disabled="productIndex == 0" />
         <div>{{ productIndex + 1 }} / {{ currentProducts.length }}</div>
-
         <Button v-if="productIndex == currentProducts.length - 1" label="Finish" @click="finishProduct" />
         <Button v-else label="Next" icon="pi pi-chevron-right" @click="finishProduct" />
+      </div>
+    </template>
+
+    <!-- Fill Area Stocks - List Mode -->
+    <template v-if="currentArea && inventoryMode === 'list'">
+      <div class="content list-content h-100">
+        <template v-for="(product, idx) in currentProducts" :key="product.id">
+          <div v-if="idx === 0 || product.category_id !== currentProducts[idx - 1].category_id" class="category-header">
+            {{ $root.getCategory(product.category_id).name || 'Uncategorized' }}
+          </div>
+          <div class="list-row" v-if="(inventory.values[product.id] || {})[currentArea.id]">
+            <span class="product-name">{{ product.name }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <Dropdown v-if="product.packaging_convert_to_piece && product.unit !== 'piece'"
+                v-model="inventory.values[product.id][currentArea.id].unit" :options="[
+                  { label: product.unit, value: product.unit },
+                  { label: `piece (${product.packaging_conditioning}${product.unit}) - ${product.packaging_reference}`, value: 'piece' }
+                ]" optionLabel="label" optionValue="value" class="unit-select" />
+              <div class="p-inputgroup list-input-group">
+                <InputNumber v-model="inventory.values[product.id][currentArea.id].value" :maxFractionDigits="5"
+                  placeholder="0" inputmode="numeric" />
+                <span class="p-inputgroup-addon">
+                  {{ inventory.values[product.id][currentArea.id].unit }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="footer mt-4">
+        <Button label="Finish" class="w-100" @click="finishCurrentArea" />
       </div>
     </template>
   </div>
@@ -109,12 +144,13 @@ import Tag from 'primevue/tag'
 import RadioButton from 'primevue/radiobutton'
 import StockMixin from '@/services/stocks-mixin'
 import InventoryNewDialog from './InventoryNewDialog.vue'
+import SelectButton from 'primevue/selectbutton';
 
 export default {
   inject: ['sessionInventories'],
   mixins: [StockMixin],
   components: {
-    InputNumber, RadioButton, Tag, InventoryNewDialog,
+    InputNumber, RadioButton, Tag, InventoryNewDialog, SelectButton,
   },
   data() {
     return {
@@ -128,13 +164,13 @@ export default {
       otherArea: { name: 'Other Products', id: 'other' },
       currentArea: undefined,
       productIndex: 0,
+      inventoryMode: localStorage.getItem('inventoryMode') || 'step',
       currentProductEdited: false,
       loading: false,
     }
   },
   beforeMount() {
     this.inventory = this.sessionInventories.find((inv) => inv.id == this.$route.params.inventory_id)
-    // if (this.areas.length === 1) this.currentArea = this.areas.at(0)
   },
   computed: {
     areas() {
@@ -322,6 +358,9 @@ export default {
         })
       })
     },
+    inventoryMode(val) {
+      localStorage.setItem('inventoryMode', val)
+    },
     async currentProduct() {
       this.currentProductEdited = false
       this.focusStockInput()
@@ -357,6 +396,44 @@ export default {
     opacity: .5;
   }
 }
+
+.list-content {
+  text-align: left;
+  padding-bottom: 0;
+  overflow-y: auto;
+
+  .list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--surface-border, #dee2e6);
+    gap: 0.5rem;
+  }
+
+  .category-header {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    padding: 1.5rem 0 .75rem;
+    margin-bottom: .5rem;
+    border-bottom: 2px solid var(--primary-color);
+  }
+
+  .product-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .list-input-group {
+    width: 10rem;
+  }
+}
+
+
 
 .p-tag-secondary {
   color: inherit;

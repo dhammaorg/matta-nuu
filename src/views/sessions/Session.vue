@@ -8,7 +8,7 @@
   </HelpMessage>
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
-    <div class="h-100" v-if="$root.isSessionFullyLoaded()">
+    <div class="h-100" style="min-height: 0;" v-if="$root.isSessionFullyLoaded()">
       <router-view></router-view>
     </div>
   </div>

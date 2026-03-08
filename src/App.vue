@@ -335,6 +335,7 @@ html {
 
 .page-full-content {
   flex-grow: 1;
+  min-height: 0;
   padding: 2rem;
   padding-bottom: 0;
 
