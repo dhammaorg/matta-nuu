@@ -160,6 +160,7 @@ export default {
     },
     calculateStockFor(productId, fromDayId) {
       let previousStock = 0
+      let previousStockIncreased = 0
       let doCalculation = fromDayId === undefined
       const row = this.stocks.find((s) => s.product_id === productId) || {}
       const values = row.values || {}
@@ -229,17 +230,31 @@ export default {
             real = realFromInventories.reduce((acc, obj) => acc + obj.value, 0)
           }
 
-          let theoric = previousStock
           // a negative previousStock is just theorical, as soon as we buy something, we consider
           // this previous negative stock to be equal to 0
-          if (bought > 0) theoric = Math.max(theoric, 0)
-          theoric = theoric - consumption + bought
+          if (bought > 0) previousStock = Math.max(previousStock, 0)
+          let theoric = previousStock - consumption + bought
+          let theoricIncreased
+          if (this.order?.increase_by_percent) {
+            theoricIncreased =
+              previousStockIncreased -
+              consumption * (1 + this.order.increase_by_percent / 100) +
+              bought
+          } else {
+            theoricIncreased = theoric
+          }
 
           let value = 0
+          let valueIncreased = 0
           // for initial stock, even if we supply a realStock we still want to take into account
           // the bought value
-          if (day.id === 'initial') value = (real || 0) + bought
-          else value = real != null ? real : theoric
+          if (day.id === 'initial') {
+            value = (real || 0) + bought
+            valueIncreased = value
+          } else {
+            value = real != null ? real : theoric
+            valueIncreased = real != null ? real : theoricIncreased
+          }
 
           // stockDiff - the real stock is quite different from theoretical stock.
           // we use the total previous consumption since last inventory to determine the thresold
@@ -273,13 +288,17 @@ export default {
             consumption,
             consumptionLabels,
             theoric,
+            theoricIncreased,
             value,
+            valueIncreased,
             stockDiff,
           }
 
           previousStock = value
+          previousStockIncreased = valueIncreased
         } else {
           previousStock = values[day.id].value
+          previousStockIncreased = values[day.id].valueIncreased
         }
       })
 

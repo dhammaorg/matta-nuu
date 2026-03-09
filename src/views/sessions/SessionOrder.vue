@@ -42,7 +42,7 @@
         <InputCategory type="Product" :multiple="true" v-model="order.product_category_ids" :btnAdd="false" />
       </div>
       <div class="p-inputgroup mb-3">
-        <span class="p-inputgroup-addon">Increase amounts by</span>
+        <span class="p-inputgroup-addon">Increase consumption by</span>
         <InputNumber v-model="order.increase_by_percent" :maxFractionDigits="2" />
         <span class="p-inputgroup-addon">%</span>
       </div>
@@ -227,13 +227,9 @@ export default {
 
           const targetStock = product.fixed_stock ? (product.fixed_stock_value || 0) : 0
           const needed = targetStock - (values[this.order.target_day] || {}).value
+          const neededIncreased = targetStock - (values[this.order.target_day] || {}).valueIncreased
 
-          if (needed > 0) {
-            let neededIncreased = needed
-            if (this.order.increase_by_percent > 0) {
-              neededIncreased = needed * (1 + this.order.increase_by_percent / 100)
-            }
-
+          if (neededIncreased > 0) {
             let targetValue = neededIncreased
             if (product.packaging_conditioning)
               targetValue = Math.ceil(targetValue / product.packaging_conditioning) * product.packaging_conditioning
@@ -251,7 +247,7 @@ export default {
               category: category.name,
               value: Math.ceil(value),
               unit,
-              needed: `${needed.toFixed(3)} ${product.unit}`,
+              needed: `${needed > 0 ? needed.toFixed(3) : '0'} ${product.unit}`,
               neededIncreased: `${neededIncreased.toFixed(3)} ${product.unit}`,
             }
           }

@@ -25,7 +25,7 @@
 
     <!-- Increase by -->
     <div class="p-field">
-      <label>Increase amounts by</label>
+      <label>Increase consumption by</label>
       <div class="p-inputgroup">
         <InputNumber v-model="order.increase_by_percent" :maxFractionDigits="2" />
         <span class="p-inputgroup-addon">%</span>
