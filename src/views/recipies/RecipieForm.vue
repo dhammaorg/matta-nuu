@@ -20,15 +20,21 @@
             inputClass="text-center" />
           <span>People</span>
         </div>
-        <div v-for="product in recipie.products" class="d-flex mb-2" :key="product">
+        <div v-for="(product, index) in recipie.products" class="d-flex mb-2 align-items-center product-row"
+          :key="index" draggable="true" :data-index="index" @dragstart="onProductDragStart($event, index)"
+          @dragend="onProductDragEnd" @dragover.prevent="onProductDragOver($event, index)"
+          @dragleave="onProductDragLeave" @drop="onProductDrop($event, index)">
+
           <div class="p-inputgroup">
-            <InputProduct v-model="product.id" :showClear="false" :editable="true"
-              style="border-top-right-radius: 0; border-bottom-right-radius: 0" />
+            <span class="p-inputgroup-addon drag-handle" title="Drag to reorder">
+              <i class="pi pi-bars" />
+            </span>
+            <InputProduct v-model="product.id" :showClear="false" :editable="true" style="border-radius: 0;" />
             <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
               inputClass="border-start-0 input-amount" />
             <span class="p-inputgroup-addon" style="width: 5rem;">{{
               $root.getProduct(product.id).unit
-            }}</span>
+              }}</span>
           </div>
           <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeProduct(product)" />
         </div>
@@ -113,6 +119,7 @@ export default {
       loading: false,
       recipie: {},
       tab: 'ingredients',
+      productDragIndex: null,
       editorConfig: {
         menubar: false,
         plugins: 'advlist anchor autolink charmap image insertdatetime link lists media preview searchreplace table emoticons code',
@@ -170,8 +177,34 @@ export default {
         this.recipie = {}
       }
     },
+    onProductDragStart(event, index) {
+      this.productDragIndex = index
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setData('text/plain', index)
+      event.target.classList.add('dragging')
+    },
+    onProductDragEnd() {
+      this.productDragIndex = null
+      document.querySelectorAll('.product-row.dragging, .product-row.drag-over').forEach((el) => {
+        el.classList.remove('dragging', 'drag-over')
+      })
+    },
+    onProductDragOver(event, index) {
+      if (this.productDragIndex !== index) event.currentTarget.classList.add('drag-over')
+    },
+    onProductDragLeave(event) {
+      event.currentTarget.classList.remove('drag-over')
+    },
+    onProductDrop(event, dropIndex) {
+      event.currentTarget.classList.remove('drag-over')
+      const dragIndex = this.productDragIndex
+      if (dragIndex == null || dragIndex === dropIndex) return
+      const item = this.recipie.products.splice(dragIndex, 1)[0]
+      this.recipie.products.splice(dropIndex, 0, item)
+      this.productDragIndex = null
+    },
     removeProduct(product) {
-      this.recipie.products = this.recipie.products.filter((p) => p.id !== product.id)
+      this.recipie.products = this.recipie.products.filter((p) => p !== product)
     },
     removeStep(step) {
       this.recipie.timeline = this.recipie.timeline.filter((s) => s.time !== step.time)
@@ -185,6 +218,27 @@ export default {
 
 <style lang="scss">
 .ingredients {
+  .product-row {
+    cursor: grab;
+
+    &.dragging {
+      opacity: 0.5;
+    }
+
+    &.drag-over {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    .drag-handle {
+      cursor: grab;
+
+      &:hover {
+        color: var(--primary-color);
+      }
+    }
+  }
+
   .input-product-wrapper {
     width: 20% !important;
   }
