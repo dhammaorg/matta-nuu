@@ -36,8 +36,12 @@
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
                 {{ event.name }}
-                <span v-if="event.people_count" class="fw-normal ms-2 xs d-inline-flex align-items-center">
-                  {{ event.people_count }}
+                <span v-if="event.people_count || (event.people_count_by_day && Object.keys(event.people_count_by_day).length)"
+                  class="fw-normal ms-2 xs d-inline-flex align-items-center">
+                  <template v-if="event.people_count_by_day && event.days && event.days.length">
+                    {{ event.days.map((_, i) => getPeopleCountForDay(event, i)).join(' / ') }}
+                  </template>
+                  <template v-else>{{ event.people_count }}</template>
                   <span class="pi pi-users xs ms-1"></span>
                 </span>
               </span>
@@ -50,7 +54,7 @@
                 <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
                   class="p-button-sm p-button-danger p-button-text" v-if="!session.is_template" />
                 <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
-                  @click="event.days.push(`Day ${event.days.length}`)" :disabled="disableAddDayFor(event)" />
+                  @click="addDayToEvent(event)" :disabled="disableAddDayFor(event)" />
               </span>
             </div>
           </template>
@@ -134,7 +138,7 @@
               {{ $root.getProduct(data.values[field].product_id).unit }}
             </span>
             <Button icon="pi pi-sync" v-show="data.values[field].recipie_id" class="p-button-secondary"
-              @click="updateRecipieAmounts(data.values[field], day.event.people_count)"
+              @click="updateRecipieAmounts(data.values[field], getPeopleCountForDay(day.event, day.index))"
               v-tooltip="'Update recipie to fit with event number of people'" />
           </div>
         </div>
@@ -192,6 +196,19 @@ export default {
     },
   },
   methods: {
+    getPeopleCountForDay(event, dayIndex) {
+      const byDay = event.people_count_by_day
+      if (byDay && byDay[dayIndex] != null) return byDay[dayIndex]
+      return event.people_count
+    },
+    addDayToEvent(event) {
+      event.days.push(`Day ${event.days.length}`)
+      if (event.people_count_by_day) {
+        const lastIndex = event.days.length - 1
+        const prevCount = event.people_count_by_day[lastIndex - 1]
+        event.people_count_by_day[lastIndex] = prevCount ?? event.people_count
+      }
+    },
     disableAddDayFor(event) {
       // Allow events to overlap only for one day (in case event1 ends on the morning and event2 starts on the afternoon)
       const newDate = event.start_date.addDays(event.days.length - 1)
@@ -225,8 +242,8 @@ export default {
         id: this.newId(this.session.rows), type, label: '', values: {}, printable: true,
       }
       this.sessionDays.forEach((day) => {
-        // init amouns with event people_count
-        const amount = ['recipie', 'recipies'].includes(type) ? day.event.people_count : null
+        // init amounts with event people_count (per day when day-by-day)
+        const amount = ['recipie', 'recipies'].includes(type) ? this.getPeopleCountForDay(day.event, day.index) : null
         row.values[day.id] = { amount }
       })
       this.session.rows.push(row)
