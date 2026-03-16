@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <p class="d-print-none">
+    <p class="d-print-none" style="white-space: pre-line;">
       {{ supplier.description }}
     </p>
 
