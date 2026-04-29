@@ -56,6 +56,7 @@ export default {
             return prices.map((price) => ({
                 ...price,
                 date: price?.date ? new Date(price.date) : null,
+                value: price?.value == null || price?.value === '' ? price?.value : Number(price.value),
             }))
         },
         show(object = {}) {
@@ -71,9 +72,14 @@ export default {
         async savePrice() {
             if (!this.product.prices) return;
 
-            this.product.prices = this.clonePrices(this.product.prices)
-                .filter((p) => p.date)
-                .sort((a, b) => b.date - a.date);
+            this.product.prices = this.$root.normalizeProductPrices(
+                this.clonePrices(this.product.prices)
+                    .filter((p) => p.date)
+                    .map((price) => ({
+                        ...price,
+                        value: price.value == null || price.value === '' ? null : Number(price.value),
+                    }))
+            );
 
             if (!this.product.prices.length) {
                 this.$toast.add({

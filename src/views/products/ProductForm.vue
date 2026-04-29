@@ -57,8 +57,10 @@
         <label>Price <span v-if="productPriceDate">({{ productPriceDate }})</span></label>
         <div class="p-inputgroup">
           <InputNumber v-model="productPriceValue" placeholder="Price" :maxFractionDigits="2" />
-          <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit
-            }}</span>
+          <Dropdown v-if="getPriceInputUnitOptions().length > 1" :modelValue="productPriceInputUnit"
+            @update:modelValue="syncProductPriceInputUnit($event)" :options="getPriceInputUnitOptions()"
+            optionLabel="label" optionValue="value" class="price-unit-dropdown" />
+          <span v-else class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit }}</span>
           <Button icon="pi pi-history" v-if="product.id && product.prices && product.prices.length > 0"
             @click="$refs.productsPriceHistoryForm.show(this.product)" />
         </div>
@@ -99,17 +101,23 @@
 <script>
 
 import InputNumber from 'primevue/inputnumber'
+import Dropdown from 'primevue/dropdown'
 import Divider from 'primevue/divider'
 import Checkbox from 'primevue/checkbox'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
 import ProductsPriceHistory from './ProductsPriceHistory.vue'
+import {
+  canUsePiecePrice, convertPriceFromBaseUnit, convertPriceToBaseUnit, normalizePriceInputUnit,
+} from '@/services/units'
+
+const PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY = 'productPriceInputUnits'
 
 
 export default {
   components: {
-    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox, ProductsPriceHistory,
+    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox, ProductsPriceHistory, Dropdown,
   },
   emits: ['created'],
   data() {
@@ -119,29 +127,78 @@ export default {
       product: {},
       productPriceValue: null,
       productPriceDate: null,
+      productPriceInputUnit: 'base',
     }
   },
   methods: {
     show(object = {}) {
       this.product = { ...object }
       this.visible = true
-      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product.id)
+      this.productPriceInputUnit = this.getSavedProductPriceInputUnit(this.product.id)
+      this.syncProductPriceInputUnit()
+      this.productPriceValue = this.getDisplayedProductPriceValue(this.product.id)
       this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product.id))
     },
     canShowCasePackSize() {
       return this.product.unit === 'piece' || !!this.product.packaging_convert_to_piece
     },
+    getPriceInputUnitOptions(product = this.product) {
+      const options = [
+        { label: `EUR / ${product.unit || 'unit'}`, value: 'base' },
+      ]
+      if (canUsePiecePrice(product)) options.push({ label: 'EUR / piece', value: 'piece' })
+      return options
+    },
+    getSavedPriceInputUnits() {
+      try {
+        return JSON.parse(localStorage.getItem(PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY) || '{}')
+      } catch (error) {
+        return {}
+      }
+    },
+    getSavedProductPriceInputUnit(productId) {
+      if (!productId) return 'base'
+      return this.getSavedPriceInputUnits()[productId] || 'base'
+    },
+    persistProductPriceInputUnit(productId, priceInputUnit) {
+      if (!productId) return
+      const priceInputUnits = this.getSavedPriceInputUnits()
+      priceInputUnits[productId] = normalizePriceInputUnit(priceInputUnit, this.product)
+      localStorage.setItem(PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY, JSON.stringify(priceInputUnits))
+    },
+    getDisplayedProductPriceValue(productId) {
+      const currentPrice = this.$root.getCurrentProductPriceValue(productId)
+      return convertPriceFromBaseUnit(currentPrice, this.productPriceInputUnit, this.product)
+    },
+    syncProductPriceInputUnit(nextUnit = this.productPriceInputUnit, previousPieceConditioning = this.product.packaging_conditioning) {
+      const previousUnit = this.productPriceInputUnit
+      const normalizedUnit = normalizePriceInputUnit(nextUnit, this.product)
+      let basePrice = this.productPriceValue
+
+      if (basePrice != null && basePrice !== '') {
+        if (previousUnit === 'piece' && previousPieceConditioning) {
+          basePrice = Number(basePrice) / Number(previousPieceConditioning)
+        } else {
+          basePrice = Number(basePrice)
+        }
+      }
+
+      this.productPriceInputUnit = normalizedUnit
+      this.productPriceValue = convertPriceFromBaseUnit(basePrice, normalizedUnit, this.product)
+      this.persistProductPriceInputUnit(this.product.id, normalizedUnit)
+    },
     async saveProduct() {
       if (this.product.name) {
         const currentProductPriceValue = this.$root.getCurrentProductPriceValue(this.product.id)
+        const nextProductPriceValue = convertPriceToBaseUnit(this.productPriceValue, this.productPriceInputUnit, this.product)
         if (!this.canShowCasePackSize()) this.product.case_pack_size = null
         else if (!this.product.case_pack_size || this.product.case_pack_size < 2) this.product.case_pack_size = null
         else this.product.case_pack_size = Math.round(this.product.case_pack_size)
-        if (this.productPriceValue != null
-          && this.productPriceValue !== ''
-          && !(this.productPriceValue === currentProductPriceValue)) {
-          this.$root.addProductPrice(this.productPriceValue, this.product)
-        } else if ((this.productPriceValue == null || this.productPriceValue === '')
+        if (nextProductPriceValue != null
+          && nextProductPriceValue !== ''
+          && !(Number(nextProductPriceValue) === Number(currentProductPriceValue))) {
+          this.$root.addProductPrice(nextProductPriceValue, this.product)
+        } else if ((nextProductPriceValue == null || nextProductPriceValue === '')
           && currentProductPriceValue != null) {
           if (!Array.isArray(this.product.prices)) {
             this.product.prices = []
@@ -161,8 +218,10 @@ export default {
         }
         if (this.product.id) {
           this.dbUpdate('products', this.product)
+          this.persistProductPriceInputUnit(this.product.id, this.productPriceInputUnit)
         } else {
           const newProduct = await this.dbCreate('products', this.product)
+          this.persistProductPriceInputUnit(newProduct?.id, this.productPriceInputUnit)
           this.$emit('created', newProduct)
         }
         this.visible = false
@@ -171,7 +230,7 @@ export default {
     },
     handleUpdatedPrices(updatedProductPrices) {
       this.product.prices = updatedProductPrices
-      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product.id)
+      this.productPriceValue = this.getDisplayedProductPriceValue(this.product.id)
       this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product.id))
     },
     formatDate(dateString) {
@@ -186,6 +245,13 @@ export default {
   watch: {
     'product.packaging_conditioning': function (newVal, oldVal) {
       if (!newVal) this.product.packaging_convert_to_piece = false
+      this.syncProductPriceInputUnit(this.productPriceInputUnit, oldVal)
+    },
+    'product.packaging_convert_to_piece': function () {
+      this.syncProductPriceInputUnit()
+    },
+    'product.unit': function () {
+      this.syncProductPriceInputUnit()
     },
     'product.fixed_stock': function (newVal) {
       if (!newVal) this.product.fixed_stock_value = null
@@ -221,5 +287,9 @@ export default {
     line-height: 1.2;
     font-weight: 600;
   }
+}
+
+.price-unit-dropdown {
+  min-width: 9.5rem;
 }
 </style>

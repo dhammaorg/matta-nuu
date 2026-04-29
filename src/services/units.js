@@ -35,6 +35,35 @@ export function canConvertToPiece(product = {}) {
   return product.unit === 'piece' || !!(product.packaging_convert_to_piece && product.packaging_conditioning)
 }
 
+export function canUsePiecePrice(product = {}) {
+  return product.unit !== 'piece' && !!(product.packaging_convert_to_piece && product.packaging_conditioning)
+}
+
+export function normalizePriceInputUnit(priceInputUnit, product = {}) {
+  if (priceInputUnit === 'piece' && canUsePiecePrice(product)) return 'piece'
+  return 'base'
+}
+
+export function convertPriceToBaseUnit(price, priceInputUnit, product = {}) {
+  if (price == null || price === '') return price
+
+  if (normalizePriceInputUnit(priceInputUnit, product) === 'piece') {
+    return Number(price) / Number(product.packaging_conditioning)
+  }
+
+  return Number(price)
+}
+
+export function convertPriceFromBaseUnit(price, priceInputUnit, product = {}) {
+  if (price == null || price === '') return price
+
+  if (normalizePriceInputUnit(priceInputUnit, product) === 'piece') {
+    return Number(price) * Number(product.packaging_conditioning)
+  }
+
+  return Number(price)
+}
+
 export function casePackFactor(product = {}) {
   if (!(product.case_pack_size > 1)) return null
   if (product.packaging_conditioning) return product.case_pack_size * product.packaging_conditioning

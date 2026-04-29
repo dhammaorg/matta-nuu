@@ -31,7 +31,7 @@
       <!-- Unit -->
       <Column v-if="isColumnVisible('unit')" field="unit" header="Unit" :sortable="true" style="max-width: 10rem">
         <template #body="{ data }">
-          <InputUnit v-model="data.unit" />
+          <InputUnit :modelValue="data.unit" @update:modelValue="updateUnit(data, $event)" />
         </template>
       </Column>
 
@@ -141,9 +141,12 @@
       <!-- Price -->
       <Column v-if="isColumnVisible('price')" field="price" header="Price" style="max-width: 10rem">
         <template #body="{ data }">
-          <InputNumber :modelValue="getDisplayedPriceValue(data)" @update:modelValue="updateDraftPrice(data.id, $event)"
+          <InputNumber :modelValue="getDisplayedPriceValue(data)" @update:modelValue="updateDraftPrice(data, $event)"
             @blur="commitDraftPrice(data)" :maxFractionDigits="2" class="w-50" />
-          <div class="w-50">{{ "€/" + data.unit }}</div>
+          <Dropdown v-if="getPriceInputUnitOptions(data).length > 1" :modelValue="getPriceInputUnit(data)"
+            @update:modelValue="syncPriceInputUnit(data, $event)" :options="getPriceInputUnitOptions(data)"
+            optionLabel="label" optionValue="value" class="w-50 product-price-unit-dropdown" />
+          <div v-else class="w-50 px-2">{{ "€/" + data.unit }}</div>
         </template>
       </Column>
 
@@ -177,13 +180,18 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import MultiSelect from 'primevue/multiselect'
 import Checkbox from 'primevue/checkbox'
+import Dropdown from 'primevue/dropdown'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import RecipieForm from '@/views/recipies/RecipieForm.vue'
+import {
+  canUsePiecePrice, convertPriceFromBaseUnit, convertPriceToBaseUnit, normalizePriceInputUnit,
+} from '@/services/units'
 
 const PRODUCT_COLUMNS_STORAGE_KEY = 'productsIndexVisibleColumns'
+const PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY = 'productPriceInputUnits'
 const PRODUCT_COLUMN_OPTIONS = [
   { key: 'unit', label: 'Unit' },
   { key: 'category_id', label: 'Category' },
@@ -202,7 +210,7 @@ const DEFAULT_VISIBLE_COLUMN_KEYS = ['category_id', 'supplier_id', 'storage_area
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputCategory, InputUnit, Chip, InputText, InputNumber, MultiSelect, Checkbox,
+    ProductForm, RecipieForm, InputSupplier, InputCategory, InputUnit, Chip, InputText, InputNumber, MultiSelect, Checkbox, Dropdown,
   },
   data() {
     return {
@@ -210,6 +218,7 @@ export default {
       filters: {},
       productsChanged: [],
       priceDrafts: {},
+      priceInputUnits: {},
       selectedColumnKeys: DEFAULT_VISIBLE_COLUMN_KEYS,
       availableColumns: PRODUCT_COLUMN_OPTIONS,
     }
@@ -277,21 +286,28 @@ export default {
     canShowCasePackSize(product) {
       return product.unit === 'piece' || !!product.packaging_convert_to_piece
     },
+    updateUnit(product, value) {
+      product.unit = value
+      this.syncPriceInputUnit(product)
+    },
     updatePackagingConditioning(product, value) {
       product.packaging_conditioning = value
       if (!value) {
         product.packaging_convert_to_piece = false
         product.case_pack_size = null
       }
+      this.syncPriceInputUnit(product)
     },
     updatePackagingConvertToPiece(product, value) {
       if (!product.packaging_conditioning) {
         product.packaging_convert_to_piece = false
         product.case_pack_size = null
+        this.syncPriceInputUnit(product)
         return
       }
       product.packaging_convert_to_piece = value
       if (!this.canShowCasePackSize(product)) product.case_pack_size = null
+      this.syncPriceInputUnit(product)
     },
     getDisplayedCasePackSize(product) {
       return this.canShowCasePackSize(product) ? product.case_pack_size : null
@@ -324,15 +340,55 @@ export default {
     recipiesUsingProduct(product) {
       return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
     },
+    getSavedPriceInputUnits() {
+      try {
+        return JSON.parse(localStorage.getItem(PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY) || '{}')
+      } catch (error) {
+        return {}
+      }
+    },
+    getSavedProductPriceInputUnit(productId) {
+      if (!productId) return 'base'
+      return this.getSavedPriceInputUnits()[productId] || 'base'
+    },
+    persistProductPriceInputUnit(productId, priceInputUnit, product) {
+      if (!productId) return
+      const priceInputUnits = this.getSavedPriceInputUnits()
+      priceInputUnits[productId] = normalizePriceInputUnit(priceInputUnit, product)
+      localStorage.setItem(PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY, JSON.stringify(priceInputUnits))
+    },
+    getPriceInputUnitOptions(product) {
+      const options = [
+        { label: `EUR / ${product.unit || 'unit'}`, value: 'base' },
+      ]
+      if (canUsePiecePrice(product)) options.push({ label: 'EUR / piece', value: 'piece' })
+      return options
+    },
+    getPriceInputUnit(product) {
+      return normalizePriceInputUnit(
+        this.priceInputUnits[product.id] || this.getSavedProductPriceInputUnit(product.id),
+        product,
+      )
+    },
+    syncPriceInputUnit(product, nextUnit = null) {
+      const normalizedUnit = normalizePriceInputUnit(nextUnit || this.getPriceInputUnit(product), product)
+      this.priceInputUnits = {
+        ...this.priceInputUnits,
+        [product.id]: normalizedUnit,
+      }
+      this.persistProductPriceInputUnit(product.id, normalizedUnit, product)
+    },
     getDisplayedPriceValue(product) {
-      return Object.prototype.hasOwnProperty.call(this.priceDrafts, product.id)
+      const priceInputUnit = this.getPriceInputUnit(product)
+      const basePrice = Object.prototype.hasOwnProperty.call(this.priceDrafts, product.id)
         ? this.priceDrafts[product.id]
         : this.$root.getCurrentProductPriceValue(product.id)
+      return convertPriceFromBaseUnit(basePrice, priceInputUnit, product)
     },
-    updateDraftPrice(productId, value) {
+    updateDraftPrice(product, value) {
       this.priceDrafts = {
         ...this.priceDrafts,
-        [productId]: value,
+        [product.id]: convertPriceToBaseUnit(value, this.getPriceInputUnit(product), product),
       }
     },
     clearDraftPrice(productId) {
@@ -390,6 +446,10 @@ export default {
       justify-content: flex-start;
       padding-left: .5rem !important;
     }
+  }
+
+  .product-price-unit-dropdown {
+    min-width: 8.5rem;
   }
 
   .edit-recipie-chip {
