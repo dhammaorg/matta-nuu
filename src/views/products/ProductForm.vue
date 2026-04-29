@@ -36,10 +36,21 @@
         </div>
       </div>
 
-      <div class="p-field-checkbox w-100 mb-3" v-if="product.packaging_conditioning">
+      <div class="p-field-checkbox w-100 mb-3 packaging-convert-field" v-if="product.packaging_conditioning">
         <Checkbox id="convert" v-model="product.packaging_convert_to_piece" :binary="true" />
-        <label for="convert" class="ms-2">Convert "{{ product.packaging_conditioning }}{{ product.unit
-        }}" to 1 piece in orders</label>
+        <label for="convert" class="ms-2 d-flex align-items-center gap-2">
+          <span>Convert</span>
+          <span class="packaging-chip">{{ product.packaging_conditioning }} {{ product.unit }}</span>
+          <span>to 1 piece in orders</span>
+        </label>
+      </div>
+
+      <div class="p-field w-100 mt-0 mb-3" v-if="showCasePackSize">
+        <label>Pieces per Case</label>
+        <div class="p-inputgroup">
+          <InputNumber v-model="product.case_pack_size" placeholder="Pieces per Case" :min="2" :maxFractionDigits="0" />
+          <span class="p-inputgroup-addon">Supplier sells this product by case of N pieces.</span>
+        </div>
       </div>
 
       <div class="p-field w-100 mt-0 mb-3">
@@ -94,8 +105,14 @@ export default {
       this.product = { ...object }
       this.visible = true
     },
+    canShowCasePackSize() {
+      return this.product.unit === 'piece' || !!this.product.packaging_convert_to_piece
+    },
     async saveProduct() {
       if (this.product.name) {
+        if (!this.canShowCasePackSize()) this.product.case_pack_size = null
+        else if (!this.product.case_pack_size || this.product.case_pack_size < 2) this.product.case_pack_size = null
+        else this.product.case_pack_size = Math.round(this.product.case_pack_size)
         if (this.product.id) {
           this.dbUpdate('products', this.product)
         } else {
@@ -105,6 +122,11 @@ export default {
         this.visible = false
         this.product = {}
       }
+    },
+  },
+  computed: {
+    showCasePackSize() {
+      return this.canShowCasePackSize()
     },
   },
   watch: {
@@ -130,6 +152,20 @@ export default {
     &:nth-child(even) {
       margin-left: 1rem !important;
     }
+  }
+}
+
+.packaging-convert-field {
+  .packaging-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: .1rem .5rem;
+    border-radius: 999px;
+    background: var(--bluegray-600);
+    color: white;
+    font-size: .85rem;
+    line-height: 1.2;
+    font-weight: 600;
   }
 }
 </style>

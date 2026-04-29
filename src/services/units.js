@@ -31,8 +31,27 @@ export function convertToBestUnit(unit, value) {
   return { unit, value }
 }
 
+export function canConvertToPiece(product = {}) {
+  return product.unit === 'piece' || !!(product.packaging_convert_to_piece && product.packaging_conditioning)
+}
+
+export function casePackFactor(product = {}) {
+  if (!(product.case_pack_size > 1)) return null
+  if (product.packaging_conditioning) return product.case_pack_size * product.packaging_conditioning
+  if (product.unit === 'piece') return product.case_pack_size
+  return null
+}
+
+export function canUseCasePack(product = {}) {
+  return !!casePackFactor(product)
+}
+
 export function convertToUnit(value, fromUnit, product) {
   const toUnit = product.unit
+
+  if (fromUnit == 'case' && canUseCasePack(product)) {
+    return value * casePackFactor(product)
+  }
 
   if (fromUnit == 'piece' && product.packaging_convert_to_piece && product.packaging_conditioning) {
     return value * product.packaging_conditioning

@@ -80,7 +80,7 @@
       <DataTable :value="values" class="mb-3 border border-bottom-0" :class="{ 'p-datatable-sm': values.length > 15 }"
         :rowGroupMode="order.group_by_category ? 'subheader' : null"
         :groupRowsBy="order.group_by_category ? 'category' : null">
-        <Column field="name" header="Product" body-class="form-cell" style="width: 80%">
+        <Column field="name" header="Product" body-class="form-cell" style="width: 60%">
           <template #body="{ data }">
             <Textarea :value="data.name" :autoResize="true" rows="1" @change="data.name = $event.target.value"
               class="product-textarea" />
@@ -91,10 +91,12 @@
             <InputNumber v-model="data.value" :maxFractionDigits="2" />
           </template>
         </Column>
-        <Column field="unit" header="Unit" style="max-width: 50px" class="unit text-center" body-class="form-cell">
+        <Column field="unit" header="Unit" style="width: 250px; min-width: 250px" class="unit text-center"
+          body-class="form-cell unit">
           <template #body="{ data }">
-            <InputUnit v-model="data.unit" :only-siblings="true" class="d-print-none" />
-            <div class="text-center d-none d-print-block">{{ data.unit }}</div>
+            <Dropdown v-model="data.unit" :options="rowUnitOptions(data)" optionLabel="label" optionValue="value"
+              class="d-print-none" />
+            <div class="text-center d-none d-print-block">{{ rowUnitLabel(data) }}</div>
           </template>
         </Column>
         <Column v-if="order.increase_by_percent > 0" field="neededIncreased" :header="`+${order.increase_by_percent}%`"
@@ -132,21 +134,23 @@
 <script>
 
 import Checkbox from 'primevue/checkbox'
+import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import Inplace from 'primevue/inplace'
 import Textarea from 'primevue/textarea'
 import InputDay from '@/components/InputDay.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
-import { convertToBestUnit } from '@/services/units'
-import InputUnit from '@/components/InputUnit.vue'
+import {
+  canConvertToPiece, canUseCasePack, casePackFactor, convertToBestUnit,
+} from '@/services/units'
 import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
   mixins: [StockMixin],
   components: {
-    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea, InputUnit, InputCategory,
+    InputDay, InputProduct, InputNumber, Inplace, Checkbox, Textarea, InputCategory, Dropdown,
   },
   data() {
     return {
@@ -209,6 +213,7 @@ export default {
         order = this.fixData(data)
         order.values ||= {}
       }
+      this.normalizeOrderValues(order)
       this.order = order
       const firstInit = Object.values(this.order.values || {}).length === 0
 
@@ -231,11 +236,17 @@ export default {
 
           if (neededIncreased > 0) {
             let targetValue = neededIncreased
-            if (product.packaging_conditioning)
+            if (product.packaging_convert_to_piece && product.packaging_conditioning) {
               targetValue = Math.ceil(targetValue / product.packaging_conditioning) * product.packaging_conditioning
+            } else if (canUseCasePack(product)) {
+              targetValue = Math.ceil(targetValue / casePackFactor(product)) * casePackFactor(product)
+            }
             let { unit, value } = convertToBestUnit(product.unit, targetValue)
 
-            if (product.packaging_convert_to_piece) {
+            if (canUseCasePack(product)) {
+              value = Math.ceil(targetValue / casePackFactor(product))
+              unit = 'case'
+            } else if (product.packaging_convert_to_piece) {
               value = Math.ceil(targetValue / product.packaging_conditioning)
               unit = 'piece'
             }
@@ -256,6 +267,7 @@ export default {
       }, 10)
     },
     async save() {
+      this.normalizeOrderValues(this.order)
       this.dbUpdate('orders', this.order)
     },
     destroy() {
@@ -269,6 +281,66 @@ export default {
         },
       })
     },
+    defaultOrderUnit(product = {}) {
+      if (canUseCasePack(product)) return 'case'
+      return canConvertToPiece(product) ? 'piece' : product.unit
+    },
+    pieceUnitLabel(product = {}) {
+      if (product.unit === 'piece' || !product.packaging_conditioning) return 'piece'
+      return `piece (${product.packaging_conditioning}${product.unit})`
+    },
+    caseUnitLabel(product = {}) {
+      if (product.packaging_convert_to_piece && product.packaging_conditioning) {
+        const totalCaseWeight = product.case_pack_size * product.packaging_conditioning
+        const formattedWeight = totalCaseWeight.toLocaleString('fr-FR', { maximumFractionDigits: 5 })
+        return `case of ${product.case_pack_size} (${formattedWeight} ${product.unit})`
+      }
+      return `case of ${product.case_pack_size}`
+    },
+    rowUnitOptions(row) {
+      const product = this.$root.getProduct(row.id) || {}
+      const options = []
+      const seen = new Set()
+      const addOption = (value, label = value) => {
+        if (!value || seen.has(value)) return
+        seen.add(value)
+        options.push({ label, value })
+      }
+      const addStandardUnit = (unit) => {
+        if (unit === 'piece' && canConvertToPiece(product)) {
+          addOption(unit, this.pieceUnitLabel(product))
+          return
+        }
+        if (unit === 'case' && canUseCasePack(product)) {
+          addOption(unit, this.caseUnitLabel(product))
+          return
+        }
+        addOption(unit)
+      }
+
+        ;[
+          product.unit,
+          row.unit,
+        ].forEach((unit) => addStandardUnit(unit))
+
+      if (canConvertToPiece(product)) addOption('piece', this.pieceUnitLabel(product))
+      if (canUseCasePack(product)) addOption('case', this.caseUnitLabel(product))
+
+      return options
+    },
+    rowUnitLabel(row) {
+      const option = this.rowUnitOptions(row).find(({ value }) => value === row.unit)
+      return option ? option.label : row.unit
+    },
+    normalizeOrderValues(order) {
+      Object.values(order.values || {}).forEach((row) => {
+        const product = this.$root.getProduct(row.id) || {}
+
+        if (row.unit === 'case' && !canUseCasePack(product)) row.unit = this.defaultOrderUnit(product)
+        if (row.unit === 'piece' && !canConvertToPiece(product)) row.unit = product.unit
+        if (!row.unit) row.unit = this.defaultOrderUnit(product)
+      })
+    },
     addProduct() {
       if (this.order.values[this.newProduct.id]) {
         this.$toast.add({
@@ -278,7 +350,7 @@ export default {
         this.order.values[this.newProduct.id] = {
           id: this.newProduct.id,
           name: this.newProduct.packaging_reference || this.newProduct.name,
-          unit: this.newProduct.packaging_convert_to_piece ? 'piece' : this.newProduct.unit,
+          unit: this.defaultOrderUnit(this.newProduct),
         }
       }
       this.newProduct = ''
@@ -292,7 +364,16 @@ export default {
 
 <style lang='scss' scoped>
 .session-order {
-  max-width: 800px;
+  max-width: 900px;
+}
+
+::deep(.form-cell.unit .p-dropdown),
+::deep(.form-cell.unit .p-dropdown-label) {
+  width: 100%;
+}
+
+::deep(.form-cell.unit .p-dropdown-label) {
+  white-space: nowrap;
 }
 
 :deep(td.needed),
@@ -356,10 +437,20 @@ export default {
   }
 }
 
+::deep(td.unit),
+::deep(th.unit) {
+  white-space: nowrap;
+}
+
 @media print {
   .session-order {
-    max-width: 600px;
+    max-width: 700px;
     margin-top: 2rem;
+  }
+
+  ::deep(td.unit),
+  ::deep(th.unit) {
+    white-space: nowrap;
   }
 
   .card {
