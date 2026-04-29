@@ -35,6 +35,18 @@
         </template>
       </Column>
 
+      <!-- Price -->
+      <Column field="price" header="Price / person" class="price text-center d-print-none">
+        <template #body="{ data }">
+          <div>
+            <span> {{ this.$root.getRecipiePrice(data.id) }} € </span>
+            <i v-if="this.$root.getRecipieMissingProductPrices(data.id).length > 0"
+               class="pi pi-exclamation-triangle"
+               v-tooltip="this.$root.getRecipieMissingProductPrices(data.id)" type="text"></i>
+          </div>
+        </template>
+      </Column>
+
       <!-- Actions -->
       <Column class="text-end">
         <template #body="{ data }">

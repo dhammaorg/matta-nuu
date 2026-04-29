@@ -91,6 +91,13 @@
           </template>
         </Column>
         <Column field="needed" header="Needed" class="needed text-center d-print-none" />
+        <Column field="unitPrice" header="Unit price" class="price text-center d-print-none">
+        </Column>
+        <Column field="total " header="Total" class="price text-center d-print-none">
+          <template #body="{ data }">
+            {{ data.total }} €
+          </template>
+        </Column>
         <Column field="id" class="d-print-none actions w-auto">
           <template #body="{ data }">
             <Button icon="pi pi-times" class="p-button-text p-0" @click="deleteRow(data)" />
@@ -109,11 +116,22 @@
       <div class="d-flex justify-content-between d-print-none">
         <div class="p-inputgroup d-inline-flex" style="width: 200px">
           <InputProduct v-model="newProduct" optionValue="" placeholder="Add Product"
-                        @keyup.enter="addProduct"
-                        :showClear="false" :editable="false" />
+                        @keyup.enter="addProduct" :showClear="false" :editable="false" />
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct"
                   class="flex-shrink-0" />
         </div>
+      </div>
+
+      <div class="d-flex flex-row-reverse mt-3 d-print-none">
+        <div class="w-25 text-center order-total py-3">
+          <span class=""><b>{{ orderTotalPrice }} € </b></span>
+          <i v-if="missingProductPrices && missingProductPrices.length > 0"
+             class="pi pi-exclamation-triangle" v-tooltip="missingProductPrices" type="text"></i>
+        </div>
+        <div class="w-auto order-total py-3">
+          <div><b>Order Total</b></div>
+        </div>
+
       </div>
 
       <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer"
@@ -134,6 +152,8 @@ import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 import { convertToBestUnit } from '@/services/units'
 import InputUnit from '@/components/InputUnit.vue'
+import InputText from 'primevue/inputtext'
+import { convertToUnit } from '@/services/units'
 
 export default {
   inject: ['sessionDays', 'stockDays'],
@@ -180,6 +200,18 @@ export default {
         }
         return aValue.localeCompare(bValue)
       })
+    },
+    orderTotalPrice() {
+      let orderTotal = 0
+      this.values.forEach(item => {
+        if (item.total && !isNaN(item.total)) {
+          orderTotal = Number(orderTotal) + Number(item.total)
+        }
+      });
+      return orderTotal.toFixed(2)
+    },
+    missingProductPrices() {
+      return this.$root.getOrderMissingProductPrices(this.values)
     },
   },
   methods: {
@@ -234,6 +266,7 @@ export default {
               value: Math.ceil(value),
               unit,
               needed: `${needed.toFixed(3)} ${product.unit}`,
+              unitPrice: this.displayUnitPrice(product.id),
             }
           }
         })
@@ -264,12 +297,26 @@ export default {
           id: this.newProduct.id,
           name: this.newProduct.name,
           unit: this.newProduct.unit,
+          unitPrice: this.displayUnitPrice(this.newProduct.id),
         }
       }
       this.newProduct = ''
     },
     deleteRow(row) {
       delete this.order.values[row.id]
+    },
+    displayUnitPrice(productId) {
+      return this.$root.getCurrentProductPriceValue(productId) + " €/" + this.$root.getProduct(productId).unit
+    },
+  },
+  watch: {
+    'values': {
+      deep: true,
+      handler(newValue, oldValue) {
+        newValue.forEach(item => {
+          item.total = this.$root.computePrice(convertToUnit(item.value, item.unit, this.$root.getProduct(item.id)), item.id) ?? 0
+        });
+      },
     },
   },
 }
@@ -281,7 +328,9 @@ export default {
 }
 
 ::v-deep td.needed,
-::v-deep td.actions {
+::v-deep td.actions,
+::v-deep td.price,
+.order-total {
   background-color: var(--indigo-50);
 }
 
