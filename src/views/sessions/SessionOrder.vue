@@ -52,6 +52,10 @@
           <label class="ms-2">Group by category</label>
         </span>
         <span class="d-flex align-items-center">
+          <Checkbox v-model="order.show_price_detail" :binary="true" />
+          <label class="ms-2">Price detail</label>
+        </span>
+        <span class="d-flex align-items-center">
           <Checkbox v-model="order.report_values_in_stocks" :binary="true" />
           <label class="ms-2">Report values in Stocks</label>
         </span>
@@ -99,10 +103,20 @@
             <div class="text-center d-none d-print-block">{{ rowUnitLabel(data) }}</div>
           </template>
         </Column>
+        <Column v-if="order.show_price_detail" field="unitPrice" header="Price/Unit"
+          class="price text-center d-print-none" body-class="price text-center d-print-none">
+        </Column>
+        <Column v-if="order.show_price_detail" field="productPrice" header="Price"
+          class="price text-center d-print-none" body-class="price text-center d-print-none">
+          <template #body="{ data }">
+            {{ data.productPrice }} €
+          </template>
+        </Column>
         <Column v-if="order.increase_by_percent > 0" field="neededIncreased" :header="`+${order.increase_by_percent}%`"
-          class="needed text-center d-print-none" />
-        <Column field="needed" header="Needed" class="needed text-center d-print-none" />
-        <Column field="id" class="d-print-none actions w-auto">
+          class="needed text-center d-print-none" body-class="needed text-center d-print-none" />
+        <Column field="needed" header="Needed" class="needed text-center d-print-none"
+          body-class="needed text-center d-print-none" />
+        <Column field="id" class="d-print-none actions w-auto" body-class="actions d-print-none">
           <template #body="{ data }">
             <Button icon="pi pi-times" class="p-button-text p-0" @click="deleteRow(data)" />
           </template>
@@ -123,6 +137,12 @@
             :showClear="false" :editable="false" />
           <Button :disabled="!newProduct" icon="pi pi-plus" @click="addProduct" class="flex-shrink-0" />
         </div>
+
+        <div class="fw-bold p-3 total-price ">
+          <span>Total {{ orderTotalPrice }} €</span>
+          <i v-if="missingProductPrices && missingProductPrices.length > 0" class="ms-2 pi pi-exclamation-triangle"
+            v-tooltip="missingProductPrices" type="text"></i>
+        </div>
       </div>
 
       <Textarea v-model="order.footer" :autoResize="true" rows="1" placeholder="Footer" class="mt-3 w-100" />
@@ -142,7 +162,7 @@ import InputDay from '@/components/InputDay.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 import {
-  canConvertToPiece, canUseCasePack, casePackFactor, convertToBestUnit,
+  canConvertToPiece, canUseCasePack, casePackFactor, convertToBestUnit, convertToUnit,
 } from '@/services/units'
 import InputCategory from '@/components/InputCategory.vue'
 
@@ -192,6 +212,18 @@ export default {
         return aValue.localeCompare(bValue)
       })
     },
+    orderTotalPrice() {
+      let orderTotal = 0
+      this.values.forEach(item => {
+        if (item.productPrice && !isNaN(item.productPrice)) {
+          orderTotal = Number(orderTotal) + Number(item.productPrice)
+        }
+      });
+      return orderTotal.toFixed(2)
+    },
+    missingProductPrices() {
+      return this.$root.getOrderMissingProductPrices(this.values)
+    },
   },
   methods: {
     print() {
@@ -213,6 +245,7 @@ export default {
         order = this.fixData(data)
         order.values ||= {}
       }
+      order.show_price_detail ??= false
       this.normalizeOrderValues(order)
       this.order = order
       const firstInit = Object.values(this.order.values || {}).length === 0
@@ -260,6 +293,7 @@ export default {
               unit,
               needed: `${needed > 0 ? needed.toFixed(3) : '0'} ${product.unit}`,
               neededIncreased: `${neededIncreased.toFixed(3)} ${product.unit}`,
+              unitPrice: this.displayUnitPrice(product.id, unit),
             }
           }
         })
@@ -336,6 +370,8 @@ export default {
       Object.values(order.values || {}).forEach((row) => {
         const product = this.$root.getProduct(row.id) || {}
 
+        if (row.productPrice == null && row.total != null) row.productPrice = row.total
+        delete row.total
         if (row.unit === 'case' && !canUseCasePack(product)) row.unit = this.defaultOrderUnit(product)
         if (row.unit === 'piece' && !canConvertToPiece(product)) row.unit = product.unit
         if (!row.unit) row.unit = this.defaultOrderUnit(product)
@@ -351,12 +387,33 @@ export default {
           id: this.newProduct.id,
           name: this.newProduct.packaging_reference || this.newProduct.name,
           unit: this.defaultOrderUnit(this.newProduct),
+          unitPrice: this.displayUnitPrice(this.newProduct.id, this.defaultOrderUnit(this.newProduct)),
         }
       }
       this.newProduct = ''
     },
     deleteRow(row) {
       delete this.order.values[row.id]
+    },
+    displayUnitPrice(productId, unit = this.$root.getProduct(productId).unit) {
+      const product = this.$root.getProduct(productId)
+      const currentPrice = this.$root.getCurrentProductPriceValue(productId)
+      const quantityInBaseUnit = convertToUnit(1, unit, product)
+
+      if (currentPrice == null || quantityInBaseUnit == null) return null
+
+      return `${(Number(currentPrice) * Number(quantityInBaseUnit)).toFixed(2)} €/${unit}`
+    },
+  },
+  watch: {
+    'values': {
+      deep: true,
+      handler(newValue, oldValue) {
+        newValue.forEach(item => {
+          item.unitPrice = this.displayUnitPrice(item.id, item.unit)
+          item.productPrice = this.$root.computePrice(convertToUnit(item.value, item.unit, this.$root.getProduct(item.id)), item.id) ?? 0
+        });
+      },
     },
   },
 }
@@ -367,8 +424,8 @@ export default {
   max-width: 900px;
 }
 
-::deep(.form-cell.unit .p-dropdown),
-::deep(.form-cell.unit .p-dropdown-label) {
+:deep(.form-cell.unit .p-dropdown),
+:deep(.form-cell.unit .p-dropdown-label) {
   width: 100%;
 }
 
@@ -377,8 +434,10 @@ export default {
 }
 
 :deep(td.needed),
-:deep(td.actions) {
-  background-color: var(--indigo-50);
+:deep(td.actions),
+:deep(td.price),
+.total-price {
+  background-color: var(--indigo-50) !important;
 }
 
 .p-inputgroup-addon {

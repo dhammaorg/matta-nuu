@@ -228,7 +228,100 @@ export default {
     getSupplier(id) {
       return this.suppliers[id] || {}
     },
+    getCurrentProductPriceValue(productId) {
+      return this.getProduct(productId)?.prices?.[0]?.value ?? null;
+    },
+    getCurrentProductPriceDate(productId) {
+      return this.getProduct(productId)?.prices?.[0]?.date ?? null;
+    },
+    normalizeProductPrices(prices = []) {
+      return prices
+        .filter((price) => price && price.date)
+        .map((price) => ({
+          ...price,
+          date: new Date(price.date),
+        }))
+        .sort((a, b) => b.date - a.date);
+    },
+    addProductPrice(price, product) {
+      if (price == null || price === '') return
+      if (!Array.isArray(product.prices)) {
+        product.prices = [];
+      }
+      product.prices = this.normalizeProductPrices(product.prices)
+
+      const newPrice = {
+        date: new Date(),
+        value: Number(price),
+      };
+
+      const mostRecentPrice = product.prices[0]
+
+      if (mostRecentPrice && newPrice.date.equals(mostRecentPrice.date)) {
+        mostRecentPrice.value = newPrice.value;
+      } else {
+        product.prices.push(newPrice);
+      }
+
+      product.prices = this.normalizeProductPrices(product.prices)
+    },
+    computePrice(quantity, productId) {
+      if (!quantity)
+        return null
+      const price = this.getCurrentProductPriceValue(productId)
+      return price ? (Number(quantity) * Number(price)).toFixed(2) : null
+    },
+    getRecipiePrice(recipieId) {
+      const recipie = this.getRecipie(recipieId)
+      let totalPrice = 0, price = 0
+      if (recipie && recipie.products) {
+        recipie.products.forEach(product => {
+          price = this.$root.computePrice(product.amount, product.id)
+          if (price && !isNaN(price)) {
+            totalPrice = Number(totalPrice) + Number(price)
+          }
+        });
+      }
+      return (totalPrice / recipie.people_count).toFixed(2)
+    },
+    getRecipieMissingProductPrices(recipieId) {
+      const recipie = this.getRecipie(recipieId)
+      let missingProductsMessage = ""
+      let count = 0, price = 0
+
+      if (recipie && recipie.products) {
+        recipie.products.forEach(product => {
+          price = this.$root.computePrice(product.amount, product.id)
+          if (!price || isNaN(price) || price == 0) {
+            missingProductsMessage = missingProductsMessage + "- " + this.$root.getProduct(product.id).name + "<br/>"
+            count++
+          }
+        });
+      }
+
+      return missingProductsMessage.length > 0
+        ? count + " product(s) do(es) not have a price : <br/>" + missingProductsMessage
+        : ''
+
+    },
+    getOrderMissingProductPrices(orderValues) {
+      let missingProductsMessage = ""
+      let count = 0
+
+      orderValues.forEach(item => {
+        if (!item.productPrice || isNaN(item.productPrice) || item.productPrice == 0) {
+          missingProductsMessage = missingProductsMessage + "- " + item.name + "<br/>"
+          count++
+        }
+      });
+
+      return missingProductsMessage.length > 0
+        ? count + " product(s) do(es) not have a price : <br/>" + missingProductsMessage
+        : ''
+
+    },
   },
+
 }
 </script>
 

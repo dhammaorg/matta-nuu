@@ -54,6 +54,17 @@
       </div>
 
       <div class="p-field w-100 mt-0 mb-3">
+        <label>Price <span v-if="productPriceDate">({{ productPriceDate }})</span></label>
+        <div class="p-inputgroup">
+          <InputNumber v-model="productPriceValue" placeholder="Price" :maxFractionDigits="2" />
+          <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit
+            }}</span>
+          <Button icon="pi pi-history" v-if="product.id && product.prices && product.prices.length > 0"
+            @click="$refs.productsPriceHistoryForm.show(this.product)" />
+        </div>
+      </div>
+
+      <div class="p-field w-100 mt-0 mb-3">
         <label>Storage Areas</label>
         <InputCategory type="StorageArea" :multiple="true" v-model="product.storage_area_ids"
           placeholder="Storage Areas" />
@@ -71,6 +82,8 @@
           <span class="p-inputgroup-addon" style="width: 4rem;">{{ product.unit }}</span>
         </div>
       </div>
+
+
     </div>
 
     <template #footer>
@@ -78,6 +91,9 @@
       <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="saveProduct" />
     </template>
   </Dialog>
+
+  <ProductsPriceHistory @updatedPrices="handleUpdatedPrices" ref="productsPriceHistoryForm">
+  </ProductsPriceHistory>
 </template>
 
 <script>
@@ -88,31 +104,61 @@ import Checkbox from 'primevue/checkbox'
 import InputUnit from '@/components/InputUnit.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
+import ProductsPriceHistory from './ProductsPriceHistory.vue'
+
 
 export default {
   components: {
-    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox,
+    InputUnit, InputSupplier, InputNumber, InputCategory, Divider, Checkbox, ProductsPriceHistory,
   },
+  emits: ['created'],
   data() {
     return {
       visible: false,
       loading: false,
       product: {},
+      productPriceValue: null,
+      productPriceDate: null,
     }
   },
   methods: {
     show(object = {}) {
       this.product = { ...object }
       this.visible = true
+      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product.id)
+      this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product.id))
     },
     canShowCasePackSize() {
       return this.product.unit === 'piece' || !!this.product.packaging_convert_to_piece
     },
     async saveProduct() {
       if (this.product.name) {
+        const currentProductPriceValue = this.$root.getCurrentProductPriceValue(this.product.id)
         if (!this.canShowCasePackSize()) this.product.case_pack_size = null
         else if (!this.product.case_pack_size || this.product.case_pack_size < 2) this.product.case_pack_size = null
         else this.product.case_pack_size = Math.round(this.product.case_pack_size)
+        if (this.productPriceValue != null
+          && this.productPriceValue !== ''
+          && !(this.productPriceValue === currentProductPriceValue)) {
+          this.$root.addProductPrice(this.productPriceValue, this.product)
+        } else if ((this.productPriceValue == null || this.productPriceValue === '')
+          && currentProductPriceValue != null) {
+          if (!Array.isArray(this.product.prices)) {
+            this.product.prices = []
+          }
+          this.product.prices = this.$root.normalizeProductPrices(this.product.prices)
+          const today = new Date()
+          const mostRecentPrice = this.product.prices[0]
+          if (mostRecentPrice && mostRecentPrice.date && today.equals(mostRecentPrice.date)) {
+            mostRecentPrice.value = null
+          } else {
+            this.product.prices.push({
+              date: today,
+              value: null,
+            })
+          }
+          this.product.prices = this.$root.normalizeProductPrices(this.product.prices)
+        }
         if (this.product.id) {
           this.dbUpdate('products', this.product)
         } else {
@@ -122,6 +168,14 @@ export default {
         this.visible = false
         this.product = {}
       }
+    },
+    handleUpdatedPrices(updatedProductPrices) {
+      this.product.prices = updatedProductPrices
+      this.productPriceValue = this.$root.getCurrentProductPriceValue(this.product.id)
+      this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product.id))
+    },
+    formatDate(dateString) {
+      return dateString ? new Intl.DateTimeFormat('default', { dateStyle: 'short' }).format(new Date(dateString)) : null;
     },
   },
   computed: {

@@ -2,7 +2,8 @@
   <Dialog v-model:visible="visible" maximizable position="top" :style="{ width: width }" header="Recipie Details"
     :modal="true" class="p-fluid recipie-dialog">
     <div class="p-field">
-      <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus />
+      <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name"
+                 autofocus />
     </div>
 
     <div class="p-field mb-3">
@@ -14,11 +15,18 @@
     <!-- Ingredients -->
     <template v-if="tab == 'ingredients'">
       <div class="ingredients my-4 py-2">
-        <div class="fw-bold mb-3">
-          <span>For</span>
-          <InputNumber v-model="recipie.people_count" class="d-inline-block w-auto mx-2" inputStyle="width: 4rem"
-            inputClass="text-center" />
-          <span>People</span>
+        <div class="d-flex justify-content-between my-3">
+          <div class="fw-bold">
+            <span>Ingredients for</span>
+            <InputNumber v-model="recipie.people_count" class="d-inline-block w-auto mx-2" inputStyle="width: 4rem"
+              inputClass="text-center" />
+            <span>People</span>
+          </div>
+          <div class="fw-bold my-auto">
+            <span>{{ recipiePrice }} € for 1 person </span>
+            <i v-if="missingProductPrices && missingProductPrices.length > 0"
+              class="pi pi-exclamation-triangle" v-tooltip="missingProductPrices" type="text"></i>
+          </div>
         </div>
         <div v-for="(product, index) in recipie.products" class="d-flex mb-2 align-items-center product-row"
           :key="index" draggable="true" :data-index="index" @dragstart="onProductDragStart($event, index)"
@@ -32,9 +40,12 @@
             <InputProduct v-model="product.id" :showClear="false" :editable="true" style="border-radius: 0;" />
             <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
               inputClass="border-start-0 input-amount" />
-            <span class="p-inputgroup-addon" style="width: 5rem;">{{
-              $root.getProduct(product.id).unit
-              }}</span>
+            <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
+            <span v-if="this.$root.computePrice(product.amount, product.id)" class="p-inputgroup-addon"
+              style="width: 6rem;">
+              {{ this.$root.computePrice(product.amount, product.id) }} €
+            </span>
+            <span v-else class="p-inputgroup-addon" style="width: 6rem;"></span>
           </div>
           <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeProduct(product)" />
         </div>
@@ -107,11 +118,10 @@ import Editor from '@tinymce/tinymce-vue'
 import SelectButton from 'primevue/selectbutton'
 import InputProduct from '@/components/InputProduct.vue'
 import InputCategory from '@/components/InputCategory.vue'
-import Calendar from 'primevue/calendar'
 
 export default {
   components: {
-    InputNumber, InputProduct, Checkbox, InputCategory, Editor, SelectButton, Calendar,
+    InputNumber, InputProduct, Checkbox, InputCategory, Editor, SelectButton,
   },
   data() {
     return {
@@ -149,6 +159,12 @@ export default {
         { value: 'timeline', label: 'Timeline' },
         { value: 'leftovers', label: 'Leftovers' },
       ]
+    },
+    recipiePrice() {
+      return this.$root.getRecipiePrice(this.recipie.id)
+    },
+    missingProductPrices() {
+      return this.$root.getRecipieMissingProductPrices(this.recipie.id)
     },
   },
   methods: {

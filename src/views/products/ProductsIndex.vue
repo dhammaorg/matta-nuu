@@ -56,6 +56,19 @@
         </template>
       </Column>
 
+      <!-- Price -->
+      <Column field="price" header="Price" style="max-width: 10rem">
+        <template #body="{ data }">
+          <InputNumber
+            :modelValue="getDisplayedPriceValue(data)"
+            @update:modelValue="updateDraftPrice(data.id, $event)"
+            @blur="commitDraftPrice(data)"
+            :maxFractionDigits="2" class="w-50" />
+          <div class="w-50">{{ "€/" + data.unit }}</div>
+        </template>
+      </Column>
+
+
       <!-- Actions -->
       <Column class="text-end" style="max-width: 40px" header="Actions">
         <template #body="{ data }">
@@ -82,6 +95,8 @@
 <script>
 import { FilterMatchMode } from 'primevue/api'
 import Chip from 'primevue/chip'
+import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
 import ProductForm from './ProductForm.vue'
 import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
@@ -89,13 +104,14 @@ import RecipieForm from '@/views/recipies/RecipieForm.vue'
 
 export default {
   components: {
-    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip,
+    ProductForm, RecipieForm, InputSupplier, InputCategory, Chip, InputText, InputNumber,
   },
   data() {
     return {
       loading: false,
       filters: {},
       productsChanged: [],
+      priceDrafts: {},
     }
   },
   created() {
@@ -140,7 +156,35 @@ export default {
     recipiesUsingProduct(product) {
       return this.$root.recipiesArray.filter((r) => r.products.some((p) => p.id == product.id))
     },
-  },
+    getDisplayedPriceValue(product) {
+      return Object.prototype.hasOwnProperty.call(this.priceDrafts, product.id)
+        ? this.priceDrafts[product.id]
+        : this.$root.getCurrentProductPriceValue(product.id)
+    },
+    updateDraftPrice(productId, value) {
+      this.priceDrafts = {
+        ...this.priceDrafts,
+        [productId]: value,
+      }
+    },
+    clearDraftPrice(productId) {
+      const remainingDrafts = { ...this.priceDrafts }
+      delete remainingDrafts[productId]
+      this.priceDrafts = remainingDrafts
+    },
+    commitDraftPrice(product) {
+      if (!Object.prototype.hasOwnProperty.call(this.priceDrafts, product.id)) return
+
+      const draftPrice = this.priceDrafts[product.id]
+      const currentPrice = this.$root.getCurrentProductPriceValue(product.id)
+
+      if (draftPrice != null && draftPrice !== '' && (currentPrice == null || Number(draftPrice) !== Number(currentPrice))) {
+        this.$root.addProductPrice(draftPrice, product)
+      }
+
+      this.clearDraftPrice(product.id)
+    },
+  }
 }
 </script>
 
