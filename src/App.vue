@@ -269,7 +269,9 @@ export default {
       if (!quantity)
         return null
       const price = this.getCurrentProductPriceValue(productId)
-      return price ? (Number(quantity) * Number(price)).toFixed(2) : null
+      return price == null || price === '' || isNaN(price)
+        ? null
+        : (Number(quantity) * Number(price)).toFixed(2)
     },
     getRecipiePrice(recipieId) {
       const recipie = this.getRecipie(recipieId)
@@ -287,12 +289,12 @@ export default {
     getRecipieMissingProductPrices(recipieId) {
       const recipie = this.getRecipie(recipieId)
       let missingProductsMessage = ""
-      let count = 0, price = 0
+      let count = 0, price = null
 
       if (recipie && recipie.products) {
         recipie.products.forEach(product => {
           price = this.$root.computePrice(product.amount, product.id)
-          if (!price || isNaN(price) || price == 0) {
+          if (!price || isNaN(price)) {
             missingProductsMessage = missingProductsMessage + "- " + this.$root.getProduct(product.id).name + "<br/>"
             count++
           }

@@ -60,7 +60,7 @@
           <Dropdown v-if="getPriceInputUnitOptions().length > 1" :modelValue="productPriceInputUnit"
             @update:modelValue="syncProductPriceInputUnit($event)" :options="getPriceInputUnitOptions()"
             optionLabel="label" optionValue="value" class="price-unit-dropdown" />
-          <span v-else class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit }}</span>
+          <span v-else class="p-inputgroup-addon" style="width: 6rem;">€ / {{ displayedPriceUnitLabel }}</span>
           <Button icon="pi pi-history" v-if="product.id && product.prices && product.prices.length > 0"
             @click="$refs.productsPriceHistoryForm.show(this.product)" />
         </div>
@@ -109,7 +109,7 @@ import InputSupplier from '@/components/InputSupplier.vue'
 import InputCategory from '@/components/InputCategory.vue'
 import ProductsPriceHistory from './ProductsPriceHistory.vue'
 import {
-  canUsePiecePrice, convertPriceFromBaseUnit, convertPriceToBaseUnit, normalizePriceInputUnit,
+  canUseParentPrice, canUsePiecePrice, convertPriceFromBaseUnit, convertPriceToBaseUnit, getDefaultPriceInputUnit, getPriceInputUnitLabel, normalizePriceInputUnit, unitParent,
 } from '@/services/units'
 
 const PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY = 'productPriceInputUnits'
@@ -123,6 +123,7 @@ export default {
   data() {
     return {
       visible: false,
+      isInitializingPrice: false,
       loading: false,
       product: {},
       productPriceValue: null,
@@ -132,21 +133,31 @@ export default {
   },
   methods: {
     show(object = {}) {
+      this.isInitializingPrice = true
+      this.productPriceValue = null
       this.product = { ...object }
       this.visible = true
-      this.productPriceInputUnit = this.getSavedProductPriceInputUnit(this.product.id)
-      this.syncProductPriceInputUnit()
+      this.productPriceInputUnit = normalizePriceInputUnit(
+        this.getSavedProductPriceInputUnit(this.product.id),
+        this.product,
+      )
       this.productPriceValue = this.getDisplayedProductPriceValue(this.product.id)
       this.productPriceDate = this.formatDate(this.$root.getCurrentProductPriceDate(this.product.id))
+      this.$nextTick(() => {
+        this.isInitializingPrice = false
+      })
     },
     canShowCasePackSize() {
       return this.product.unit === 'piece' || !!this.product.packaging_convert_to_piece
     },
     getPriceInputUnitOptions(product = this.product) {
-      const options = [
-        { label: `EUR / ${product.unit || 'unit'}`, value: 'base' },
-      ]
-      if (canUsePiecePrice(product)) options.push({ label: 'EUR / piece', value: 'piece' })
+      const options = []
+      if (canUseParentPrice(product)) {
+        options.push({ label: `€/${unitParent(product.unit)}`, value: 'parent' })
+      } else {
+        options.push({ label: `€/${product.unit || 'unit'}`, value: 'base' })
+      }
+      if (canUsePiecePrice(product)) options.push({ label: '€/piece', value: 'piece' })
       return options
     },
     getSavedPriceInputUnits() {
@@ -157,8 +168,8 @@ export default {
       }
     },
     getSavedProductPriceInputUnit(productId) {
-      if (!productId) return 'base'
-      return this.getSavedPriceInputUnits()[productId] || 'base'
+      if (!productId) return getDefaultPriceInputUnit(this.product)
+      return this.getSavedPriceInputUnits()[productId] || getDefaultPriceInputUnit(this.product)
     },
     persistProductPriceInputUnit(productId, priceInputUnit) {
       if (!productId) return
@@ -170,17 +181,13 @@ export default {
       const currentPrice = this.$root.getCurrentProductPriceValue(productId)
       return convertPriceFromBaseUnit(currentPrice, this.productPriceInputUnit, this.product)
     },
-    syncProductPriceInputUnit(nextUnit = this.productPriceInputUnit, previousPieceConditioning = this.product.packaging_conditioning) {
+    syncProductPriceInputUnit(nextUnit = this.productPriceInputUnit, previousProduct = this.product) {
       const previousUnit = this.productPriceInputUnit
       const normalizedUnit = normalizePriceInputUnit(nextUnit, this.product)
       let basePrice = this.productPriceValue
 
       if (basePrice != null && basePrice !== '') {
-        if (previousUnit === 'piece' && previousPieceConditioning) {
-          basePrice = Number(basePrice) / Number(previousPieceConditioning)
-        } else {
-          basePrice = Number(basePrice)
-        }
+        basePrice = convertPriceToBaseUnit(basePrice, previousUnit, previousProduct)
       }
 
       this.productPriceInputUnit = normalizedUnit
@@ -241,17 +248,32 @@ export default {
     showCasePackSize() {
       return this.canShowCasePackSize()
     },
+    displayedPriceUnitLabel() {
+      return getPriceInputUnitLabel(this.productPriceInputUnit, this.product)
+    },
   },
   watch: {
     'product.packaging_conditioning': function (newVal, oldVal) {
+      if (this.isInitializingPrice) return
       if (!newVal) this.product.packaging_convert_to_piece = false
-      this.syncProductPriceInputUnit(this.productPriceInputUnit, oldVal)
+      this.syncProductPriceInputUnit(this.productPriceInputUnit, {
+        ...this.product,
+        packaging_conditioning: oldVal,
+      })
     },
-    'product.packaging_convert_to_piece': function () {
-      this.syncProductPriceInputUnit()
+    'product.packaging_convert_to_piece': function (newVal, oldVal) {
+      if (this.isInitializingPrice) return
+      this.syncProductPriceInputUnit(this.productPriceInputUnit, {
+        ...this.product,
+        packaging_convert_to_piece: oldVal,
+      })
     },
-    'product.unit': function () {
-      this.syncProductPriceInputUnit()
+    'product.unit': function (newVal, oldVal) {
+      if (this.isInitializingPrice) return
+      this.syncProductPriceInputUnit(this.productPriceInputUnit, {
+        ...this.product,
+        unit: oldVal,
+      })
     },
     'product.fixed_stock': function (newVal) {
       if (!newVal) this.product.fixed_stock_value = null

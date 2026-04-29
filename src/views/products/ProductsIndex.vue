@@ -102,6 +102,21 @@
         </template>
       </Column>
 
+      <!-- Price -->
+      <Column v-if="isColumnVisible('price')" field="price" header="Price" style="max-width: 10rem">
+        <template #body="{ data }">
+          <div class="d-flex flex-nowrap align-items-center product-price-row">
+            <InputNumber class="product-price-input flex-shrink-1" :modelValue="getDisplayedPriceValue(data)"
+              @update:modelValue="updateDraftPrice(data, $event)" @blur="commitDraftPrice(data)" :maxFractionDigits="2"
+              inputClass="pe-1 product-price-input-field text-start" />
+            <Dropdown v-if="getPriceInputUnitOptions(data).length > 1" :modelValue="getPriceInputUnit(data)"
+              @update:modelValue="syncPriceInputUnit(data, $event)" :options="getPriceInputUnitOptions(data)"
+              optionLabel="label" optionValue="value" class="product-price-unit-dropdown" />
+            <span v-else class="product-price-unit-label">{{ `€/${getDisplayedPriceUnitLabel(data)}` }}</span>
+          </div>
+        </template>
+      </Column>
+
       <!-- Storage Areas -->
       <Column v-if="isColumnVisible('storage_area_ids')" field="storage_area_ids" header="Storage Areas"
         :sortable="true" style="max-width: 14rem" filterField="storage_area_ids" :showFilterMatchModes="false"
@@ -132,21 +147,9 @@
         <template #body="{ data }">
           <div class="d-flex align-items-center">
             <InputNumber :modelValue="data.fixed_stock_value" @update:modelValue="updateFixedStockValue(data, $event)"
-              :maxFractionDigits="5" class="w-50" :disabled="!data.fixed_stock" />
-            <div class="w-50 px-2">{{ data.unit }}</div>
+              :maxFractionDigits="5" :disabled="!data.fixed_stock" />
+            <div class="px-3">{{ data.unit }}</div>
           </div>
-        </template>
-      </Column>
-
-      <!-- Price -->
-      <Column v-if="isColumnVisible('price')" field="price" header="Price" style="max-width: 10rem">
-        <template #body="{ data }">
-          <InputNumber :modelValue="getDisplayedPriceValue(data)" @update:modelValue="updateDraftPrice(data, $event)"
-            @blur="commitDraftPrice(data)" :maxFractionDigits="2" class="w-50" />
-          <Dropdown v-if="getPriceInputUnitOptions(data).length > 1" :modelValue="getPriceInputUnit(data)"
-            @update:modelValue="syncPriceInputUnit(data, $event)" :options="getPriceInputUnitOptions(data)"
-            optionLabel="label" optionValue="value" class="w-50 product-price-unit-dropdown" />
-          <div v-else class="w-50 px-2">{{ "€/" + data.unit }}</div>
         </template>
       </Column>
 
@@ -187,7 +190,7 @@ import InputCategory from '@/components/InputCategory.vue'
 import InputUnit from '@/components/InputUnit.vue'
 import RecipieForm from '@/views/recipies/RecipieForm.vue'
 import {
-  canUsePiecePrice, convertPriceFromBaseUnit, convertPriceToBaseUnit, normalizePriceInputUnit,
+  canUseParentPrice, canUsePiecePrice, convertPriceFromBaseUnit, convertPriceToBaseUnit, getDefaultPriceInputUnit, getPriceInputUnitLabel, normalizePriceInputUnit, unitParent,
 } from '@/services/units'
 
 const PRODUCT_COLUMNS_STORAGE_KEY = 'productsIndexVisibleColumns'
@@ -207,6 +210,25 @@ const PRODUCT_COLUMN_OPTIONS = [
   { key: 'recipies', label: 'Used by' },
 ]
 const DEFAULT_VISIBLE_COLUMN_KEYS = ['category_id', 'supplier_id', 'storage_area_ids', 'recipies']
+
+/** Plain ISO strings for jsonb — avoids losing nested Date objects during bulk upsert */
+function serializePriceHistoryForUpsert(prices) {
+  if (!Array.isArray(prices)) return prices
+  return prices.map((price) => ({
+    ...price,
+    date:
+      price.date instanceof Date
+        ? price.date.toISOString()
+        : price.date,
+  }))
+}
+
+function serializeProductRowForUpsert(product) {
+  return {
+    ...product,
+    prices: serializePriceHistoryForUpsert(product.prices),
+  }
+}
 
 export default {
   components: {
@@ -328,7 +350,13 @@ export default {
     },
     async save() {
       this.loading = true
-      const { error } = await this.$db.from('products').upsert(this.$root.productsArray)
+      Object.keys(this.priceDrafts).forEach((draftProductId) => {
+        const product = this.$root.products[draftProductId]
+        if (product) this.commitDraftPrice(product)
+      })
+
+      const rows = this.$root.productsArray.map((product) => serializeProductRowForUpsert(product))
+      const { error } = await this.$db.from('products').upsert(rows)
       if (error) this.toastError(error)
       else {
         this.$toast.add({
@@ -348,8 +376,9 @@ export default {
       }
     },
     getSavedProductPriceInputUnit(productId) {
-      if (!productId) return 'base'
-      return this.getSavedPriceInputUnits()[productId] || 'base'
+      const product = this.$root.products[productId]
+      if (!productId || !product) return 'base'
+      return this.getSavedPriceInputUnits()[productId] || getDefaultPriceInputUnit(product)
     },
     persistProductPriceInputUnit(productId, priceInputUnit, product) {
       if (!productId) return
@@ -358,11 +387,17 @@ export default {
       localStorage.setItem(PRODUCT_PRICE_INPUT_UNIT_STORAGE_KEY, JSON.stringify(priceInputUnits))
     },
     getPriceInputUnitOptions(product) {
-      const options = [
-        { label: `EUR / ${product.unit || 'unit'}`, value: 'base' },
-      ]
-      if (canUsePiecePrice(product)) options.push({ label: 'EUR / piece', value: 'piece' })
+      const options = []
+      if (canUseParentPrice(product)) {
+        options.push({ label: `€/${unitParent(product.unit)}`, value: 'parent' })
+      } else {
+        options.push({ label: `€/${product.unit || 'unit'}`, value: 'base' })
+      }
+      if (canUsePiecePrice(product)) options.push({ label: '€/piece', value: 'piece' })
       return options
+    },
+    getDisplayedPriceUnitLabel(product) {
+      return getPriceInputUnitLabel(this.getPriceInputUnit(product), product)
     },
     getPriceInputUnit(product) {
       return normalizePriceInputUnit(
@@ -446,10 +481,54 @@ export default {
       justify-content: flex-start;
       padding-left: .5rem !important;
     }
-  }
 
-  .product-price-unit-dropdown {
-    min-width: 8.5rem;
+    .product-price-row {
+      gap: 0.125rem;
+      min-width: 0;
+
+      .product-price-input.p-inputnumber {
+        flex: 1 1 35%;
+        min-width: 0;
+        width: auto !important;
+        max-width: 100%;
+      }
+
+      .product-price-input-field {
+        min-width: 0;
+        text-align: left !important;
+      }
+
+      .product-price-input .p-inputnumber-input {
+        text-align: left !important;
+      }
+
+      .product-price-unit-label {
+        flex: 0 0 auto;
+        padding-right: 1rem;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
+      .product-price-unit-dropdown.p-dropdown {
+        flex: 0 0 auto;
+        width: auto !important;
+        min-width: 0 !important;
+
+        .p-dropdown-label {
+          padding: 0.2rem .5rem 0.2rem 0.3rem !important;
+          line-height: 1.2 !important;
+        }
+
+        .p-dropdown-trigger {
+          width: auto !important;
+          padding: 0 0.5rem 0 0 !important;
+
+          .pi {
+            font-size: 0.75rem !important;
+          }
+        }
+      }
+    }
   }
 
   .edit-recipie-chip {

@@ -52,12 +52,12 @@
           <label class="ms-2">Group by category</label>
         </span>
         <span class="d-flex align-items-center">
-          <Checkbox v-model="order.show_price_detail" :binary="true" />
-          <label class="ms-2">Price detail</label>
-        </span>
-        <span class="d-flex align-items-center">
           <Checkbox v-model="order.report_values_in_stocks" :binary="true" />
           <label class="ms-2">Report values in Stocks</label>
+        </span>
+        <span class="d-flex align-items-center">
+          <Checkbox v-model="showPriceDetail" :binary="true" />
+          <label class="ms-2">Price detail</label>
         </span>
         <Button label="Calculate" icon="pi pi-refresh" class="ms-auto p-button-secondary" @click="calculate"
           :loading="isCalculating" />
@@ -103,10 +103,10 @@
             <div class="text-center d-none d-print-block">{{ rowUnitLabel(data) }}</div>
           </template>
         </Column>
-        <Column v-if="order.show_price_detail" field="unitPrice" header="Price/Unit"
+        <Column v-if="showPriceDetail" field="unitPrice" header="Price/Unit"
           class="price text-center d-print-none" body-class="price text-center d-print-none">
         </Column>
-        <Column v-if="order.show_price_detail" field="productPrice" header="Price"
+        <Column v-if="showPriceDetail" field="productPrice" header="Price"
           class="price text-center d-print-none" body-class="price text-center d-print-none">
           <template #body="{ data }">
             {{ data.productPrice }} €
@@ -177,6 +177,7 @@ export default {
       order: {
         values: {},
       },
+      showPriceDetail: false,
       newProduct: '',
       loading: false,
       isCalculating: false,
@@ -245,7 +246,7 @@ export default {
         order = this.fixData(data)
         order.values ||= {}
       }
-      order.show_price_detail ??= false
+      delete order.show_price_detail
       this.normalizeOrderValues(order)
       this.order = order
       const firstInit = Object.values(this.order.values || {}).length === 0
@@ -269,7 +270,7 @@ export default {
 
           if (neededIncreased > 0) {
             let targetValue = neededIncreased
-            if (product.packaging_convert_to_piece && product.packaging_conditioning) {
+            if (product.packaging_conditioning) {
               targetValue = Math.ceil(targetValue / product.packaging_conditioning) * product.packaging_conditioning
             } else if (canUseCasePack(product)) {
               targetValue = Math.ceil(targetValue / casePackFactor(product)) * casePackFactor(product)

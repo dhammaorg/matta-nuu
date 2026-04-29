@@ -39,16 +39,40 @@ export function canUsePiecePrice(product = {}) {
   return product.unit !== 'piece' && !!(product.packaging_convert_to_piece && product.packaging_conditioning)
 }
 
+export function canUseParentPrice(product = {}) {
+  return product.unit === 'g' || product.unit === 'mL'
+}
+
+export function getDefaultPriceInputUnit(product = {}) {
+  if (canUseParentPrice(product)) return 'parent'
+  return 'base'
+}
+
+export function getPriceInputUnitLabel(priceInputUnit, product = {}) {
+  const normalizedPriceInputUnit = normalizePriceInputUnit(priceInputUnit, product)
+
+  if (normalizedPriceInputUnit === 'piece') return 'piece'
+  if (normalizedPriceInputUnit === 'parent') return unitParent(product.unit)
+  return product.unit || 'unit'
+}
+
 export function normalizePriceInputUnit(priceInputUnit, product = {}) {
   if (priceInputUnit === 'piece' && canUsePiecePrice(product)) return 'piece'
-  return 'base'
+  if (priceInputUnit === 'parent' && canUseParentPrice(product)) return 'parent'
+  return getDefaultPriceInputUnit(product)
 }
 
 export function convertPriceToBaseUnit(price, priceInputUnit, product = {}) {
   if (price == null || price === '') return price
 
-  if (normalizePriceInputUnit(priceInputUnit, product) === 'piece') {
+  const normalizedPriceInputUnit = normalizePriceInputUnit(priceInputUnit, product)
+
+  if (normalizedPriceInputUnit === 'piece') {
     return Number(price) / Number(product.packaging_conditioning)
+  }
+
+  if (normalizedPriceInputUnit === 'parent') {
+    return Number(price) * unitFactor(product.unit)
   }
 
   return Number(price)
@@ -57,8 +81,14 @@ export function convertPriceToBaseUnit(price, priceInputUnit, product = {}) {
 export function convertPriceFromBaseUnit(price, priceInputUnit, product = {}) {
   if (price == null || price === '') return price
 
-  if (normalizePriceInputUnit(priceInputUnit, product) === 'piece') {
+  const normalizedPriceInputUnit = normalizePriceInputUnit(priceInputUnit, product)
+
+  if (normalizedPriceInputUnit === 'piece') {
     return Number(price) * Number(product.packaging_conditioning)
+  }
+
+  if (normalizedPriceInputUnit === 'parent') {
+    return Number(price) / unitFactor(product.unit)
   }
 
   return Number(price)

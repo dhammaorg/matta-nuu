@@ -1,36 +1,30 @@
 <template>
-    <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Price History"
-            position="top" :modal="true" class="p-fluid">
+    <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Price History" position="top" :modal="true"
+        class="p-fluid">
 
         <div class="p-field">
-            <InputText id="name" v-model="product.name" placeholder="Name"
-                       autofocus />
+            <InputText id="name" v-model="product.name" placeholder="Name" autofocus />
         </div>
 
         <div class="prices my-4 py-2">
             <div v-for="price in product.prices" class="d-flex mb-2" :key="price">
                 <div class="p-inputgroup">
-                    <Calendar v-model="price.date" required="true"
-                              dateFormat="d MM yy" placeholder="Date" class="w-50" />
-                    <InputNumber v-model="price.value" :maxFractionDigits="2"
-                                 placeholder="Value"
-                                 inputClass="border-start-0 input-amount" />
-                    <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ product.unit
+                    <Calendar v-model="price.date" required="true" dateFormat="d MM yy" placeholder="Date"
+                        class="w-50" />
+                    <InputNumber v-model="price.value" :maxFractionDigits="2" placeholder="Value"
+                        inputClass="border-start-0 input-amount" />
+                    <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ displayedPriceUnitLabel
                         }}</span>
                 </div>
-                <Button icon="pi pi-times" class="p-button-text p-button-danger"
-                        @click="removeRow(price)" />
+                <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeRow(price)" />
             </div>
-            <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto mt-2"
-                    label="Price"
-                    @click="newRow"></Button>
+            <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto mt-2" label="Price"
+                @click="newRow"></Button>
         </div>
 
         <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text"
-                    @click="visible = false" />
-            <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading"
-                    @click="savePrice" />
+            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
+            <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="savePrice" />
         </template>
     </Dialog>
 </template>
@@ -38,90 +32,98 @@
 <script>
 
 import InputNumber from 'primevue/inputnumber'
-import Calendar from 'primevue/calendar';
+import Calendar from 'primevue/calendar'
+import { convertPriceFromBaseUnit, convertPriceToBaseUnit, getDefaultPriceInputUnit, getPriceInputUnitLabel } from '@/services/units'
 
 export default {
-    components: {
-        InputNumber, Calendar,
+  components: {
+    InputNumber, Calendar,
+  },
+  data() {
+    return {
+      visible: false,
+      loading: false,
+      product: {},
+    }
+  },
+  computed: {
+    displayedPriceUnitLabel() {
+      return getPriceInputUnitLabel(this.getHistoryPriceInputUnit(), this.product)
     },
-    data() {
-        return {
-            visible: false,
-            loading: false,
-            product: {},
+  },
+  methods: {
+    getHistoryPriceInputUnit(product = this.product) {
+      return getDefaultPriceInputUnit(product)
+    },
+    cloneEditablePrices(prices = []) {
+      return prices.map((price) => ({
+        ...price,
+        date: price?.date ? new Date(price.date) : null,
+        value:
+          price?.value == null || price?.value === ''
+            ? price?.value
+            : Number(price.value),
+      }))
+    },
+    clonePrices(prices = [], product = this.product) {
+      const priceInputUnit = this.getHistoryPriceInputUnit(product)
+
+      return this.cloneEditablePrices(prices).map((price) => ({
+        ...price,
+        value:
+          price?.value == null || price?.value === ''
+            ? price?.value
+            : convertPriceFromBaseUnit(price.value, priceInputUnit, product),
+      }))
+    },
+    show(object = {}) {
+      this.product = {
+        ...object,
+        prices: Array.isArray(object.prices) ? this.clonePrices(object.prices, object) : [{}],
+      }
+      this.visible = true
+    },
+    newRow() {
+      this.product.prices.push({})
+    },
+    async savePrice() {
+      if (!this.product.prices) return
+
+      const priceInputUnit = this.getHistoryPriceInputUnit()
+      this.product.prices = this.$root.normalizeProductPrices(
+        this.cloneEditablePrices(this.product.prices)
+          .filter((p) => p.date)
+          .map((price) => ({
+            ...price,
+            value:
+              price.value == null || price.value === ''
+                ? null
+                : convertPriceToBaseUnit(price.value, priceInputUnit, this.product),
+          })),
+      )
+
+      for (const element of this.product.prices) {
+        if (element.date.isTodayOrAfter() && !element.date.isToday()) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Dates can not be in the future',
+            life: 4000,
+          })
+          return
         }
+      }
+      if (this.product.id) {
+        await this.dbUpdate('products', this.product)
+        this.$emit('updatedPrices', this.product.prices)
+        this.visible = false
+        this.product = { prices: [{}] }
+      }
     },
-    methods: {
-        clonePrices(prices = []) {
-            return prices.map((price) => ({
-                ...price,
-                date: price?.date ? new Date(price.date) : null,
-                value: price?.value == null || price?.value === '' ? price?.value : Number(price.value),
-            }))
-        },
-        show(object = {}) {
-            this.product = {
-                ...object,
-                prices: Array.isArray(object.prices) ? this.clonePrices(object.prices) : [{}]
-            };
-            this.visible = true
-        },
-        newRow() {
-            this.product.prices.push({})
-        },
-        async savePrice() {
-            if (!this.product.prices) return;
-
-            this.product.prices = this.$root.normalizeProductPrices(
-                this.clonePrices(this.product.prices)
-                    .filter((p) => p.date)
-                    .map((price) => ({
-                        ...price,
-                        value: price.value == null || price.value === '' ? null : Number(price.value),
-                    }))
-            );
-
-            if (!this.product.prices.length) {
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `You must fill the date field`,
-                    life: 4000,
-                });
-                return;
-            }
-            for (const element of this.product.prices) {
-                if (element.date.isTodayOrAfter() && !element.date.isToday()) {
-                    this.$toast.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: `Dates can not be in the future`,
-                        life: 4000,
-                    });
-                    return;
-                }
-            }
-            if (this.product.id) {
-                await this.dbUpdate('products', this.product)
-                this.$emit('updatedPrices', this.product.prices)
-                this.visible = false
-                this.product = { prices: [{}] }
-
-            }
-        },
-        removeRow(price) {
-            if (this.product.prices.length > 1) {
-                this.product.prices = this.product.prices.filter((p) => p !== price)
-            } else {
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `You can not delete the last item`,
-                    life: 4000,
-                })
-            }
-        },
+    removeRow(price) {
+      this.product.prices = this.product.prices.filter((p) => p !== price)
     },
+  },
 }
 </script>
 

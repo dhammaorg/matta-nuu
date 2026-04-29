@@ -248,7 +248,7 @@ export default {
           try {
             const dbPromise = this.$db
               .from(tableName)
-              .insert([this.addUserId(object)])
+              .insert([this.addUserId(this.stripTransientFields(object))])
               .select()
             const { data, error } = await this.executeWithTimeout(dbPromise)
             if (error) this.toastError(error)
@@ -273,7 +273,7 @@ export default {
           try {
             const dbPromise = this.$db
               .from(tableName)
-              .update(this.addUserId(object))
+              .update(this.addUserId(this.stripTransientFields(object)))
               .eq('id', object.id)
               .select()
             const { data, error } = await this.executeWithTimeout(dbPromise)
@@ -305,6 +305,11 @@ export default {
         },
         addUserId(object) {
           return { ...object, ...{ user_id: this.$root.user.id } }
+        },
+        stripTransientFields(object) {
+          return Object.fromEntries(
+            Object.entries(object).filter(([key]) => !key.startsWith('_'))
+          )
         },
         toastError(error) {
           if (typeof error === 'string') error = { message: 'Error', details: error }

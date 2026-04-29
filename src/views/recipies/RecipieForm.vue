@@ -41,7 +41,7 @@
             <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
               inputClass="border-start-0 input-amount" />
             <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
-            <span v-if="this.$root.computePrice(product.amount, product.id)" class="p-inputgroup-addon"
+            <span v-if="this.$root.computePrice(product.amount, product.id) !== null" class="p-inputgroup-addon"
               style="width: 6rem;">
               {{ this.$root.computePrice(product.amount, product.id) }} €
             </span>
