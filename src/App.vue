@@ -234,6 +234,12 @@ export default {
     getCurrentProductPriceDate(productId) {
       return this.getProduct(productId)?.prices?.[0]?.date ?? null;
     },
+    getProductPriceHistoryMetadata(product = {}) {
+      return {
+        packaging_reference: product?.packaging_reference || '',
+        supplier_name: this.getSupplier(product?.supplier_id)?.name || '',
+      }
+    },
     normalizeProductPrices(prices = []) {
       return prices
         .filter((price) => price && price.date)
@@ -253,12 +259,14 @@ export default {
       const newPrice = {
         date: new Date(),
         value: Number(price),
+        ...this.getProductPriceHistoryMetadata(product),
       };
 
       const mostRecentPrice = product.prices[0]
 
       if (mostRecentPrice && newPrice.date.equals(mostRecentPrice.date)) {
         mostRecentPrice.value = newPrice.value;
+        Object.assign(mostRecentPrice, this.getProductPriceHistoryMetadata(product))
       } else {
         product.prices.push(newPrice);
       }

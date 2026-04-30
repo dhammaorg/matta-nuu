@@ -6,18 +6,18 @@ Session/event management app for Dhamma centers (products, suppliers, recipes, i
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Vue 3 — **Options API only** (no Composition API, no `<script setup>`) |
-| Build | Vue CLI 4.5 (`vue-cli-service serve/build`) |
-| UI Components | PrimeVue 3.10 (`lara-light-indigo` theme) |
-| Layout/Spacing | Bootstrap 5.1 **utilities only** (`bootstrap-utilities.css`) |
-| Backend | Supabase (auth, Postgres, realtime subscriptions) |
-| Router | Vue Router 4, hash mode (`#/path`) |
-| Calendar | FullCalendar 6.1 |
-| Rich Text | TinyMCE Vue 6 |
-| Styles | SCSS |
-| Lint | ESLint (Airbnb + Vue 3 essential), Prettier |
+| Layer          | Technology                                                             |
+| -------------- | ---------------------------------------------------------------------- |
+| Framework      | Vue 3 — **Options API only** (no Composition API, no `<script setup>`) |
+| Build          | Vue CLI 4.5 (`vue-cli-service serve/build`)                            |
+| UI Components  | PrimeVue 3.10 (`lara-light-indigo` theme)                              |
+| Layout/Spacing | Bootstrap 5.1 **utilities only** (`bootstrap-utilities.css`)           |
+| Backend        | Supabase (auth, Postgres, realtime subscriptions)                      |
+| Router         | Vue Router 4, hash mode (`#/path`)                                     |
+| Calendar       | FullCalendar 6.1                                                       |
+| Rich Text      | TinyMCE Vue 6                                                          |
+| Styles         | SCSS                                                                   |
+| Lint           | ESLint (Airbnb + Vue 3 essential), Prettier                            |
 
 ## Dev Environment
 
@@ -104,11 +104,13 @@ this.$db.from('products').upsert(array)
 ## Component Conventions
 
 ### File Naming
+
 - Views: `*Index.vue` (list), `*Form.vue` (create/edit dialog), `Session*.vue` (session sub-views)
 - Components: `Input*.vue` (form selectors), `*Dialog.vue` (modal dialogs)
 - Spelling: "recipies" (not "recipes") — keep this convention
 
 ### Code Style
+
 - **Options API only** — `data()`, `methods`, `computed`, `watch`, `mounted`, `created`
 - **Mixins** for shared logic: `StockMixin`, `CalendarMixin`
 - **`inject`** for parent-provided data (e.g., `inject: ['sessionInventories']`)
@@ -117,6 +119,7 @@ this.$db.from('products').upsert(array)
 - **Loading pattern:** `this.loading = true` → fetch → `this.loading = false`
 
 ### UI Patterns
+
 - PrimeVue `Dialog` with `v-model:visible` for modals
 - PrimeVue `DataTable` + `Column` for tables
 - PrimeVue `Button`, `InputText`, `Dropdown`, `InputNumber` for forms
@@ -125,6 +128,7 @@ this.$db.from('products').upsert(array)
 - PrimeVue CSS vars: `--primary-color`, `--surface-border`
 
 ### Form Dialog Pattern
+
 ```vue
 <!-- Parent calls: this.$refs.form.show(object) -->
 <template>
@@ -137,15 +141,20 @@ this.$db.from('products').upsert(array)
 </template>
 <script>
 export default {
-  data() { return { visible: false, object: {} } },
+  data() {
+    return { visible: false, object: {} }
+  },
   methods: {
-    show(obj) { this.object = { ...obj }; this.visible = true },
+    show(obj) {
+      this.object = { ...obj }
+      this.visible = true
+    },
     async save() {
       if (this.object.id) await this.dbUpdate('table', this.object)
       else await this.dbCreate('table', this.object)
       this.visible = false
-    }
-  }
+    },
+  },
 }
 </script>
 ```
@@ -159,11 +168,14 @@ export default {
 
 ## Testing Changes
 
-This is a frontend-only project. When making changes, **always verify visually in the browser**:
-1. Navigate to `http://localhost:8080/`
-2. Login with `test@dhamma.org` / `behappy`
-3. For session-related features, use session ID `235`: `http://localhost:8080/#/sessions/235/overview`
-4. Use the browser MCP tools to navigate, snapshot, and verify UI changes
+This is a frontend-only project. When making changes, **try to verify visually in the browser**:
+
+- Generally the server is already working, so no need to run it
+- Navigate to `http://localhost:8080/`
+- Login with `test@dhamma.org` / `behappy`
+- For session-related features (stock, order, schedule...), use session ID `235`: `http://localhost:8080/#/-ssions/235/overview`
+- Use the browser MCP tools to navigate, snapshot, and verify UI changes
+- Open the browser so user can see what you are doing
 
 ## Key Reminders
 

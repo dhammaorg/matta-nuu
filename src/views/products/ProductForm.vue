@@ -215,10 +215,12 @@ export default {
           const mostRecentPrice = this.product.prices[0]
           if (mostRecentPrice && mostRecentPrice.date && today.equals(mostRecentPrice.date)) {
             mostRecentPrice.value = null
+            Object.assign(mostRecentPrice, this.$root.getProductPriceHistoryMetadata(this.product))
           } else {
             this.product.prices.push({
               date: today,
               value: null,
+              ...this.$root.getProductPriceHistoryMetadata(this.product),
             })
           }
           this.product.prices = this.$root.normalizeProductPrices(this.product.prices)

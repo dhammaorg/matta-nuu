@@ -1,32 +1,52 @@
 <template>
-    <Dialog v-model:visible="visible" :style="{ width: '600px' }" header="Price History" position="top" :modal="true"
-        class="p-fluid">
+  <Dialog v-model:visible="visible" :style="{ width: '1100px', maxWidth: '95vw' }"
+    :header="`Price History for ${product.name}`" position="top" :modal="true" class="p-fluid">
 
-        <div class="p-field">
-            <InputText id="name" v-model="product.name" placeholder="Name" autofocus />
-        </div>
+    <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto" label="Price" @click="newRow">
+    </Button>
 
-        <div class="prices my-4 py-2">
-            <div v-for="price in product.prices" class="d-flex mb-2" :key="price">
-                <div class="p-inputgroup">
-                    <Calendar v-model="price.date" required="true" dateFormat="d MM yy" placeholder="Date"
-                        class="w-50" />
-                    <InputNumber v-model="price.value" :maxFractionDigits="2" placeholder="Value"
-                        inputClass="border-start-0 input-amount" />
-                    <span class="p-inputgroup-addon" style="width: 6rem;">€ / {{ displayedPriceUnitLabel
-                        }}</span>
-                </div>
-                <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeRow(price)" />
-            </div>
-            <Button icon="pi pi-plus" class="p-button-primary p-button-sm w-auto mt-2" label="Price"
-                @click="newRow"></Button>
-        </div>
-
-        <template #footer>
-            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
-            <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="savePrice" />
+    <DataTable :value="product.prices" class="price-history-table mt-3" responsiveLayout="scroll" showGridlines>
+      <Column header="Date" headerStyle="width: 12rem">
+        <template #body="{ data }">
+          <Calendar v-model="data.date" required="true" dateFormat="d MM yy" placeholder="Date"
+            class="w-100" inputClass="history-input history-date-input" />
         </template>
-    </Dialog>
+      </Column>
+
+      <Column header="Value" headerStyle="width: 14rem">
+        <template #body="{ data }">
+          <div class="p-inputgroup value-input-group">
+            <InputNumber v-model="data.value" :maxFractionDigits="2" placeholder="Value"
+              inputClass="history-input history-value-input" />
+            <span class="p-inputgroup-addon">€ / {{ displayedPriceUnitLabel }}</span>
+          </div>
+        </template>
+      </Column>
+
+      <Column header="Packaging Name / Reference">
+        <template #body="{ data }">
+          <InputText v-model.trim="data.packaging_reference" class="history-input w-100" />
+        </template>
+      </Column>
+
+      <Column header="Supplier">
+        <template #body="{ data }">
+          <InputText v-model.trim="data.supplier_name" class="history-input w-100" />
+        </template>
+      </Column>
+
+      <Column header="Actions" headerStyle="width: 5rem">
+        <template #body="{ data }">
+          <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="removeRow(data)" />
+        </template>
+      </Column>
+    </DataTable>
+
+    <template #footer>
+      <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="visible = false" />
+      <Button label="Save" icon="pi pi-check" class="p-button-text" :loading="loading" @click="savePrice" />
+    </template>
+  </Dialog>
 </template>
 
 <script>
@@ -52,6 +72,15 @@ export default {
     },
   },
   methods: {
+    getCurrentSupplierName(product = this.product) {
+      return this.$root.getSupplier(product?.supplier_id)?.name || ''
+    },
+    getDefaultPriceHistoryFields(product = this.product) {
+      return {
+        packaging_reference: product?.packaging_reference || '',
+        supplier_name: this.getCurrentSupplierName(product),
+      }
+    },
     getHistoryPriceInputUnit(product = this.product) {
       return getDefaultPriceInputUnit(product)
     },
@@ -63,6 +92,8 @@ export default {
           price?.value == null || price?.value === ''
             ? price?.value
             : Number(price.value),
+        packaging_reference: price?.packaging_reference || '',
+        supplier_name: price?.supplier_name || '',
       }))
     },
     clonePrices(prices = [], product = this.product) {
@@ -79,12 +110,14 @@ export default {
     show(object = {}) {
       this.product = {
         ...object,
-        prices: Array.isArray(object.prices) ? this.clonePrices(object.prices, object) : [{}],
+        prices: Array.isArray(object.prices) && object.prices.length > 0
+          ? this.clonePrices(object.prices, object)
+          : [this.getDefaultPriceHistoryFields(object)],
       }
       this.visible = true
     },
     newRow() {
-      this.product.prices.push({})
+      this.product.prices.push(this.getDefaultPriceHistoryFields())
     },
     async savePrice() {
       if (!this.product.prices) return
@@ -102,17 +135,6 @@ export default {
           })),
       )
 
-      for (const element of this.product.prices) {
-        if (element.date.isTodayOrAfter() && !element.date.isToday()) {
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Dates can not be in the future',
-            life: 4000,
-          })
-          return
-        }
-      }
       if (this.product.id) {
         await this.dbUpdate('products', this.product)
         this.$emit('updatedPrices', this.product.prices)
@@ -128,40 +150,51 @@ export default {
 </script>
 
 <style lang="scss">
-.prices {
-    .input-product-wrapper {
-        width: 20% !important;
-    }
+.price-history-table {
+  .p-datatable-thead>tr>th,
+  .p-datatable-tbody>tr>td {
+    border-color: var(--gray-400) !important;
+    text-align: left;
+  }
 
-    .p-inputgroup {
-        &:hover>.btn-edit-product {
-            border-color: var(--primary-color);
-        }
+  .p-datatable-thead>tr>th {
+    background-color: var(--surface-ground);
+    color: black;
+    font-weight: 600;
+    white-space: nowrap;
+  }
 
-        .btn-edit-product {
-            border-radius: 0 !important;
-            background-color: transparent;
-            border-color: #ced4da;
-            border-left: none !important;
-            width: 2.5rem !important;
-            justify-content: flex-start;
-            padding-left: .25rem !important;
-            color: var(--text-color);
+  .p-datatable-tbody>tr>td {
+    padding: .5rem;
+    vertical-align: top;
+  }
 
-            .pi {
-                font-size: .9rem;
-            }
+  .p-calendar,
+  .p-inputnumber,
+  .p-inputgroup {
+    width: 100%;
+  }
 
-            &:hover {
-                background-color: transparent !important;
-                color: var(--primary-color);
-                border-color: #ced4da;
-            }
-        }
-    }
+  .history-input,
+  .history-date-input,
+  .history-value-input,
+  .p-inputgroup-addon {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    text-align: left !important;
+  }
 
-    .input-product {
-        border-right: none;
-    }
+  .history-input,
+  .history-date-input,
+  .history-value-input {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .value-input-group .p-inputgroup-addon {
+    white-space: nowrap;
+    padding-left: 0;
+  }
 }
 </style>
