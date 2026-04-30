@@ -2,8 +2,7 @@
   <Dialog v-model:visible="visible" maximizable position="top" :style="{ width: width }" header="Recipie Details"
     :modal="true" class="p-fluid recipie-dialog">
     <div class="p-field">
-      <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name"
-                 autofocus />
+      <InputText id="name" v-model.trim="recipie.name" required="true" placeholder="Name" autofocus />
     </div>
 
     <div class="p-field mb-3">
@@ -24,8 +23,8 @@
           </div>
           <div class="fw-bold my-auto">
             <span>{{ recipiePrice }} € for 1 person </span>
-            <i v-if="missingProductPrices && missingProductPrices.length > 0"
-              class="pi pi-exclamation-triangle" v-tooltip="missingProductPrices" type="text"></i>
+            <i v-if="missingProductPrices && missingProductPrices.length > 0" class="pi pi-exclamation-triangle"
+              v-tooltip="missingProductPrices" type="text"></i>
           </div>
         </div>
         <div v-for="(product, index) in recipie.products" class="d-flex mb-2 align-items-center product-row"
@@ -41,9 +40,8 @@
             <InputNumber v-model="product.amount" :maxFractionDigits="5" placeholder="Amount"
               inputClass="border-start-0 input-amount" />
             <span class="p-inputgroup-addon" style="width: 5rem;">{{ $root.getProduct(product.id).unit }}</span>
-            <span v-if="this.$root.computePrice(product.amount, product.id) !== null" class="p-inputgroup-addon"
-              style="width: 6rem;">
-              {{ this.$root.computePrice(product.amount, product.id) }} €
+            <span v-if="getProductPricePerPerson(product) !== null" class="p-inputgroup-addon" style="width: 6rem;">
+              {{ getProductPricePerPerson(product) }} €
             </span>
             <span v-else class="p-inputgroup-addon" style="width: 6rem;"></span>
           </div>
@@ -218,6 +216,14 @@ export default {
       const item = this.recipie.products.splice(dragIndex, 1)[0]
       this.recipie.products.splice(dropIndex, 0, item)
       this.productDragIndex = null
+    },
+    getProductPricePerPerson(product) {
+      const totalPrice = this.$root.computePrice(product.amount, product.id)
+      const peopleCount = Number(this.recipie.people_count)
+
+      if (totalPrice === null || !peopleCount) return null
+
+      return (Number(totalPrice) / peopleCount).toFixed(2)
     },
     removeProduct(product) {
       this.recipie.products = this.recipie.products.filter((p) => p !== product)
