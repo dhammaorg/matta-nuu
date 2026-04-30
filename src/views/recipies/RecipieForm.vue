@@ -56,6 +56,11 @@
       <div class="my-4 py-2">
         <Editor v-model="recipie.instructions_day_before" api-key="gld93ttf4tgy3id80qeozfn2kkussyi011pcw85aile0k2z9"
           :init="editorConfig" />
+        <div class="p-field mt-3">
+          <label class="mb-2 d-block">Products to list on day before</label>
+          <MultiSelect v-model="recipie.products_to_list_on_day_before" :options="dayBeforeProductOptions"
+            optionLabel="name" optionValue="id" placeholder="All recipe products" class="w-100" />
+        </div>
       </div>
     </template>
     <!-- Preparation Instructions -->
@@ -113,13 +118,14 @@
 import InputNumber from 'primevue/inputnumber'
 import Checkbox from 'primevue/checkbox'
 import Editor from '@tinymce/tinymce-vue'
+import MultiSelect from 'primevue/multiselect'
 import SelectButton from 'primevue/selectbutton'
 import InputProduct from '@/components/InputProduct.vue'
 import InputCategory from '@/components/InputCategory.vue'
 
 export default {
   components: {
-    InputNumber, InputProduct, Checkbox, InputCategory, Editor, SelectButton,
+    InputNumber, InputProduct, Checkbox, InputCategory, Editor, MultiSelect, SelectButton,
   },
   data() {
     return {
@@ -164,11 +170,21 @@ export default {
     missingProductPrices() {
       return this.$root.getRecipieMissingProductPrices(this.recipie.id)
     },
+    dayBeforeProductOptions() {
+      const ids = new Set()
+      return (this.recipie.products || [])
+        .filter((product) => product?.id && !ids.has(product.id) && ids.add(product.id))
+        .map((product) => ({
+          id: product.id,
+          name: this.$root.getProduct(product.id).name || `Product #${product.id}`
+        }))
+    },
   },
   methods: {
     show(object = {}) {
       this.recipie = { ...object }
       this.recipie.products ||= [{}]
+      this.recipie.products_to_list_on_day_before ||= []
       this.recipie.timeline ||= [{}]
       this.recipie.timeline.sort((a, b) => new Date(`1970-01-01T${a.time || '00:00'}:00`) - new Date(`1970-01-01T${b.time || '00:00'}:00`))
       this.recipie.timeline_day_before ||= [{}]
@@ -180,6 +196,8 @@ export default {
       if (this.recipie.name) {
         // filter empty ingredients
         this.recipie.products = this.recipie.products.filter((p) => p.id && p.amount)
+        this.recipie.products_to_list_on_day_before = (this.recipie.products_to_list_on_day_before || [])
+          .filter((productId) => this.recipie.products.some((p) => p.id === productId))
 
         if (this.recipie.id) {
           this.dbUpdate('recipies', this.recipie)
@@ -227,6 +245,8 @@ export default {
     },
     removeProduct(product) {
       this.recipie.products = this.recipie.products.filter((p) => p !== product)
+      this.recipie.products_to_list_on_day_before = (this.recipie.products_to_list_on_day_before || [])
+        .filter((productId) => this.recipie.products.some((p) => p.id === productId))
     },
     removeStep(step) {
       this.recipie.timeline = this.recipie.timeline.filter((s) => s.time !== step.time)

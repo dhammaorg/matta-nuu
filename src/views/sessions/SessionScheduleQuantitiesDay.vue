@@ -55,6 +55,15 @@ import { unitChild, unitParent } from '@/services/units'
 
 export default {
   props: ['event', 'day', 'dayIndex', 'numbers'],
+  methods: {
+    getProductsToPrint(recipie) {
+      const selectedProductIds = recipie.products_to_list_on_day_before || []
+      if (!recipie.forDayAfter || selectedProductIds.length === 0) {
+        return recipie.products || []
+      }
+      return (recipie.products || []).filter((product) => selectedProductIds.includes(product.id))
+    },
+  },
   computed: {
     recipies() {
       const result = []
@@ -76,12 +85,12 @@ export default {
         const dayAfterValue = row.values[`Event${this.event.id}_${this.dayIndex + 1}`] || {}
         const dayAfterRecipie = this.$root.getRecipie(row.recipie_id || dayAfterValue.recipie_id)
         if (dayAfterRecipie.id && dayAfterValue.amount && dayAfterRecipie.prepare_day_before) {
-          result.push({ ...dayAfterRecipie, ...{ row } })
+          result.push({ ...dayAfterRecipie, ...{ row }, ...{ forDayAfter: true } })
         }
       })
 
       result.forEach((recipie) => {
-        recipie.products = recipie.products.map((p) => {
+        recipie.products = this.getProductsToPrint(recipie).map((p) => {
           const product = { ...p, ...this.$root.getProduct(p.id) }
           product.values = {}
           // Pre calculate values for each number
