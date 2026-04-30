@@ -162,7 +162,7 @@ import InputDay from '@/components/InputDay.vue'
 import InputProduct from '@/components/InputProduct.vue'
 import StockMixin from '@/services/stocks-mixin'
 import {
-  canConvertToPiece, canUseCasePack, casePackFactor, convertToBestUnit, convertToUnit,
+  canConvertToPiece, canUseCasePack, casePackFactor, convertToBestUnit, convertToUnit, normalizeQuantityUnit,
 } from '@/services/units'
 import InputCategory from '@/components/InputCategory.vue'
 
@@ -373,8 +373,7 @@ export default {
 
         if (row.productPrice == null && row.total != null) row.productPrice = row.total
         delete row.total
-        if (row.unit === 'case' && !canUseCasePack(product)) row.unit = this.defaultOrderUnit(product)
-        if (row.unit === 'piece' && !canConvertToPiece(product)) row.unit = product.unit
+        row.unit = normalizeQuantityUnit(row.unit, product)
         if (!row.unit) row.unit = this.defaultOrderUnit(product)
       })
     },

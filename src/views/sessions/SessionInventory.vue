@@ -143,6 +143,7 @@ import InputNumber from 'primevue/inputnumber'
 import Tag from 'primevue/tag'
 import RadioButton from 'primevue/radiobutton'
 import StockMixin from '@/services/stocks-mixin'
+import { normalizeQuantityUnit } from '@/services/units'
 import InventoryNewDialog from './InventoryNewDialog.vue'
 import SelectButton from 'primevue/selectbutton';
 
@@ -171,6 +172,7 @@ export default {
   },
   beforeMount() {
     this.inventory = this.sessionInventories.find((inv) => inv.id == this.$route.params.inventory_id)
+    this.normalizeInventoryUnits()
   },
   computed: {
     areas() {
@@ -248,6 +250,14 @@ export default {
     },
   },
   methods: {
+    normalizeInventoryUnits() {
+      Object.entries(this.inventory.values || {}).forEach(([productId, areaValues]) => {
+        const product = this.$root.getProduct(productId) || {}
+        Object.values(areaValues || {}).forEach((areaValue) => {
+          areaValue.unit = normalizeQuantityUnit(areaValue.unit, product)
+        })
+      })
+    },
     startArea(area) {
       this.currentArea = area
       this.productIndex = 0
@@ -342,6 +352,7 @@ export default {
     },
     onInventoryUpdated(data) {
       this.inventory = data
+      this.normalizeInventoryUnits()
       this.currentArea = null
     },
   },
@@ -355,6 +366,10 @@ export default {
         this.inventory.values[product.id] ||= {}
         areasIds.forEach((areaId) => {
           this.inventory.values[product.id][areaId] ||= { unit: product.unit }
+          this.inventory.values[product.id][areaId].unit = normalizeQuantityUnit(
+            this.inventory.values[product.id][areaId].unit,
+            product
+          )
         })
       })
     },

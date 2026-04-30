@@ -105,7 +105,14 @@ export function canUseCasePack(product = {}) {
   return !!casePackFactor(product)
 }
 
+export function normalizeQuantityUnit(unit, product = {}) {
+  if (unit === 'case' && !canUseCasePack(product)) return product.unit
+  if (unit === 'piece' && !canConvertToPiece(product)) return product.unit
+  return unit || product.unit
+}
+
 export function convertToUnit(value, fromUnit, product) {
+  fromUnit = normalizeQuantityUnit(fromUnit, product)
   const toUnit = product.unit
 
   if (fromUnit == 'case' && canUseCasePack(product)) {
