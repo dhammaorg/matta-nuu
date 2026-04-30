@@ -52,7 +52,8 @@
         <TabMenu :model="tabMenuItems" class="d-flex justify-content-center" />
       </div>
     </template>
-    <div class="d-flex">
+
+    <div class="d-flex flex-shrink-0" style="min-width: 160px;">
       <template v-if="['session_orders', 'session_order'].includes($route.name)">
         <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm"
           @click="$refs.orderForm.show()" style="margin-left: 4.5rem" />
