@@ -30,6 +30,15 @@ import './main.scss'
 
 utils()
 
+let cachedUser = null
+let authResolved = false
+
+const authStateReady = supabase.auth.getSession().then(({ data }) => {
+  cachedUser = data.session?.user ?? null
+  authResolved = true
+  return cachedUser
+})
+
 const app = createApp(App)
   .use(router)
   .use(db)
@@ -47,19 +56,24 @@ const app = createApp(App)
   .component('Dropdown', Dropdown)
   .component('HelpMessage', HelpMessage)
 
+supabase.auth.onAuthStateChange((_event, session) => {
+  cachedUser = session?.user ?? null
+  authResolved = true
+  if (app._instance) app._instance.data.user = cachedUser
+})
+
 router.beforeEach(async (to) => {
-  const { data, error } = await supabase.auth.getSession()
-  if (error) this.toastError(error)
-  let user = data.session?.user
+  if (!authResolved) await authStateReady
+  let user = cachedUser ?? app._instance?.data?.user ?? null
   if (to.path.includes('update-password')) {
     // wait for the user to be signed in in the backend
     while (user == null) {
       await new Promise((r) => setTimeout(r, 400))
-      const { data, error } = await supabase.auth.getSession()
-      if (error) this.toastError(error)
-      user = data.session?.user
+      const { data } = await supabase.auth.getSession()
+      user = data.session?.user ?? null
+      cachedUser = user
     }
-    app._instance.data.user = user
+    if (app._instance) app._instance.data.user = user
     return { name: 'profile' }
   }
   if (!user && !['login', 'register', 'reset-password'].includes(to.name)) return { name: 'login' }

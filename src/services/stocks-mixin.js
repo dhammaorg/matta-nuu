@@ -8,80 +8,23 @@ export default {
     return {
       stocks: [],
       sessionProducts: [],
+      realtimeChannels: [],
+      deferredRecalculationFrame: null,
+      deferredRecalculationTimeout: null,
+      onRealtimeStockData: null,
     }
   },
   mounted() {
-    this.reCalculateAll()
-
-    const onNewDataRetrieved = debounce(() => {
-      this.reCalculateAll()
-    }, 300)
-    // we listen for current session change so we recalculate stock if needed
-    supabase
-      .channel(`session-changes-${this.session.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: '*',
-          table: 'sessions',
-          filter: `id=eq.${this.session.id}`,
-        },
-        onNewDataRetrieved
-      )
-      .subscribe()
-    supabase
-      .channel(`session-orders-${this.session.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: '*',
-          table: 'orders',
-          filter: `session_id=eq.${this.session.id}`,
-        },
-        onNewDataRetrieved
-      )
-      .subscribe()
-    supabase
-      .channel(`session-inventories-${this.session.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: '*',
-          table: 'inventories',
-          filter: `session_id=eq.${this.session.id}`,
-        },
-        onNewDataRetrieved
-      )
-      .subscribe()
-    supabase
-      .channel(`products-callback-${this.$root.user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: '*',
-          table: 'products',
-          filter: `user_id=eq.${this.$root.user.id}`,
-        },
-        onNewDataRetrieved
-      )
-      .subscribe()
-    supabase
-      .channel(`recipies-callback-${this.$root.user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: '*',
-          table: 'recipies',
-          filter: `user_id=eq.${this.$root.user.id}`,
-        },
-        onNewDataRetrieved
-      )
-      .subscribe()
+    this.enterStocksView()
+  },
+  activated() {
+    this.enterStocksView()
+  },
+  deactivated() {
+    this.leaveStocksView()
+  },
+  beforeUnmount() {
+    this.leaveStocksView()
   },
   computed: {
     session() {
@@ -113,6 +56,95 @@ export default {
     },
   },
   methods: {
+    enterStocksView() {
+      if (!this.onRealtimeStockData) {
+        this.onRealtimeStockData = debounce(() => {
+          this.deferReCalculateAll()
+        }, 300)
+      }
+      this.ensureRealtimeChannels()
+      this.deferReCalculateAll()
+    },
+    leaveStocksView() {
+      this.clearDeferredRecalculation()
+      this.removeRealtimeChannels()
+    },
+    deferReCalculateAll() {
+      this.clearDeferredRecalculation()
+      const runRecalculation = () => {
+        this.deferredRecalculationTimeout = null
+        this.reCalculateAll()
+      }
+      if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+        this.deferredRecalculationFrame = window.requestAnimationFrame(() => {
+          this.deferredRecalculationFrame = null
+          this.deferredRecalculationTimeout = window.setTimeout(runRecalculation, 0)
+        })
+        return
+      }
+      this.deferredRecalculationTimeout = setTimeout(runRecalculation, 0)
+    },
+    clearDeferredRecalculation() {
+      if (this.deferredRecalculationFrame !== null && typeof window !== 'undefined') {
+        window.cancelAnimationFrame(this.deferredRecalculationFrame)
+        this.deferredRecalculationFrame = null
+      }
+      if (this.deferredRecalculationTimeout !== null) {
+        clearTimeout(this.deferredRecalculationTimeout)
+        this.deferredRecalculationTimeout = null
+      }
+    },
+    ensureRealtimeChannels() {
+      if (this.realtimeChannels.length > 0 || !this.session.id) return
+      this.realtimeChannels = [
+        {
+          name: this.buildRealtimeChannelName('session-changes'),
+          table: 'sessions',
+          filter: `id=eq.${this.session.id}`,
+        },
+        {
+          name: this.buildRealtimeChannelName('session-orders'),
+          table: 'orders',
+          filter: `session_id=eq.${this.session.id}`,
+        },
+        {
+          name: this.buildRealtimeChannelName('session-inventories'),
+          table: 'inventories',
+          filter: `session_id=eq.${this.session.id}`,
+        },
+        {
+          name: this.buildRealtimeChannelName('products-callback'),
+          table: 'products',
+          filter: `user_id=eq.${this.$root.user.id}`,
+        },
+        {
+          name: this.buildRealtimeChannelName('recipies-callback'),
+          table: 'recipies',
+          filter: `user_id=eq.${this.$root.user.id}`,
+        },
+      ].map(({ name, table, filter }) => supabase
+        .channel(name)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: '*',
+            table,
+            filter,
+          },
+          this.onRealtimeStockData
+        )
+        .subscribe())
+    },
+    removeRealtimeChannels() {
+      this.realtimeChannels.forEach((channel) => {
+        supabase.removeChannel(channel)
+      })
+      this.realtimeChannels = []
+    },
+    buildRealtimeChannelName(prefix) {
+      return `${prefix}-${this.session.id}-${this.$.uid}`
+    },
     reCalculateAll() {
       this.stocks = []
       this.sessionProducts = []

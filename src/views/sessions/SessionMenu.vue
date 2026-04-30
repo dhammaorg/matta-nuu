@@ -49,7 +49,7 @@
         </OverlayPanel>
       </div>
       <div class="flex-grow-1 flex-shrink-0 text-center">
-        <TabMenu :model="tabMenuItems" class="d-flex justify-content-center" />
+        <TabMenu :model="tabMenuItems" :activeIndex="activeTabIndex" class="d-flex justify-content-center" />
       </div>
     </template>
 
@@ -79,6 +79,40 @@ import Listbox from 'primevue/listbox'
 import OrderNewDialog from './OrderNewDialog.vue'
 import SessionNew from './SessionNew.vue'
 
+function isPlainObject(value) {
+  return Object.prototype.toString.call(value) === '[object Object]'
+}
+
+function areSnapshotsEqual(left, right) {
+  if (left === right) return true
+  if (left instanceof Date && right instanceof Date) return left.getTime() === right.getTime()
+  if (left == null || right == null) return left === right
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false
+    return left.every((item, index) => areSnapshotsEqual(item, right[index]))
+  }
+  if (!isPlainObject(left) || !isPlainObject(right)) return left === right
+  const leftKeys = Object.keys(left)
+  const rightKeys = Object.keys(right)
+  if (leftKeys.length !== rightKeys.length) return false
+  return leftKeys.every((key) => areSnapshotsEqual(left[key], right[key]))
+}
+
+const SESSION_TAB_ROUTE_NAMES = [
+  'session_overview',
+  'session_schedule',
+  'session_inventories',
+  'session_stocks',
+  'session_orders',
+]
+
+function normalizeSessionTabRouteName(routeName) {
+  if (SESSION_TAB_ROUTE_NAMES.includes(routeName)) return routeName
+  if (routeName === 'session_order') return 'session_orders'
+  if (routeName === 'session_inventory') return 'session_inventories'
+  return 'session_overview'
+}
+
 export default {
   inject: ['sessionDays'],
   components: {
@@ -88,12 +122,15 @@ export default {
     return {
       saving: false,
       history: [],
+      historyRecordTimeout: null,
+      pendingTabRouteName: null,
       unsavedChanges: false,
       switchPanelSelection: null,
     }
   },
   mounted() {
     window.onbeforeunload = () => {
+      this.flushPendingHistoryRecord()
       if (this.unsavedChangesWarning) return 'You have unsaved changes, are you sure to quit?'
     }
     window.addEventListener('keydown', (e) => {
@@ -105,6 +142,9 @@ export default {
       }
     })
   },
+  beforeUnmount() {
+    this.clearPendingHistoryRecord()
+  },
   computed: {
     session() {
       return this.$root.session
@@ -112,12 +152,18 @@ export default {
     tabMenuItems() {
       const id = this.$route.params.id
       return [
-        { label: 'Overview', icon: 'pi pi-compass', to: { name: 'session_overview', params: { id } } },
-        { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id } } },
-        { label: 'Inventories', icon: 'pi pi-file-edit', to: { name: 'session_inventories', params: { id } } },
-        { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id } } },
-        { label: 'Orders', icon: 'pi pi-dollar', to: { name: 'session_orders', params: { id } } },
+        { label: 'Overview', icon: 'pi pi-compass', command: () => this.navigateToTab('session_overview', id) },
+        { label: 'Schedule', icon: 'pi pi-calendar', command: () => this.navigateToTab('session_schedule', id) },
+        { label: 'Inventories', icon: 'pi pi-file-edit', command: () => this.navigateToTab('session_inventories', id) },
+        { label: 'Stocks', icon: 'pi pi-box', command: () => this.navigateToTab('session_stocks', id) },
+        { label: 'Orders', icon: 'pi pi-dollar', command: () => this.navigateToTab('session_orders', id) },
       ]
+    },
+    activeTabRouteName() {
+      return normalizeSessionTabRouteName(this.pendingTabRouteName || this.$route.name)
+    },
+    activeTabIndex() {
+      return SESSION_TAB_ROUTE_NAMES.indexOf(this.activeTabRouteName)
     },
     sortedSessionSwitchOptions() {
       return this.$root.sessionsArray.slice().sort((a, b) => {
@@ -135,6 +181,15 @@ export default {
     },
   },
   methods: {
+    navigateToTab(routeName, id = this.$route.params.id) {
+      if (this.activeTabRouteName === routeName) return
+      this.pendingTabRouteName = routeName
+      this.$router.push({ name: routeName, params: { id } }).finally(() => {
+        if (normalizeSessionTabRouteName(this.$route.name) !== routeName) {
+          this.pendingTabRouteName = null
+        }
+      })
+    },
     isSessionStarred(session) {
       return session?.starred === true
     },
@@ -162,6 +217,7 @@ export default {
       this.$refs.sessionNewModal.open({})
     },
     goToSession(sess) {
+      this.flushPendingHistoryRecord()
       const newId = sess.id
       const currentId = parseInt(this.$route.params.id, 10)
       if (newId === currentId) {
@@ -208,6 +264,7 @@ export default {
       run()
     },
     goSessionsIndex() {
+      this.flushPendingHistoryRecord()
       const run = () => {
         this.$refs.sessionPanel.hide()
         this.syncSwitchPanelSelection()
@@ -249,24 +306,55 @@ export default {
       lastSession.events.forEach((e) => { e.start_date = new Date(e.start_date) })
       this.$root.session = lastSession
     },
+    clearPendingHistoryRecord() {
+      if (this.historyRecordTimeout !== null) {
+        clearTimeout(this.historyRecordTimeout)
+        this.historyRecordTimeout = null
+      }
+    },
+    flushPendingHistoryRecord() {
+      if (this.historyRecordTimeout === null) return
+      this.clearPendingHistoryRecord()
+      this.recordHistorySnapshot()
+    },
+    scheduleHistoryRecord() {
+      this.clearPendingHistoryRecord()
+      this.historyRecordTimeout = setTimeout(() => {
+        this.historyRecordTimeout = null
+        this.recordHistorySnapshot()
+      }, 120)
+    },
+    recordHistorySnapshot() {
+      if (!this.$root.isSessionFullyLoaded()) return
+      const snapshot = this.cloneSessionSnapshot()
+      const previousSnapshot = this.history[this.history.length - 1]
+      if (previousSnapshot && areSnapshotsEqual(snapshot, previousSnapshot)) return
+      if (this.history.length !== 0) this.unsavedChanges = true
+      this.history.push(snapshot)
+    },
+    cloneSessionSnapshot() {
+      const snapshot = JSON.parse(JSON.stringify(this.session))
+      snapshot.events.forEach((event) => {
+        event.start_date = new Date(event.start_date)
+      })
+      return snapshot
+    },
   },
   watch: {
+    '$route.name'() {
+      this.pendingTabRouteName = null
+    },
     '$route.params.id'() {
+      this.clearPendingHistoryRecord()
       this.history = []
+      this.pendingTabRouteName = null
       this.unsavedChanges = false
       this.switchPanelSelection = null
     },
     session: {
       deep: true,
       handler() {
-        const sessionJson = JSON.stringify(this.session)
-        // Check for fake change
-        if (sessionJson !== JSON.stringify(this.history[this.history.length - 1]) && this.$root.isSessionFullyLoaded()) {
-          // Parse + stringify makes object deep copy
-          const newValue = JSON.parse(sessionJson)
-          if (this.history.length !== 0) this.unsavedChanges = true
-          this.history.push(newValue)
-        }
+        this.scheduleHistoryRecord()
       },
     },
   },

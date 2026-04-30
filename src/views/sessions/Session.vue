@@ -9,7 +9,12 @@
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
     <div class="h-100" style="min-height: 0;" v-if="$root.isSessionFullyLoaded()">
-      <router-view :key="`${$route.name}-${$route.params.id}`"></router-view>
+      <router-view v-slot="{ Component, route }">
+        <KeepAlive :key="String(route.params.id)">
+          <component :is="Component" v-if="isCacheableSessionRoute(route.name)" :key="route.name" />
+        </KeepAlive>
+        <component :is="Component" v-if="!isCacheableSessionRoute(route.name)" :key="route.fullPath" />
+      </router-view>
     </div>
   </div>
 </template>
@@ -17,6 +22,14 @@
 <script>
 import { computed } from 'vue'
 import SessionMenu from './SessionMenu.vue'
+
+const CACHEABLE_SESSION_ROUTES = [
+  'session_overview',
+  'session_schedule',
+  'session_inventories',
+  'session_stocks',
+  'session_orders',
+]
 
 export default {
   components: { SessionMenu },
@@ -62,15 +75,19 @@ export default {
       return days
     },
     sessionOrders() {
+      const stockDaysById = this.stockDays.reduce((result, day) => {
+        result[day.id] = day
+        return result
+      }, {})
       return Object.values(this.$root.orders)
         .filter((order) => order.session_id === this.$root.session.id)
         .sort((a, b) => (a.id < b.id ? 1 : -1))
         .map((o) => {
           const result = { ...o }
-          result.delivery_day_object = this.stockDays.find((d) => d.id == result.delivery_day) || {}
+          result.delivery_day_object = stockDaysById[result.delivery_day] || {}
           result.delivery_day_label = result.delivery_day_object.dateHeader
           result.delivery_day_date = result.delivery_day_object.date
-          result.target_day_object = this.stockDays.find((d) => d.id == result.target_day) || {}
+          result.target_day_object = stockDaysById[result.target_day] || {}
           result.target_day_label = result.target_day_object.dateHeader
           result.target_day_date = result.target_day_object.date
           return result
@@ -99,6 +116,9 @@ export default {
     next()
   },
   methods: {
+    isCacheableSessionRoute(routeName) {
+      return CACHEABLE_SESSION_ROUTES.includes(routeName)
+    },
     initDaysValuesForEachRow() {
       this.sessionDays.forEach((day) => {
         this.session.rows.forEach((row) => {
@@ -121,6 +141,7 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
+    this.$refs.menu?.flushPendingHistoryRecord?.()
     if (this.$refs.menu && this.$refs.menu.unsavedChangesWarning) {
       this.$confirm.require({
         message: 'You have unsaved changes !',
