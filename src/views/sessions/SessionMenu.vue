@@ -5,6 +5,7 @@
       <div class="session-context d-flex align-items-center flex-shrink-0">
         <Button type="button" label="Switch" icon="pi pi-arrow-right-arrow-left" iconPos="left"
           class="session-switch-trigger p-button-outlined p-button-sm me-3 flex-shrink-0"
+          :loading="isSessionSwitching" :disabled="isSessionSwitching"
           @click="openSessionSwitchPanel($event)" />
         <Inplace :closable="true">
           <template #display>
@@ -178,6 +179,9 @@ export default {
     },
     unsavedChangesWarning() {
       return this.unsavedChanges && window.location.hostname !== 'localhost'
+    },
+    isSessionSwitching() {
+      return this.$root.isSessionLoading
     },
   },
   methods: {

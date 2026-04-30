@@ -73,6 +73,9 @@ export default {
     dataFetched() {
       return this.dataFetchedCount === 6
     },
+    isSessionLoading() {
+      return this.sessionFetchDepth > 0
+    },
     isPublicMode() {
       return this.$route && (this.$route.name === 'inventories_public' || this.$route.query?.public === 'true')
     },
@@ -189,9 +192,11 @@ export default {
 
         // Loads associated objects
         if (!session.is_template) {
-          await this.fetchSessionAssociatedObjects('orders', sessionId)
-          await this.fetchSessionAssociatedObjects('notes', sessionId)
-          await this.fetchSessionAssociatedObjects('inventories', sessionId)
+          await Promise.all([
+            this.fetchSessionAssociatedObjects('orders', sessionId),
+            this.fetchSessionAssociatedObjects('notes', sessionId),
+            this.fetchSessionAssociatedObjects('inventories', sessionId),
+          ])
         }
 
         this.sessions[sessionId] = session

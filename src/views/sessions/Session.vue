@@ -8,7 +8,10 @@
   </HelpMessage>
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
-    <div class="h-100" style="min-height: 0;" v-if="$root.isSessionFullyLoaded()">
+    <div v-if="showSessionSpinner" class="h-100 d-flex align-items-center justify-content-center" style="min-height: 0;">
+      <Spinner />
+    </div>
+    <div class="h-100" style="min-height: 0;" v-else>
       <router-view v-slot="{ Component, route }">
         <KeepAlive :key="String(route.params.id)">
           <component :is="Component" v-if="isCacheableSessionRoute(route.name)" :key="route.name" />
@@ -21,6 +24,7 @@
 
 <script>
 import { computed } from 'vue'
+import Spinner from '@/components/Spinner.vue'
 import SessionMenu from './SessionMenu.vue'
 
 const CACHEABLE_SESSION_ROUTES = [
@@ -32,7 +36,7 @@ const CACHEABLE_SESSION_ROUTES = [
 ]
 
 export default {
-  components: { SessionMenu },
+  components: { SessionMenu, Spinner },
   provide() {
     return {
       sessionDays: computed(() => this.sessionDays),
@@ -100,6 +104,9 @@ export default {
     },
     contentFullPage() {
       return this.$route.name !== 'session_orders'
+    },
+    showSessionSpinner() {
+      return this.$root.isSessionLoading || !this.$root.isSessionFullyLoaded()
     },
   },
   async created() {
