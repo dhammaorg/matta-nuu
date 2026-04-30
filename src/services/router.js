@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import HomeRedirect from '@/views/HomeRedirect.vue'
 import SessionsIndex from '@/views/sessions/SessionsIndex.vue'
 import Session from '@/views/sessions/Session.vue'
 import SessionOverview from '@/views/sessions/SessionOverview.vue'
@@ -43,6 +44,11 @@ const routes = [
   },
   {
     path: '/',
+    name: 'home',
+    component: HomeRedirect,
+  },
+  {
+    path: '/sessions',
     name: 'sessions',
     component: SessionsIndex,
   },

@@ -15,6 +15,7 @@ import Toast from 'primevue/toast'
 import supabase from '@/services/supabase'
 import Menu from '@/views/Menu.vue'
 import Spinner from '@/components/Spinner.vue'
+import { writeLastSessionId } from '@/services/session-nav-storage'
 
 const emptySession = {
   rows: [], events: [], realStocks: {}, buys: {}, products: {},
@@ -24,6 +25,7 @@ export default {
   data() {
     return {
       dataFetchedCount: 0,
+      sessionFetchDepth: 0,
       products: {},
       suppliers: {},
       recipies: {},
@@ -147,7 +149,7 @@ export default {
           })
           this.handleDataFetched()
         })
-      this.$db.from('sessions').select('id, name, is_template, events')
+      this.$db.from('sessions').select('id, name, is_template, events, starred, created_at')
         .match({ user_id: this.user.id }).order('id', { ascending: false })
         .then((result) => {
           result.data.forEach((session) => {
@@ -171,32 +173,40 @@ export default {
     // so we need to fetch again the full session individually
     async fetchSession(sessionId = parseInt(this.$route.params.id, 10)) {
       if (this.isSessionFullyLoaded(sessionId)) return this.sessions[sessionId]
-      const { error, data } = await this.$db.from('sessions').select().match({ id: sessionId }).single()
-      if (error) return this.toastError(error)
-      // Adds default values
-      const session = {
-        ...{
-          realStocks: {}, rows: [], events: [], buys: {},
-        },
-        ...data,
+      this.sessionFetchDepth += 1
+      try {
+        const { error, data } = await this.$db.from('sessions').select().match({ id: sessionId }).single()
+        if (error) return this.toastError(error)
+        // Adds default values
+        const session = {
+          ...{
+            realStocks: {}, rows: [], events: [], buys: {},
+          },
+          ...data,
+        }
+
+        session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
+
+        // Loads associated objects
+        if (!session.is_template) {
+          await this.fetchSessionAssociatedObjects('orders', sessionId)
+          await this.fetchSessionAssociatedObjects('notes', sessionId)
+          await this.fetchSessionAssociatedObjects('inventories', sessionId)
+        }
+
+        this.sessions[sessionId] = session
+        this.initProductsForSession()
+        this.fullyLoadedSessions.push(sessionId)
+        return session
+      } finally {
+        this.sessionFetchDepth = Math.max(0, this.sessionFetchDepth - 1)
       }
-
-      session.events.forEach((e) => { e.start_date = new Date(e.start_date) })
-
-      // Loads associated objects
-      if (!session.is_template) {
-        await this.fetchSessionAssociatedObjects('orders')
-        await this.fetchSessionAssociatedObjects('notes')
-        await this.fetchSessionAssociatedObjects('inventories')
-      }
-
-      this.sessions[sessionId] = session
-      this.initProductsForSession()
-      this.fullyLoadedSessions.push(sessionId)
-      return session
     },
-    async fetchSessionAssociatedObjects(objectName) {
-      const result = await this.$db.from(objectName).select().match({ session_id: this.$route.params.id })
+    persistLastSessionId(sessionId) {
+      writeLastSessionId(sessionId)
+    },
+    async fetchSessionAssociatedObjects(objectName, sessionId = parseInt(this.$route.params.id, 10)) {
+      const result = await this.$db.from(objectName).select().match({ session_id: sessionId })
       if (result.error) return this.toastError(result.error)
       result.data.forEach((obj) => {
         if (!this.$root[objectName][obj.id]) {

@@ -9,7 +9,7 @@
 
   <div :class="contentFullPage ? 'page-full-content' : 'page-content'">
     <div class="h-100" style="min-height: 0;" v-if="$root.isSessionFullyLoaded()">
-      <router-view></router-view>
+      <router-view :key="`${$route.name}-${$route.params.id}`"></router-view>
     </div>
   </div>
 </template>
@@ -87,7 +87,16 @@ export default {
   },
   async created() {
     await this.$root.fetchSession()
+    this.$root.persistLastSessionId(parseInt(this.$route.params.id, 10))
     this.initDaysValuesForEachRow()
+  },
+  async beforeRouteUpdate(to, from, next) {
+    if (to.params.id !== from.params.id) {
+      await this.$root.fetchSession(parseInt(to.params.id, 10))
+      this.$root.persistLastSessionId(parseInt(to.params.id, 10))
+      this.initDaysValuesForEachRow()
+    }
+    next()
   },
   methods: {
     initDaysValuesForEachRow() {

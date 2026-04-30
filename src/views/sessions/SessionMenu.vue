@@ -1,22 +1,57 @@
 <template>
   <div class="submenu px-3 d-flex align-items-center d-print-none overflow-auto flex-shrink-0">
     <h2 v-if="session.is_template" class="flex-grow-1 py-2">Event Template</h2>
-    <div v-else class="d-flex justify-content-center flex-shrink-0">
-      <Inplace :closable="true">
-        <template #display>
-          <h2 class="m-0 me-3" title="Edit">
-            {{ session.name }}
-            <span class="ms-2 pi pi-pencil xs"></span>
-          </h2>
-        </template>
-        <template #content>
-          <InputText v-model="session.name" autoFocus />
-        </template>
-      </Inplace>
-    </div>
-    <div class="flex-grow-1 flex-shrink-0 text-center" v-if="!session.is_template">
-      <TabMenu :model="items" class="d-flex justify-content-center" />
-    </div>
+    <template v-else>
+      <div class="session-context d-flex align-items-center flex-shrink-0">
+        <Button type="button" label="Switch" icon="pi pi-arrow-right-arrow-left" iconPos="left"
+          class="session-switch-trigger p-button-outlined p-button-sm me-3 flex-shrink-0"
+          @click="openSessionSwitchPanel($event)" />
+        <Inplace :closable="true">
+          <template #display>
+            <h2 class="m-0" title="Edit Name">
+              {{ session.name }}
+              <span class="ms-2 pi pi-pencil xs"></span>
+            </h2>
+          </template>
+          <template #content>
+            <InputText v-model="session.name" autoFocus />
+          </template>
+        </Inplace>
+
+        <Button type="button" :icon="isSessionStarred(session) ? 'pi pi-star-fill' : 'pi pi-star'"
+          class="session-star-toggle p-button-text ms-2 pb-2 p-button-sm flex-shrink-0"
+          :class="{ 'is-starred': isSessionStarred(session) }"
+          v-tooltip.top="isSessionStarred(session) ? 'Remove star' : 'Star session'"
+          @click.stop="toggleSessionStarred(session)" />
+
+        <OverlayPanel ref="sessionPanel" appendTo="body" class="session-switch-overlay" @show="onSessionSwitchShow">
+          <div class="session-switch-panel-inner">
+            <Listbox v-model="switchPanelSelection" :options="sortedSessionSwitchOptions" optionLabel="name"
+              dataKey="id" filter filterPlaceholder="Search by name…" emptyFilterMessage="No sessions match."
+              emptyMessage="No sessions yet." listStyle="max-height: 240px" class="w-100 session-switch-listbox mb-2"
+              @change="onSessionListboxChange">
+              <template #option="{ option }">
+                <div class="d-flex align-items-center w-100 gap-3">
+                  <i v-if="option.starred === true" class="pi pi-star-fill text-warning flex-shrink-0"
+                    title="Starred session" aria-label="Starred session" style="font-size: .85rem;" />
+                  <span class="text-truncate">{{ option.name }}</span>
+                  <i v-if="Number($route.params.id) === Number(option.id)" class="pi pi-check text-primary ms-auto"
+                    aria-hidden="true" />
+                </div>
+              </template>
+            </Listbox>
+            <Button type="button" label="New session"
+              class="p-button-secondary p-button-sm w-100 justify-content-start mt-2"
+              @click="openNewSessionFromSwitcher" />
+            <Button type="button" label="Manage all sessions"
+              class="mt-2 p-button-sm p-button-primary w-100 justify-content-start" @click="goSessionsIndex()" />
+          </div>
+        </OverlayPanel>
+      </div>
+      <div class="flex-grow-1 flex-shrink-0 text-center">
+        <TabMenu :model="tabMenuItems" class="d-flex justify-content-center" />
+      </div>
+    </template>
     <div class="d-flex">
       <template v-if="['session_orders', 'session_order'].includes($route.name)">
         <Button label="New Order" icon="pi pi-plus" class="btn-new-order p-button-outlined p-button-sm"
@@ -31,29 +66,29 @@
     </div>
 
     <OrderNewDialog ref="orderForm" :days="sessionDays" />
+    <SessionNew ref="sessionNewModal" />
   </div>
 </template>
 
 <script>
 import TabMenu from 'primevue/tabmenu'
 import Inplace from 'primevue/inplace'
+import OverlayPanel from 'primevue/overlaypanel'
+import Listbox from 'primevue/listbox'
 import OrderNewDialog from './OrderNewDialog.vue'
+import SessionNew from './SessionNew.vue'
 
 export default {
   inject: ['sessionDays'],
-  components: { TabMenu, Inplace, OrderNewDialog },
+  components: {
+    TabMenu, Inplace, OrderNewDialog, OverlayPanel, Listbox, SessionNew,
+  },
   data() {
     return {
-      items: [
-        { label: 'Overview', icon: 'pi pi-compass', to: { name: 'session_overview', params: { id: this.$route.params.id } } },
-        { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id: this.$route.params.id } } },
-        { label: 'Inventories', icon: 'pi pi-file-edit', to: { name: 'session_inventories', params: { id: this.$route.params.id } } },
-        { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id: this.$route.params.id } } },
-        { label: 'Orders', icon: 'pi pi-dollar', to: { name: 'session_orders', params: { id: this.$route.params.id } } },
-      ],
       saving: false,
       history: [],
       unsavedChanges: false,
+      switchPanelSelection: null,
     }
   },
   mounted() {
@@ -73,11 +108,126 @@ export default {
     session() {
       return this.$root.session
     },
+    tabMenuItems() {
+      const id = this.$route.params.id
+      return [
+        { label: 'Overview', icon: 'pi pi-compass', to: { name: 'session_overview', params: { id } } },
+        { label: 'Schedule', icon: 'pi pi-calendar', to: { name: 'session_schedule', params: { id } } },
+        { label: 'Inventories', icon: 'pi pi-file-edit', to: { name: 'session_inventories', params: { id } } },
+        { label: 'Stocks', icon: 'pi pi-box', to: { name: 'session_stocks', params: { id } } },
+        { label: 'Orders', icon: 'pi pi-dollar', to: { name: 'session_orders', params: { id } } },
+      ]
+    },
+    sortedSessionSwitchOptions() {
+      return this.$root.sessionsArray.slice().sort((a, b) => {
+        if (this.isSessionStarred(a) !== this.isSessionStarred(b)) {
+          return this.isSessionStarred(a) ? -1 : 1
+        }
+        const createdAtA = new Date(a.created_at || 0).getTime()
+        const createdAtB = new Date(b.created_at || 0).getTime()
+        if (createdAtA !== createdAtB) return createdAtB - createdAtA
+        return Number(b.id) - Number(a.id)
+      })
+    },
     unsavedChangesWarning() {
       return this.unsavedChanges && window.location.hostname !== 'localhost'
     },
   },
   methods: {
+    isSessionStarred(session) {
+      return session?.starred === true
+    },
+    syncSwitchPanelSelection() {
+      const id = parseInt(this.$route.params.id, 10)
+      const list = this.sortedSessionSwitchOptions
+      this.switchPanelSelection = list.find((s) => Number(s.id) === id) ?? null
+    },
+    toggleSessionStarred(session) {
+      this.dbUpdate('sessions', { id: session.id, starred: !this.isSessionStarred(session) })
+    },
+    openSessionSwitchPanel(event) {
+      this.syncSwitchPanelSelection()
+      this.$refs.sessionPanel.toggle(event)
+    },
+    onSessionSwitchShow() {
+      this.syncSwitchPanelSelection()
+    },
+    onSessionListboxChange({ value }) {
+      if (!value) return
+      this.goToSession(value)
+    },
+    openNewSessionFromSwitcher() {
+      this.$refs.sessionPanel.hide()
+      this.$refs.sessionNewModal.open({})
+    },
+    goToSession(sess) {
+      const newId = sess.id
+      const currentId = parseInt(this.$route.params.id, 10)
+      if (newId === currentId) {
+        this.$refs.sessionPanel.hide()
+        return
+      }
+      const run = () => {
+        this.$refs.sessionPanel.hide()
+        this.syncSwitchPanelSelection()
+        this.$root.persistLastSessionId(newId)
+        const name = this.$route.name
+        if (['session_overview', 'session_schedule', 'session_stocks', 'session_orders', 'session_inventories'].includes(name)) {
+          this.$router.push({ name, params: { id: newId } })
+          return
+        }
+        if (name === 'session_order') {
+          this.$router.push({ name: 'session_orders', params: { id: newId } })
+          return
+        }
+        if (name === 'session_inventory') {
+          this.$router.push({ name: 'session_inventories', params: { id: newId } })
+          return
+        }
+        if (name === 'inventories_public') {
+          this.$router.push({ name: 'inventories_public', params: { id: newId } })
+          return
+        }
+        this.$router.push({ name: 'session_overview', params: { id: newId } })
+      }
+      if (this.unsavedChanges) {
+        this.$confirm.require({
+          message: 'You have unsaved changes !',
+          acceptLabel: 'Quit without saving',
+          rejectLabel: 'Cancel',
+          header: 'Warning',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            this.$root.fullyLoadedSessions = this.$root.fullyLoadedSessions.filter((id) => id !== this.session.id)
+            run()
+          },
+        })
+        return
+      }
+      run()
+    },
+    goSessionsIndex() {
+      const run = () => {
+        this.$refs.sessionPanel.hide()
+        this.syncSwitchPanelSelection()
+        this.$router.push({ name: 'sessions' })
+      }
+      if (this.unsavedChanges) {
+        this.$confirm.require({
+          message: 'You have unsaved changes !',
+          acceptLabel: 'Quit without saving',
+          rejectLabel: 'Cancel',
+          header: 'Warning',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            this.$root.fullyLoadedSessions = this.$root.fullyLoadedSessions.filter((id) => id !== this.session.id)
+            run()
+          },
+        })
+        return
+      }
+      run()
+    },
     async save() {
       this.saving = true
       // For template, session name is the event template name
@@ -100,6 +250,11 @@ export default {
     },
   },
   watch: {
+    '$route.params.id'() {
+      this.history = []
+      this.unsavedChanges = false
+      this.switchPanelSelection = null
+    },
     session: {
       deep: true,
       handler() {
@@ -155,7 +310,61 @@ $inactive-color: var(--indigo-100);
   }
 }
 
+.session-context {
+  min-width: 0;
+}
+
+.session-switch-trigger {
+  color: var(--indigo-50) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: #fff !important;
+  }
+}
+
+.session-star-toggle {
+  color: var(--indigo-50) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  &.is-starred {
+    color: #facc15 !important;
+  }
+}
+
 .btn-new-order {
   background-color: var(--surface-0) !important;
+}
+</style>
+
+<style lang='scss'>
+.session-switch-overlay.p-overlaypanel .p-overlaypanel-content {
+  padding: 0;
+  border-radius: var(--border-radius, 8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.session-switch-panel-inner {
+  padding: 0.85rem 1rem;
+  width: min(21rem, 92vw);
+}
+
+.session-switch-listbox {
+  :deep(.p-listbox-filter-container) .p-inputtext {
+    padding-left: 1.85rem;
+  }
+
+  :deep(.p-listbox-filter-icon) {
+    color: var(--text-color-secondary);
+  }
+
+  :deep(.p-listbox-list .p-listbox-item) {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
 }
 </style>

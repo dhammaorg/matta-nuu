@@ -47,7 +47,7 @@ export default {
       if (error) this.toastError(error)
       else {
         this.$root.user = user
-        this.$router.push({ name: 'sessions' })
+        this.$router.push({ name: 'home' })
       }
     },
   },

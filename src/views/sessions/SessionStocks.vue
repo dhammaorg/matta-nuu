@@ -91,7 +91,7 @@
             :style="data.values[field].stockDiff > 0.2 && 'color: var(--orange-600) !important'"
             :title="data.values[field].stockDiff > 0.2 ? `Theoric stock was ${data.values[field].theoric.round()} ${data.product_unit}` : null">
             <template v-if="day.id == 'initial'">{{ (data.values[field].real || 0).round()
-            }}</template>
+              }}</template>
             <template v-else>{{ data.values[field].value.round() }}</template>
           </span>
           <span class="stock-value-container"></span>
@@ -126,7 +126,7 @@
 
     <template #groupheader="{ data }">
       <span style="position: sticky; left: .7rem">{{ (data[options.groupBy] || {}).name || "Others"
-      }}</span>
+        }}</span>
     </template>
 
   </DataTable>

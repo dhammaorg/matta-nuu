@@ -33,14 +33,19 @@
 import Menubar from 'primevue/menubar'
 import ToggleButton from 'primevue/togglebutton'
 import TieredMenu from 'primevue/tieredmenu'
+import {
+  readLastSessionId,
+  readLastSessionRouteName,
+  resolveDefaultSessionId,
+} from '@/services/session-nav-storage'
 import supabase from '@/services/supabase'
 
 export default {
   components: { Menubar, ToggleButton, TieredMenu },
-  data() {
-    return {
-      navItems: [
-        { label: 'Sessions', to: { name: 'sessions' }, icon: 'pi pi-folder-open' },
+  computed: {
+    navItems() {
+      return [
+        { label: 'Sessions', icon: 'pi pi-folder-open', command: () => this.goSessionsShortcut() },
         { label: 'Products', to: { name: 'products' }, icon: 'pi pi-apple' },
         { label: 'Suppliers', to: { name: 'suppliers' }, icon: 'pi pi-shopping-cart' },
         { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
@@ -53,17 +58,28 @@ export default {
             { label: 'Storage Areas', to: { name: 'categories', params: { type: 'StorageArea' } } },
           ],
         },
-      ],
-      userItems: [
-        { label: this.$root.userData.account_name, disabled: true },
+      ]
+    },
+    userItems() {
+      return [
+        { label: this.$root.userData.account_name || 'Account', disabled: true },
         { separator: true },
         { label: 'Settings', to: { name: 'profile' }, icon: 'pi pi-cog' },
         { label: 'Import Data', to: { name: 'import' }, icon: 'pi pi-cloud-download' },
         { label: 'Logout', command: () => { this.logout() }, icon: 'pi pi-sign-out' },
-      ],
-    }
+      ]
+    },
   },
   methods: {
+    goSessionsShortcut() {
+      let id = readLastSessionId()
+      const { sessions } = this.$root
+      if (!id || !sessions[id]) id = resolveDefaultSessionId(sessions)
+      if (id && sessions[id]) {
+        this.$router.push({ name: readLastSessionRouteName(), params: { id } })
+      }
+      else this.$router.push({ name: 'sessions' })
+    },
     async logout() {
       await supabase.auth.signOut()
       this.$root.user = null

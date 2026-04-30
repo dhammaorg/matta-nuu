@@ -148,7 +148,7 @@ export default {
           } else if (payload.eventType == 'UPDATE') {
             const oldObject = this.fixData(payload.old, payload.table)
             const currentObject = this.$root.sessions[newObject.id]
-            let attrs = ['name', 'events', 'rows']
+            let attrs = ['name', 'events', 'rows', 'starred']
             attrs.forEach((attr) => {
               if (!this.deepEqual(oldObject[attr], newObject[attr])) {
                 currentObject[attr] = newObject[attr]

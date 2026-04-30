@@ -36,10 +36,11 @@
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
                 {{ event.name }}
-                <span v-if="event.people_count || (event.people_count_by_day && Object.keys(event.people_count_by_day).length)"
+                <span
+                  v-if="event.people_count || (event.people_count_by_day && Object.keys(event.people_count_by_day).length)"
                   class="fw-normal ms-2 xs d-inline-flex align-items-center">
                   <template v-if="event.people_count_by_day && event.days && event.days.length">
-                    {{ event.days.map((_, i) => getPeopleCountForDay(event, i)).join(' / ') }}
+                    {{event.days.map((_, i) => getPeopleCountForDay(event, i)).join(' / ')}}
                   </template>
                   <template v-else>{{ event.people_count }}</template>
                   <span class="pi pi-users xs ms-1"></span>

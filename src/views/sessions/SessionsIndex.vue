@@ -17,16 +17,21 @@
       </span>
     </div>
 
-    <DataTable :value="$root.sessionsArray" dataKey="id" :paginator="true" :rows="20" :filters="filters">
+    <DataTable class="table-clickable" :value="$root.sessionsArray" dataKey="id" :paginator="true" :rows="20"
+      :filters="filters" @row-click="onRowClick">
 
       <Column field="name" header="Name" :sortable="true"></Column>
       <Column class="text-end">
         <template #body="{ data }">
-          <router-link :to="{ name: 'session_overview', params: { id: data.id } }">
-            <Button icon="pi pi-pencil" class="p-button-text" v-tooltip="'Edit'" />
-          </router-link>
-          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'" @click="duplicateSession(data)" />
-          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteSession(data)"
+          <Button :icon="isSessionStarred(data) ? 'pi pi-star-fill' : 'pi pi-star'"
+            class="p-button-text star-toggle-button" :style="isSessionStarred(data) ? 'color: #facc15' : ''"
+            v-tooltip.top="isSessionStarred(data) ? 'Remove star' : 'Star session'"
+            @click.stop="toggleSessionStarred(data)" />
+
+          <Button icon="pi pi-arrow-right" class="p-button-text" v-tooltip="'Open'" @click.stop="openSession(data)" />
+          <Button icon="pi pi-copy" class="p-button-text" v-tooltip="'Duplicate'"
+            @click.stop="duplicateSession(data)" />
+          <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click.stop="deleteSession(data)"
             v-tooltip="'Delete'" />
         </template>
       </Column>
@@ -51,6 +56,18 @@ export default {
     this.initFilters()
   },
   methods: {
+    isSessionStarred(session) {
+      return session.starred === true
+    },
+    onRowClick(e) {
+      this.openSession(e.data)
+    },
+    openSession(session) {
+      this.$router.push({ name: 'session_overview', params: { id: session.id } })
+    },
+    toggleSessionStarred(session) {
+      this.dbUpdate('sessions', { id: session.id, starred: !this.isSessionStarred(session) })
+    },
     deleteSession(session) {
       this.$confirm.require({
         message: `Are you sure you want to delete ${session.name} ?`,
@@ -76,3 +93,5 @@ export default {
   },
 }
 </script>
+
+<style lang='scss' scoped></style>
