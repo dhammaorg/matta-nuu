@@ -68,12 +68,10 @@
 
         <!-- Instructions -->
         <div class="instructions" v-if="!recipie.forDayAfter && recipie.instructions">
-          <h3>Instructions</h3>
-          <div class="instructions-content" v-html="recipie.instructions"></div>
+          <div class="instructions-content mt-2 pt-1" v-html="recipie.instructions"></div>
         </div>
         <div class="instructions" v-if="recipie.forDayAfter && recipie.instructions_day_before">
-          <h3>Instructions</h3>
-          <div class="instructions-content" v-html="recipie.instructions_day_before"></div>
+          <div class="instructions-content mt-2 pt-1" v-html="recipie.instructions_day_before"></div>
         </div>
       </div>
     </template>
