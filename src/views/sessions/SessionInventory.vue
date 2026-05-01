@@ -32,7 +32,10 @@
 
     <!-- Choose Area -->
     <template v-if="!currentArea">
-      <div v-if="areas.length == 0">
+      <div v-if="isInventoryLoading" class="content d-flex align-items-center justify-content-center py-5">
+        <Spinner />
+      </div>
+      <div v-else-if="areas.length == 0">
         <h3>No products available. Please check your configuration</h3>
       </div>
       <div v-else class="content">
@@ -145,13 +148,14 @@ import RadioButton from 'primevue/radiobutton'
 import StockMixin from '@/services/stocks-mixin'
 import { normalizeQuantityUnit } from '@/services/units'
 import InventoryNewDialog from './InventoryNewDialog.vue'
-import SelectButton from 'primevue/selectbutton';
+import SelectButton from 'primevue/selectbutton'
+import Spinner from '@/components/Spinner.vue'
 
 export default {
   inject: ['sessionInventories'],
   mixins: [StockMixin],
   components: {
-    InputNumber, RadioButton, Tag, InventoryNewDialog, SelectButton,
+    InputNumber, RadioButton, Tag, InventoryNewDialog, SelectButton, Spinner,
   },
   data() {
     return {
@@ -197,7 +201,9 @@ export default {
       return this.areas.filter((area) => this.inventory.completed_storage_areas_ids.includes(area.id.toString()))
     },
     products() {
-      let result = this.sessionProducts.map((productId) => this.$root.getProduct(productId))
+      let result = this.sessionProducts
+        .map((productId) => this.$root.getProduct(productId))
+        .filter((product) => product.id)
       if (this.inventory.supplier_ids.length > 0) {
         result = result.filter((product) => this.inventory.supplier_ids.includes(product.supplier_id))
       }
@@ -247,6 +253,9 @@ export default {
     },
     isOnlyOtherArea() {
       return this.areas.length === 1 && this.areas[0].id === 'other'
+    },
+    isInventoryLoading() {
+      return this.stocksLoading || !this.stocksReady
     },
   },
   methods: {

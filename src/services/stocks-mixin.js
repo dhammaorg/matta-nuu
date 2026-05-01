@@ -8,6 +8,8 @@ export default {
     return {
       stocks: [],
       sessionProducts: [],
+      stocksLoading: false,
+      stocksReady: false,
       realtimeChannels: [],
       deferredRecalculationFrame: null,
       deferredRecalculationTimeout: null,
@@ -67,22 +69,32 @@ export default {
     },
     leaveStocksView() {
       this.clearDeferredRecalculation()
+      this.stocksLoading = false
       this.removeRealtimeChannels()
     },
     deferReCalculateAll() {
       this.clearDeferredRecalculation()
+      this.stocksLoading = true
       const runRecalculation = () => {
         this.deferredRecalculationTimeout = null
-        this.reCalculateAll()
+        this.runReCalculateAll()
       }
       if (typeof window !== 'undefined' && window.requestAnimationFrame) {
         this.deferredRecalculationFrame = window.requestAnimationFrame(() => {
           this.deferredRecalculationFrame = null
-          this.deferredRecalculationTimeout = window.setTimeout(runRecalculation, 0)
+          runRecalculation()
         })
         return
       }
       this.deferredRecalculationTimeout = setTimeout(runRecalculation, 0)
+    },
+    runReCalculateAll() {
+      try {
+        this.reCalculateAll()
+        this.stocksReady = true
+      } finally {
+        this.stocksLoading = false
+      }
     },
     clearDeferredRecalculation() {
       if (this.deferredRecalculationFrame !== null && typeof window !== 'undefined') {
