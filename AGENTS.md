@@ -174,8 +174,6 @@ This is a frontend-only project. When making changes, **try to verify visually i
 - Navigate to `http://localhost:8080/`
 - Login with `test@dhamma.org` / `behappy`
 - For session-related features (stock, order, schedule...), use session ID `235`: `http://localhost:8080/#/-ssions/235/overview`
-- Use the browser MCP tools to navigate, snapshot, and verify UI changes
-- Open the browser so user can see what you are doing
 
 ## Key Reminders
 
