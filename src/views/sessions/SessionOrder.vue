@@ -469,7 +469,7 @@ export default {
   }
 
   .p-multiselect {
-    color: #495057;
+    color: #4f4d47;
   }
 }
 

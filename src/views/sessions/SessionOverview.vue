@@ -274,7 +274,7 @@ export default {
 
 <style lang="scss">
 .fc {
-  --fc-today-bg-color: rgba(255, 220, 40, .35);
+  --fc-today-bg-color: rgba(183, 135, 48, .20);
 }
 
 .fc .fc-daygrid-day-number {

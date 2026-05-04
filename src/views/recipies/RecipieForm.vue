@@ -293,7 +293,7 @@ export default {
     .btn-edit-product {
       border-radius: 0 !important;
       background-color: transparent;
-      border-color: #ced4da;
+      border-color: #d4c5a9;
       border-left: none !important;
       width: 2.5rem !important;
       justify-content: flex-start;
@@ -307,7 +307,7 @@ export default {
       &:hover {
         background-color: transparent !important;
         color: var(--primary-color);
-        border-color: #ced4da;
+        border-color: #d4c5a9;
       }
     }
   }

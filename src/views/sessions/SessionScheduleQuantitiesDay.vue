@@ -180,7 +180,7 @@ export default {
     background-color: var(--bluegray-50);
 
     @media print {
-      background-color: #E7E7E7;
+      background-color: #e8d9c2;
     }
   }
 

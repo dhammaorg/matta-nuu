@@ -2,7 +2,7 @@
   <!-- Simplified menu for public mode -->
   <div v-if="$root.isPublicMode" class="p-menubar d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
-      <img src="../assets/logo.png" height="50" style="margin-top: -5px" />
+      <span class="app-logo">Matta Nuu</span>
     </div>
     <span v-if="$route.name === 'inventories_public'">{{ this.$root.userData.account_name }}</span>
     <Button v-else label="Inventories" icon="pi pi-home" class="p-button-text"
@@ -13,8 +13,8 @@
   <!-- Standard Menu -->
   <Menubar v-else :model="navItems" class="d-print-none">
     <template #start>
-      <div class="d-flex align-items-center">
-        <img src="../assets/logo.png" class="me-4" height="50" style="margin-top: -5px" />
+      <div class="d-flex align-items-center me-4">
+        <span class="app-logo">Matta Nuu</span>
       </div>
     </template>
     <template #end>
@@ -93,11 +93,13 @@ export default {
 .matta-nuu .p-menubar {
   border-radius: 0;
   border: none;
-  background: var(--bluegray-900);
-  color: var(--indigo-100);
+  border-bottom: 1px solid #d4c5a9;
+  background: #f0e7d5;
+  color: #1e3461;
+  padding: 0.5rem 1rem;
 
   h1 {
-    color: var(--indigo-100);
+    color: #1e3461;
   }
 
   .p-submenu-list {
@@ -109,17 +111,17 @@ export default {
   box-shadow: none !important;
 
   &:hover {
-    background-color: var(--primary-color) !important;
+    background-color: rgba(156, 107, 20, 0.08) !important;
 
     .p-menuitem-icon,
     .p-menuitem-text {
-      color: var(--surface-0) !important;
+      color: #9c6b14 !important;
     }
   }
 
   .p-menuitem-icon,
   .p-menuitem-text {
-    color: var(--indigo-200) !important;
+    color: #1e3461 !important;
   }
 
   .p-menuitem-text {
@@ -134,12 +136,26 @@ export default {
 }
 
 .p-menubar .p-button.p-button-text {
-  color: var(--indigo-200);
+  color: #1e3461;
+
+  &:hover {
+    color: #9c6b14;
+    background: rgba(156, 107, 20, 0.08) !important;
+  }
 }
 
 .btn-user {
-  background: var(--indigo-200);
-  color: var(--bluegray-900);
+  background: #1e3461;
+  color: #f0e7d5;
   border: none;
+}
+
+.app-logo {
+  font-family: 'Amiri', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #b78730;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 </style>

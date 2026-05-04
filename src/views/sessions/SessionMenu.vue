@@ -425,7 +425,7 @@ $inactive-color: var(--indigo-100);
   }
 
   &.is-starred {
-    color: #facc15 !important;
+    color: #b78730 !important;
   }
 }
 

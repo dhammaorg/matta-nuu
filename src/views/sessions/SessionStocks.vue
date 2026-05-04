@@ -269,7 +269,7 @@ th.top-left-cell {
       justify-content: center;
 
       &.bought {
-        color: #22C55E;
+        color: #4a7c59;
         font-size: .8rem;
         font-weight: bold;
       }

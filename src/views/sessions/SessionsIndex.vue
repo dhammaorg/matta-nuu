@@ -24,7 +24,7 @@
       <Column class="text-end">
         <template #body="{ data }">
           <Button :icon="isSessionStarred(data) ? 'pi pi-star-fill' : 'pi pi-star'"
-            class="p-button-text star-toggle-button" :style="isSessionStarred(data) ? 'color: #facc15' : ''"
+            class="p-button-text star-toggle-button" :style="isSessionStarred(data) ? 'color: #b78730' : ''"
             v-tooltip.top="isSessionStarred(data) ? 'Remove star' : 'Star session'"
             @click.stop="toggleSessionStarred(data)" />
 

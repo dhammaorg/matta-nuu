@@ -431,7 +431,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--surface-border, #dee2e6);
+    border-bottom: 1px solid var(--surface-border, #d4c5a9);
     gap: 0.5rem;
   }
 
