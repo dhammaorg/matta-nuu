@@ -39,8 +39,8 @@
   --surface-800: #4d4436;
   --surface-900: #2a2318;
 
-  // Text → stone
-  --text-color: #4f4d47;
+  // Text
+  --text-color: #212529;
   --text-color-secondary: #7a7569;
 
   // Indigo scale → navy (used by labels, scrollbar, session sub-nav)
@@ -87,7 +87,7 @@ h1 {
 }
 
 h2 {
-  font-family: 'Amiri', serif;
+  font-family: 'Noto Sans', sans-serif;
   color: #1e3461;
 }
 
@@ -399,21 +399,26 @@ label[for] {
 
 // Text / outlined buttons → ochre
 .p-button.p-button-text:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger) {
-  color: #9c6b14 !important;
+  color: #ffffff !important;
+  border-color: #b78730 !important;
+  background-color: #b78730 !important;
 
   &:enabled:hover {
-    background: rgba(156, 107, 20, 0.08) !important;
     color: #9c6b14 !important;
+    border-color: #9c6b14 !important;
+    background-color: #ffffff !important;
   }
 }
 
 .p-button.p-button-outlined:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger) {
-  color: #9c6b14 !important;
-  border-color: #9c6b14 !important;
+  color: #ffffff !important;
+  border-color: #b78730 !important;
+  background-color: #b78730 !important;
 
   &:enabled:hover {
-    background: rgba(156, 107, 20, 0.08) !important;
     color: #9c6b14 !important;
+    border-color: #9c6b14 !important;
+    background-color: #ffffff !important;
   }
 }
 
@@ -458,11 +463,8 @@ label[for] {
 
 // Links (outside buttons) → ochre
 a:not(.p-button):not(.p-menuitem-link) {
-  color: #9c6b14;
-
-  &:hover {
-    color: #7a5410;
-  }
+  color: #212529;
+  font-weight: bolder;
 }
 
 // Active nav links text → ochre

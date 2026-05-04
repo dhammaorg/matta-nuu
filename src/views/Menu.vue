@@ -1,12 +1,20 @@
 <template>
   <!-- Simplified menu for public mode -->
-  <div v-if="$root.isPublicMode" class="p-menubar d-flex justify-content-between align-items-center">
+  <div
+    v-if="$root.isPublicMode"
+    class="p-menubar d-flex justify-content-between align-items-center"
+  >
     <div class="d-flex align-items-center">
       <span class="app-logo">Matta Nuu</span>
     </div>
     <span v-if="$route.name === 'inventories_public'">{{ this.$root.userData.account_name }}</span>
-    <Button v-else label="Inventories" icon="pi pi-home" class="p-button-text"
-      @click="$router.push({ name: 'inventories_public', params: { id: $root.session.id } })" />
+    <Button
+      v-else
+      label="Inventories"
+      icon="pi pi-home"
+      class="p-button-text"
+      @click="$router.push({ name: 'inventories_public', params: { id: $root.session.id } })"
+    />
     <Button icon="pi pi-sign-out" class="p-button-text" @click="logout" />
   </div>
 
@@ -18,12 +26,22 @@
       </div>
     </template>
     <template #end>
-      <ToggleButton v-model="$root.help" class="p-button-sm p-button-text me-3 d-none d-md-inline-block"
-        style="height: 2rem" onLabel="Help" offLabel="Help" onIcon="pi pi-question-circle"
-        offIcon="pi pi-question-circle" />
+      <ToggleButton
+        v-model="$root.help"
+        class="p-button-sm p-button-text me-3 d-none d-md-inline-block"
+        style="height: 2rem"
+        onLabel="Help"
+        offLabel="Help"
+        onIcon="pi pi-question-circle"
+        offIcon="pi pi-question-circle"
+      />
 
-      <Button icon="pi pi-user" @click="this.$refs.menu.toggle($event)" v-if="$root.user"
-        class="btn-user p-button-rounded me-2" />
+      <Button
+        icon="pi pi-user"
+        @click="this.$refs.menu.toggle($event)"
+        v-if="$root.user"
+        class="btn-user p-button-rounded me-2"
+      />
       <TieredMenu ref="menu" :model="userItems" :popup="true" />
     </template>
   </Menubar>
@@ -53,8 +71,14 @@ export default {
         {
           label: 'More',
           items: [
-            { label: 'Product Categories', to: { name: 'categories', params: { type: 'Product' } } },
-            { label: 'Recipie Categories', to: { name: 'categories', params: { type: 'Recipie' } } },
+            {
+              label: 'Product Categories',
+              to: { name: 'categories', params: { type: 'Product' } },
+            },
+            {
+              label: 'Recipie Categories',
+              to: { name: 'categories', params: { type: 'Recipie' } },
+            },
             { label: 'Storage Areas', to: { name: 'categories', params: { type: 'StorageArea' } } },
           ],
         },
@@ -66,7 +90,13 @@ export default {
         { separator: true },
         { label: 'Settings', to: { name: 'profile' }, icon: 'pi pi-cog' },
         { label: 'Import Data', to: { name: 'import' }, icon: 'pi pi-cloud-download' },
-        { label: 'Logout', command: () => { this.logout() }, icon: 'pi pi-sign-out' },
+        {
+          label: 'Logout',
+          command: () => {
+            this.logout()
+          },
+          icon: 'pi pi-sign-out',
+        },
       ]
     },
   },
@@ -77,8 +107,7 @@ export default {
       if (!id || !sessions[id]) id = resolveDefaultSessionId(sessions)
       if (id && sessions[id]) {
         this.$router.push({ name: readLastSessionRouteName(), params: { id } })
-      }
-      else this.$router.push({ name: 'sessions' })
+      } else this.$router.push({ name: 'sessions' })
     },
     async logout() {
       await supabase.auth.signOut()
@@ -89,7 +118,7 @@ export default {
 }
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 .matta-nuu .p-menubar {
   border-radius: 0;
   border: none;
@@ -107,11 +136,11 @@ export default {
   }
 }
 
-.matta-nuu .p-menubar .p-menubar-root-list>.p-menuitem>.p-menuitem-link {
+.matta-nuu .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link {
   box-shadow: none !important;
 
   &:hover {
-    background-color: rgba(156, 107, 20, 0.08) !important;
+    background-color: rgba(0, 0, 0, 0) !important;
 
     .p-menuitem-icon,
     .p-menuitem-text {

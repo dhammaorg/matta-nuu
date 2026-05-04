@@ -11,51 +11,96 @@
     <Spinner />
   </div>
 
-  <DataTable :value="session.rows" dataKey="id" showGridlines v-if="session.events.length > 0 && isMounted"
-    :scrollable="true" scrollHeight="calc(100vh - 11rem)" :class="{ 'hide-dates': !displayDates }"
-    @rowReorder="session.rows = $event.value" editMode="cell" class="editable-cells-table session-table schedule-table"
-    @cell-edit-complete="onCellEditComplete" :rowClass="rowClass">
+  <DataTable
+    :value="session.rows"
+    dataKey="id"
+    showGridlines
+    v-if="session.events.length > 0 && isMounted"
+    :scrollable="true"
+    scrollHeight="calc(100vh - 11rem)"
+    :class="{ 'hide-dates': !displayDates }"
+    @rowReorder="session.rows = $event.value"
+    editMode="cell"
+    class="editable-cells-table session-table schedule-table"
+    @cell-edit-complete="onCellEditComplete"
+    :rowClass="rowClass"
+  >
     <ColumnGroup type="header">
       <Row>
         <!-- Top Left Cell -->
-        <Column class="top-left-cell transparent hide-print" frozen :rowspan="displayDates ? 3 : 2" :colspan="2">
+        <Column
+          class="top-left-cell transparent hide-print"
+          frozen
+          :rowspan="displayDates ? 3 : 2"
+          :colspan="2"
+        >
           <template #header>
             <PrintButton />
             <div class="d-flex flex-column ms-4">
               <NewRowButton @add-row="addRow" />
-              <Button type="button" icon="pi pi-plus" label="Event" class="mt-2 p-button-sm p-button-outlined"
-                @click="$refs.eventForm.show()" v-if="!session.is_template" />
-
+              <Button
+                type="button"
+                icon="pi pi-plus"
+                label="Event"
+                class="mt-2 p-button-sm p-button-outlined"
+                @click="$refs.eventForm.show()"
+                v-if="!session.is_template"
+              />
             </div>
           </template>
         </Column>
         <!-- Event Header -->
-        <Column v-for="(event, index) in session.events" :colspan="event.days.length" :key="event.id"
-          class="event-start event-end header-group event-editor" :class="`event-${event.id}`">
+        <Column
+          v-for="(event, index) in session.events"
+          :colspan="event.days.length"
+          :key="event.id"
+          class="event-start event-end header-group event-editor"
+          :class="`event-${event.id}`"
+        >
           <template #header>
             <div class="d-flex align-items-center w-100">
               <span class="flex-grow-1 text-center">
                 {{ event.name }}
                 <span
-                  v-if="event.people_count || (event.people_count_by_day && Object.keys(event.people_count_by_day).length)"
-                  class="fw-normal ms-2 xs d-inline-flex align-items-center">
+                  v-if="
+                    event.people_count ||
+                    (event.people_count_by_day && Object.keys(event.people_count_by_day).length)
+                  "
+                  class="fw-normal ms-2 xs d-inline-flex align-items-center"
+                >
                   <template v-if="event.people_count_by_day && event.days && event.days.length">
-                    {{event.days.map((_, i) => getPeopleCountForDay(event, i)).join(' / ')}}
+                    {{ event.days.map((_, i) => getPeopleCountForDay(event, i)).join(' / ') }}
                   </template>
                   <template v-else>{{ event.people_count }}</template>
                   <span class="pi pi-users xs ms-1"></span>
                 </span>
               </span>
               <span class="d-print-none btn-on-hover">
-                <Button icon="pi pi-save" @click="$refs.saveTemplate.show(event)"
-                  class="p-button-sm p-button-success p-button-text" v-tooltip.top="'Save as template'"
-                  v-if="!session.is_template" />
-                <Button icon="pi pi-pencil" @click="$refs.eventForm.show(event, session.is_template)"
-                  class="p-button-sm p-button-text" />
-                <Button icon="pi pi-trash" @click="session.events.splice(index, 1)"
-                  class="p-button-sm p-button-danger p-button-text" v-if="!session.is_template" />
-                <Button icon="pi pi-plus" label="Day" class="p-button-sm p-button-secondary btn-add-day"
-                  @click="addDayToEvent(event)" :disabled="disableAddDayFor(event)" />
+                <Button
+                  icon="pi pi-save"
+                  @click="$refs.saveTemplate.show(event)"
+                  class="p-button-sm p-button-success p-button-text"
+                  v-tooltip.top="'Save as template'"
+                  v-if="!session.is_template"
+                />
+                <Button
+                  icon="pi pi-pencil"
+                  @click="$refs.eventForm.show(event, session.is_template)"
+                  class="p-button-sm p-button-text"
+                />
+                <Button
+                  icon="pi pi-trash"
+                  @click="session.events.splice(index, 1)"
+                  class="p-button-sm p-button-danger p-button-text"
+                  v-if="!session.is_template"
+                />
+                <Button
+                  icon="pi pi-plus"
+                  label="Day"
+                  class="p-button-sm p-button-secondary btn-add-day"
+                  @click="addDayToEvent(event)"
+                  :disabled="disableAddDayFor(event)"
+                />
               </span>
             </div>
           </template>
@@ -63,7 +108,11 @@
       </Row>
       <Row>
         <!-- Day Date Header -->
-        <Column v-for="day in sessionDays" :key="`header-date-${day.id}`" :class="[day.class, 'day-date']">
+        <Column
+          v-for="day in sessionDays"
+          :key="`header-date-${day.id}`"
+          :class="[day.class, 'day-date']"
+        >
           <template #header>
             <span>{{ day.dateHeader }}</span>
           </template>
@@ -71,11 +120,24 @@
       </Row>
       <Row>
         <!-- Day Name Header -->
-        <Column v-for="day in sessionDays" :key="`header-${day.id}`" :class="day.class" class="day-label">
+        <Column
+          v-for="day in sessionDays"
+          :key="`header-${day.id}`"
+          :class="day.class"
+          class="day-label"
+        >
           <template #header>
-            <InputText :value="day.label" @change="day.event.days[day.index] = $event.target.value" class="day-input" />
-            <Button icon="pi pi-trash" class="btn-on-hover p-button-danger p-button-text p-0"
-              v-if="day.class.includes('event-end') && day.event.days.length > 1" @click="day.event.days.pop()" />
+            <InputText
+              :value="day.label"
+              @change="day.event.days[day.index] = $event.target.value"
+              class="day-input"
+            />
+            <Button
+              icon="pi pi-trash"
+              class="btn-on-hover p-button-danger p-button-text p-0"
+              v-if="day.class.includes('event-end') && day.event.days.length > 1"
+              @click="day.event.days.pop()"
+            />
           </template>
         </Column>
       </Row>
@@ -88,19 +150,34 @@
       <template #body="{ data }">
         <span v-if="data.type == 'product'">
           {{ $root.getProduct(data.product_id).name }}
-          <span v-if="$root.getProduct(data.product_id).unit">({{ $root.getProduct(data.product_id).unit }})</span>
+          <span v-if="$root.getProduct(data.product_id).unit"
+            >({{ $root.getProduct(data.product_id).unit }})</span
+          >
         </span>
         <span v-else-if="data.type == 'recipie'">{{ $root.getRecipie(data.recipie_id).name }}</span>
         <span v-else class="variable-row-label">{{ data.label }}</span>
         <span class="btn-on-hover d-print-none">
-          <ToggleButton v-model="data.printable" onIcon="pi pi-print" offIcon="pi pi-print slash" @click.stop
-            title="Printable ?" class="p-button-sm" />
-          <Button icon="pi pi-trash" @click.prevent="deleteRow(data)"
-            class=" p-button-small p-button-danger p-button-text" />
+          <ToggleButton
+            v-model="data.printable"
+            onIcon="pi pi-print"
+            offIcon="pi pi-print slash"
+            @click.stop
+            title="Printable ?"
+            class="p-button-sm"
+          />
+          <Button
+            icon="pi pi-trash"
+            @click.prevent="deleteRow(data)"
+            class="p-button-small p-button-danger p-button-text"
+          />
         </span>
       </template>
       <template #editor="{ data }">
-        <InputProduct v-if="data.type == 'product'" v-model="data.product_id" class="editor-sm w-100" />
+        <InputProduct
+          v-if="data.type == 'product'"
+          v-model="data.product_id"
+          class="editor-sm w-100"
+        />
         <InputRecipie v-else-if="data.type == 'recipie'" v-model="data.recipie_id" />
         <InputText v-else v-model="data.label" placeholder="Row Name" />
       </template>
@@ -113,17 +190,27 @@
         <template v-if="data.values[field]">
           <label v-if="data.type == 'products'">
             {{ $root.getProduct(data.values[field].product_id).name }}
-            <span v-if="$root.getProduct(data.values[field].product_id).unit">({{
-              $root.getProduct(data.values[field].product_id).unit }})</span>
+            <span v-if="$root.getProduct(data.values[field].product_id).unit"
+              >({{ $root.getProduct(data.values[field].product_id).unit }})</span
+            >
           </label>
           <label v-if="data.type == 'recipies' && data.values[field].recipie_id">
             {{ $root.getRecipie(data.values[field].recipie_id).name }}
-            <span class="pi pi-clock d-print-none" v-tooltip="'Needed to be prepared the day before'"
+            <span
+              class="pi pi-clock d-print-none"
+              v-tooltip="'Needed to be prepared the day before'"
               style="font-size: 0.7rem"
-              v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"></span>
+              v-if="$root.getRecipie(data.values[field].recipie_id).prepare_day_before"
+            ></span>
           </label>
-          <div class="amount"
-            v-if="data.type == 'recipies' && data.values[field].recipie_id || data.type == 'products' && data.values[field].product_id || ['recipie', 'product'].includes(data.type)">
+          <div
+            class="amount"
+            v-if="
+              (data.type == 'recipies' && data.values[field].recipie_id) ||
+              (data.type == 'products' && data.values[field].product_id) ||
+              ['recipie', 'product'].includes(data.type)
+            "
+          >
             {{ data.values[field].amount }}
           </div>
         </template>
@@ -131,24 +218,46 @@
       <!-- Cell Edit -->
       <template #editor="{ data, field }">
         <div :class="inCellEditorClass(data)">
-          <InputProduct v-if="data.type == 'products'" v-model="data.values[field].product_id" class="w-100" />
-          <InputRecipie v-else-if="data.type == 'recipies'" v-model="data.values[field].recipie_id" />
+          <InputProduct
+            v-if="data.type == 'products'"
+            v-model="data.values[field].product_id"
+            class="w-100"
+          />
+          <InputRecipie
+            v-else-if="data.type == 'recipies'"
+            v-model="data.values[field].recipie_id"
+          />
           <div class="p-inputgroup">
-            <InputNumber v-model="data.values[field].amount" placeholder="Amount" autofocus :maxFractionDigits="2" />
+            <InputNumber
+              v-model="data.values[field].amount"
+              placeholder="Amount"
+              autofocus
+              :maxFractionDigits="2"
+            />
             <span class="p-inputgroup-addon rounded-0 p-0" v-show="data.values[field].product_id">
               {{ $root.getProduct(data.values[field].product_id).unit }}
             </span>
-            <Button icon="pi pi-sync" v-show="data.values[field].recipie_id" class="p-button-secondary"
-              @click="updateRecipieAmounts(data.values[field], getPeopleCountForDay(day.event, day.index))"
-              v-tooltip="'Update recipie to fit with event number of people'" />
+            <Button
+              icon="pi pi-sync"
+              v-show="data.values[field].recipie_id"
+              class="p-button-secondary"
+              @click="
+                updateRecipieAmounts(data.values[field], getPeopleCountForDay(day.event, day.index))
+              "
+              v-tooltip="'Update recipie to fit with event number of people'"
+            />
           </div>
         </div>
       </template>
     </Column>
   </DataTable>
 
-  <EventForm ref="eventForm" @save="createOrUpdateEvent($event)" :disabled-dates="sessionDays.map(d => d.date)"
-    :default-date="sessionDays.length > 1 ? sessionDays.at(-1).date.addDays(1) : null" />
+  <EventForm
+    ref="eventForm"
+    @save="createOrUpdateEvent($event)"
+    :disabled-dates="sessionDays.map((d) => d.date)"
+    :default-date="sessionDays.length > 1 ? sessionDays.at(-1).date.addDays(1) : null"
+  />
 
   <SaveTemplate ref="saveTemplate" />
 </template>
@@ -213,7 +322,9 @@ export default {
     disableAddDayFor(event) {
       // Allow events to overlap only for one day (in case event1 ends on the morning and event2 starts on the afternoon)
       const newDate = event.start_date.addDays(event.days.length - 1)
-      return this.sessionDays.find((day) => day.event !== event && day.date.toDateString() === newDate.toDateString())
+      return this.sessionDays.find(
+        (day) => day.event !== event && day.date.toDateString() === newDate.toDateString()
+      )
     },
     onCellEditComplete(event) {
       // When creating an object from a modal any click on a dropdown inside the modal was
@@ -240,11 +351,17 @@ export default {
     },
     addRow(type) {
       const row = {
-        id: this.newId(this.session.rows), type, label: '', values: {}, printable: true,
+        id: this.newId(this.session.rows),
+        type,
+        label: '',
+        values: {},
+        printable: true,
       }
       this.sessionDays.forEach((day) => {
         // init amounts with event people_count (per day when day-by-day)
-        const amount = ['recipie', 'recipies'].includes(type) ? this.getPeopleCountForDay(day.event, day.index) : null
+        const amount = ['recipie', 'recipies'].includes(type)
+          ? this.getPeopleCountForDay(day.event, day.index)
+          : null
         row.values[day.id] = { amount }
       })
       this.session.rows.push(row)
@@ -281,8 +398,11 @@ export default {
     },
     fillSessionWithEventTemplateRows(templateRows, eventId = '') {
       templateRows.forEach((templateRow) => {
-        const existingRow = this.session.rows
-          .find((r) => ['label', 'product_id', 'recipie_id', 'type'].every((prop) => r[prop] === templateRow[prop]))
+        const existingRow = this.session.rows.find((r) =>
+          ['label', 'product_id', 'recipie_id', 'type'].every(
+            (prop) => r[prop] === templateRow[prop]
+          )
+        )
         if (existingRow) {
           Object.values(templateRow.values).forEach((rowValue, rowIndex) => {
             existingRow.values[`Event${eventId}_${rowIndex}`] = rowValue
@@ -292,7 +412,10 @@ export default {
           Object.values(templateRow.values).forEach((rowValue, rowIndex) => {
             values[`Event${eventId}_${rowIndex}`] = rowValue
           })
-          this.session.rows.push({ ...{ ...templateRow }, ...{ id: this.newId(this.session.rows), values } })
+          this.session.rows.push({
+            ...{ ...templateRow },
+            ...{ id: this.newId(this.session.rows), values },
+          })
         }
       })
     },
@@ -300,7 +423,7 @@ export default {
     // recipie so that it will now be cooked for 100
     updateRecipieAmounts(dayValue, targetAmount) {
       const recipie = this.$root.getRecipie(dayValue.recipie_id)
-      const ratio = (dayValue.amount / targetAmount)
+      const ratio = dayValue.amount / targetAmount
       this.$confirm.require({
         message: `This will modify the recipie amounts to fit with the event people count.
                   All recipies ingredient will be multiplied by ${ratio.round(3)}
@@ -340,18 +463,18 @@ export default {
 }
 
 .schedule-table th.event-editor {
-  padding: .7rem 1rem !important;
+  padding: 0.7rem 1rem !important;
 
   .p-button.p-button-sm.btn-add-day {
-    padding: 0.0rem 0.5rem;
+    padding: 0rem 0.5rem;
     border-radius: 4px;
     height: 2rem;
     align-self: center;
-    margin-right: .5rem;
-    margin-left: .25rem;
+    margin-right: 0.5rem;
+    margin-left: 0.25rem;
 
     .p-button-icon {
-      font-size: .7rem;
+      font-size: 0.7rem;
       line-height: 1.5;
       margin-right: 5px;
     }
@@ -369,7 +492,7 @@ export default {
   color: var(--bluegray-300) !important;
 
   &:after {
-    content: "";
+    content: '';
     width: 20px;
     height: 2px;
     background-color: var(--bluegray-500);
@@ -385,12 +508,12 @@ export default {
     visibility: hidden;
   }
 
-  .schedule-table.hide-dates-on-print .p-datatable-thead>tr:nth-of-type(2) {
+  .schedule-table.hide-dates-on-print .p-datatable-thead > tr:nth-of-type(2) {
     display: none;
   }
 }
 
-.schedule-table.hide-dates .p-datatable-thead>tr:nth-of-type(2) {
+.schedule-table.hide-dates .p-datatable-thead > tr:nth-of-type(2) {
   display: none;
 }
 
