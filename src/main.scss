@@ -409,6 +409,10 @@ hr {
 .p-inputtext {
   display: inline-flex;
   align-items: center;
+
+  &:enabled:hover {
+    border-color: var(--bs-blue-600) !important;
+  }
 }
 
 @media print {
