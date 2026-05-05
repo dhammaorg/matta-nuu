@@ -1,16 +1,133 @@
 :root {
-  --font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --focus-ring: 0 0 0 0.2rem rgba(30, 52, 97, 0.25);
+  // ── Palette scales — Vipassana ──────────────────────────────────────────────
+  --bs-blue-100: #f8f9fa;
+  --bs-blue-150: #f0f2f4;
+  --bs-blue-200: #d2d6df;
+  --bs-blue-300: #8586a2;
+  --bs-blue-400: #707595;
+  --bs-blue-500: #5b6588;
+  --bs-blue-600: #47547b;
+  --bs-blue-700: #32446e;
+  --bs-blue-800: #1e3461;
+  --bs-blue-900: #121f3a;
 
-  // Primary colour → navy (#1e3461)
-  --primary-color: #1e3461;
+  --bs-gold-100: #fcfaf7;
+  --bs-gold-200: #f0e7d5;
+  --bs-gold-300: #deccad;
+  --bs-gold-400: #c6a364;
+  --bs-gold-500: #b78730;
+  --bs-gold-600: #9c6b14;
+  --bs-gold-700: #7d550c;
+  --bs-gold-800: #493613;
+  --bs-gold-900: #241a09;
+
+  --bs-green-100: #d8e1cc;
+  --bs-green-200: #d5e4c3;
+  --bs-green-300: #8ba666;
+  --bs-green-400: #648933;
+  --bs-green-500: #3d6b00;
+  --bs-green-600: #315600;
+  --bs-green-700: #203800;
+  --bs-green-800: #182b00;
+  --bs-green-900: #0c1500;
+
+  --bs-red-100: #e8d6d6;
+  --bs-red-200: #eccccc;
+  --bs-red-300: #bb8585;
+  --bs-red-400: #a55c5c;
+  --bs-red-500: #8e3333;
+  --bs-red-600: #722929;
+  --bs-red-700: #720000;
+  --bs-red-800: #391414;
+  --bs-red-900: #1c0a0a;
+
+  // ── Bootstrap semantic aliases ───────────────────────────────────────────────
+  --bs-blue: var(--bs-blue-800);
+  --bs-indigo: #6610f2;
+  --bs-purple: #6f42c1;
+  --bs-pink: #d63384;
+  --bs-red: var(--bs-red-500);
+  --bs-orange: #fd7e14;
+  --bs-yellow: #ffc107;
+  --bs-green: var(--bs-green-500);
+  --bs-teal: #20c997;
+  --bs-cyan: #0dcaf0;
+  --bs-black: #000;
+  --bs-white: #fff;
+  --bs-gray: #6c757d;
+  --bs-gray-dark: #343a40;
+  --bs-gray-100: #f8f9fa;
+  --bs-gray-200: #e9ecef;
+  --bs-gray-300: #dee2e6;
+  --bs-gray-400: #ced4da;
+  --bs-gray-500: #adb5bd;
+  --bs-gray-600: #6c757d;
+  --bs-gray-700: #495057;
+  --bs-gray-800: #343a40;
+  --bs-gray-900: #212529;
+
+  --bs-primary: var(--bs-blue-800);
+  --bs-secondary: var(--bs-gold-500);
+  --bs-success: var(--bs-green-500);
+  --bs-info: var(--bs-gold-500);
+  --bs-warning: #ffc107;
+  --bs-danger: var(--bs-red-500);
+  --bs-light: #f0f2f4;
+  --bs-dark: #4f4d47;
+
+  // RGB variants — allow rgba(var(--bs-primary-rgb), opacity) without hardcoding
+  --bs-primary-rgb: 30, 52, 97;
+  --bs-secondary-rgb: 183, 135, 48;
+  --bs-success-rgb: 61, 107, 0;
+  --bs-info-rgb: 183, 135, 48;
+  --bs-warning-rgb: 255, 193, 7;
+  --bs-danger-rgb: 142, 51, 51;
+  --bs-light-rgb: 240, 242, 244;
+  --bs-dark-rgb: 79, 77, 71;
+  --bs-white-rgb: 255, 255, 255;
+  --bs-black-rgb: 0, 0, 0;
+  --bs-body-color-rgb: 33, 37, 41;
+  --bs-body-bg-rgb: 252, 250, 247;
+
+  // ── Body / typography defaults ───────────────────────────────────────────────
+  --bs-body-font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 1.7;
+  --bs-body-color: #212529;
+  --bs-body-bg: var(--bs-gold-100);
+
+  // ── Border & radius defaults ─────────────────────────────────────────────────
+  --bs-border-width: 1px;
+  --bs-border-style: solid;
+  --bs-border-color: #d2d6df;
+  --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+  --bs-border-radius: 0.25rem;
+  --bs-border-radius-sm: 0.25rem;
+  --bs-border-radius-lg: 0.5rem;
+  --bs-border-radius-xl: 1rem;
+  --bs-border-radius-2xl: 2rem;
+  --bs-border-radius-pill: 50rem;
+
+  // ── Link defaults ────────────────────────────────────────────────────────────
+  --bs-link-color: var(--bs-blue-800);
+  --bs-link-hover-color: var(--bs-blue-900);
+
+  // ── PrimeVue integration ─────────────────────────────────────────────────────
+  --font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --focus-ring: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+  --focus-ring-gold: 0 0 0 0.2rem rgba(var(--bs-secondary-rgb), 0.35);
+  --focus-ring-navy: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.2);
+
+  // Primary colour → navy
+  --primary-color: var(--bs-blue-800);
   --primary-color-text: #ffffff;
   --primary-50:  #eef1f7;
   --primary-100: #ccd3e8;
   --primary-200: #99a8d1;
   --primary-300: #667cba;
   --primary-400: #3350a2;
-  --primary-500: #1e3461;
+  --primary-500: var(--bs-blue-800);
   --primary-600: #192d56;
   --primary-700: #14264b;
   --primary-800: #0f1f40;
@@ -18,10 +135,10 @@
 
   // Selection / highlight → warm sand
   --highlight-bg: #e8d9c2;
-  --highlight-text-color: #1e3461;
+  --highlight-text-color: var(--bs-blue-800);
 
   // Surfaces → sandy warmth
-  --surface-ground:  #fcfaf7;
+  --surface-ground:  var(--bs-gold-100);
   --surface-section: #ebe0cc;
   --surface-card:    #fdf8f2;
   --surface-overlay: #fdf8f2;
@@ -49,7 +166,7 @@
   --indigo-200: #99a8d1;
   --indigo-300: #667cba;
   --indigo-400: #3350a2;
-  --indigo-500: #1e3461;
+  --indigo-500: var(--bs-blue-800);
   --indigo-600: #192d56;
   --indigo-700: #14264b;
   --indigo-800: #0f1f40;
@@ -65,7 +182,7 @@
   --bluegray-600: #5c5040;
   --bluegray-700: #4f4d47;
   --bluegray-800: #2e2c27;
-  --bluegray-900: #1e3461;
+  --bluegray-900: var(--bs-blue-800);
 }
 
 body,
@@ -83,12 +200,12 @@ a {
 
 h1 {
   font-family: 'Amiri', serif;
-  color: #9c6b14;
+  color: var(--bs-gold-600);
 }
 
 h2 {
   font-family: 'Noto Sans', sans-serif;
-  color: #1e3461;
+  color: var(--bs-blue-800);
 }
 
 .sm {
@@ -212,6 +329,15 @@ td .p-inputnumber {
 
 .p-datatable-wrapper {
   @extend .custom-scroll-bar;
+}
+
+.p-datatable .p-sortable-column.p-highlight {
+    background: var(--bs-gold-200) !important;
+    color: var(--bs-gold-500) !important;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+    color: var(--bs-gold-500) !important;
 }
 
 .p-dialog.p-confirm-dialog .p-confirm-dialog-message {
@@ -383,56 +509,102 @@ label[for] {
 
 // Filled primary buttons → gold
 .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger):not(.p-button-help):not(.p-button-outlined):not(.p-button-text):not(.p-button-link) {
-  background: #b78730 !important;
-  border-color: #b78730 !important;
+  background: var(--bs-gold-500) !important;
+  border-color: var(--bs-gold-500) !important;
   color: #ffffff !important;
 
   &:enabled:hover {
-    background: #9a6f1e !important;
-    border-color: #9a6f1e !important;
+    background: var(--bs-gold-600) !important;
+    border-color: var(--bs-gold-600) !important;
   }
 
   &:focus {
-    box-shadow: 0 0 0 0.2rem rgba(183, 135, 48, 0.35) !important;
+    box-shadow: var(--focus-ring-gold) !important;
   }
 }
 
-// Text / outlined buttons → ochre
+// Text / outlined buttons → gold
 .p-button.p-button-text:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger) {
   color: #ffffff !important;
-  border-color: #b78730 !important;
-  background-color: #b78730 !important;
+  border-color: var(--bs-gold-500) !important;
+  background-color: var(--bs-gold-500) !important;
+  height: 2.5rem !important;
 
-  &:enabled:hover {
-    color: #9c6b14 !important;
-    border-color: #9c6b14 !important;
+  &:hover {
+    color: var(--bs-gold-600) !important;
+    border-color: var(--bs-gold-600) !important;
+    background-color: #ffffff !important;
+  }
+}
+
+.p-button.p-button-danger.p-button-text, .p-buttonset.p-button-danger > .p-button.p-button-text, .p-splitbutton.p-button-danger > .p-button.p-button-text{
+  color: #ffffff !important;
+  border-color: var(--bs-red-500) !important;
+  background-color: var(--bs-red-500) !important;
+  height: 2.5rem !important;
+  
+  &:hover {
+    color: var(--bs-gold-600) !important;
+    border-color: var(--bs-gold-600) !important;
     background-color: #ffffff !important;
   }
 }
 
 .p-button.p-button-outlined:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger) {
-  color: #ffffff !important;
-  border-color: #b78730 !important;
-  background-color: #b78730 !important;
+  color: var(--bs-gold-500) !important;
+  border-color: var(--bs-gold-500) !important;
+  background-color: #ffffff !important;
 
   &:enabled:hover {
-    color: #9c6b14 !important;
-    border-color: #9c6b14 !important;
+    color: var(--bs-gold-600) !important;
+    border-color: var(--bs-gold-600) !important;
     background-color: #ffffff !important;
   }
 }
 
+.fc.fc-theme-standard .fc-toolbar .fc-button {
+  background-color: var(--indigo-500);
+  border-color: var(--indigo-500);
+  color: #ffffff;
+
+  &:enabled:hover {
+    background-color: var(--indigo-600);
+    border-color: var(--indigo-600);
+    color: #ffffff;
+  }
+
+  &:disabled {
+    background-color: var(--indigo-200);
+    border-color: var(--indigo-200);
+    color: #ffffff;
+  }
+}
+
+.fc-addNote-button {
+  background-color: var(--bs-green-500) !important;
+  border-color: var(--bs-green-500) !important;
+}
+.fc-addOrder-button {
+  background-color: var(--bs-gold-600) !important;
+  border-color: var(--bs-gold-600) !important;
+}
+.fc-addInventory-button {
+  background-color: var(--bs-blue-600) !important;
+  border-color: var(--bs-blue-600) !important;
+}
+
+
 // Checkbox & radio checked → gold
 .p-checkbox .p-checkbox-box.p-highlight,
 .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
-  background: #b78730 !important;
-  border-color: #b78730 !important;
+  background: var(--bs-gold-500) !important;
+  border-color: var(--bs-gold-500) !important;
 }
 
 .p-radiobutton .p-radiobutton-box.p-highlight,
 .p-radiobutton:not(.p-radiobutton-disabled) .p-radiobutton-box.p-highlight:hover {
-  background: #b78730 !important;
-  border-color: #b78730 !important;
+  background: var(--bs-gold-500) !important;
+  border-color: var(--bs-gold-500) !important;
 }
 
 // Input focus ring → navy
@@ -441,8 +613,8 @@ label[for] {
 .p-multiselect:not(.p-disabled).p-focus,
 .p-autocomplete .p-inputtext:enabled:focus,
 .p-inputnumber:not(.p-disabled).p-focus .p-inputtext {
-  border-color: #1e3461 !important;
-  box-shadow: 0 0 0 0.2rem rgba(30, 52, 97, 0.2) !important;
+  border-color: var(--bs-blue-800) !important;
+  box-shadow: var(--focus-ring-navy) !important;
 }
 
 // Dropdown / listbox highlighted option → sand
@@ -450,25 +622,109 @@ label[for] {
 .p-listbox .p-listbox-list .p-listbox-item.p-highlight,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
-  background: #e8d9c2 !important;
-  color: #1e3461 !important;
+  background: var(--highlight-bg) !important;
+  color: var(--bs-blue-800) !important;
 }
 
 // Paginator active page → gold
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: #b78730 !important;
-  border-color: #b78730 !important;
+  background: var(--bs-gold-500) !important;
+  border-color: var(--bs-gold-500) !important;
   color: #ffffff !important;
 }
 
-// Links (outside buttons) → ochre
+// Links (outside buttons) → text color
 a:not(.p-button):not(.p-menuitem-link) {
-  color: #212529;
+  color: var(--text-color);
   font-weight: bolder;
 }
 
 // Active nav links text → ochre
 .p-menubar .p-menuitem-link.p-menuitem-link-active .p-menuitem-text,
 .p-tieredmenu .p-menuitem-link.p-menuitem-link-active .p-menuitem-text {
-  color: #9c6b14 !important;
+  color: var(--bs-gold-600) !important;
+}
+
+// FullCalendar toolbar buttons → gold
+
+.fc.fc-theme-standard .fc-toolbar .fc-button:focus {
+  box-shadow: var(--focus-ring-gold) !important;
+}
+
+.fc.fc-theme-standard .fc-toolbar .fc-button.fc-button-active {
+  background: var(--bs-gold-600) !important;
+  border-color: var(--bs-gold-600) !important;
+}
+
+// FullCalendar custom action buttons
+.fc-addInventory-button {
+  background-color: var(--bs-blue-600) !important;
+  border-color: var(--bs-blue-600) !important;
+}
+
+.fc-addOrder-button {
+  background-color: var(--bs-gold-600) !important;
+  border-color: var(--bs-gold-600) !important;
+}
+
+.fc-addNote-button {
+  background-color: var(--bs-green-500) !important;
+  border-color: var(--bs-green-500) !important;
+}
+
+// Success buttons → earthy green
+.p-button-success,
+.p-buttonset.p-button-success > .p-button,
+.p-splitbutton.p-button-success > .p-button {
+  color: #ffffff !important;
+  background: var(--bs-green-500) !important;
+  border: 1px solid var(--bs-green-500) !important;
+
+  &:enabled:hover {
+    background-color: #ffffff !important;
+    color: var(--bs-green-600) !important;
+    border-color: var(--bs-green-600) !important;
+  }
+}
+
+// Success messages / toasts → earthy green
+.p-message.p-message-success {
+  background: var(--bs-green-100) !important;
+  border-color: var(--bs-green-500) !important;
+  color: var(--bs-green-600) !important;
+
+  .p-message-icon {
+    color: var(--bs-green-500) !important;
+  }
+}
+
+.p-toast .p-toast-message.p-toast-message-success {
+  background: var(--bs-green-100) !important;
+  border-color: var(--bs-green-500) !important;
+  color: var(--bs-green-600) !important;
+
+  .p-toast-message-icon,
+  .p-toast-icon-close {
+    color: var(--bs-green-500) !important;
+  }
+}
+
+.p-inline-message.p-inline-message-success {
+  background: var(--bs-green-100) !important;
+  border-color: var(--bs-green-500) !important;
+  color: var(--bs-green-600) !important;
+
+  .p-inline-message-icon {
+    color: var(--bs-green-500) !important;
+  }
+}
+
+// Sortable column highlight → sand + navy (mirrors dropdown highlight)
+.p-datatable .p-sortable-column.p-highlight {
+  background: var(--highlight-bg);
+  color: var(--bs-blue-800);
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+  color: var(--bs-gold-600);
 }

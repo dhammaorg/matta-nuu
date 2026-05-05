@@ -122,13 +122,13 @@ export default {
 .matta-nuu .p-menubar {
   border-radius: 0;
   border: none;
-  border-bottom: 1px solid #d4c5a9;
-  background: #f0e7d5;
-  color: #1e3461;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--bs-gold-200);
+  color: var(--bs-blue-800);
   padding: 0.5rem 1rem;
 
   h1 {
-    color: #1e3461;
+    color: var(--bs-blue-800);
   }
 
   .p-submenu-list {
@@ -144,13 +144,13 @@ export default {
 
     .p-menuitem-icon,
     .p-menuitem-text {
-      color: #9c6b14 !important;
+      color: var(--bs-gold-600) !important;
     }
   }
 
   .p-menuitem-icon,
   .p-menuitem-text {
-    color: #1e3461 !important;
+    color: var(--bs-blue-800) !important;
   }
 
   .p-menuitem-text {
@@ -165,17 +165,17 @@ export default {
 }
 
 .p-menubar .p-button.p-button-text {
-  color: #1e3461;
+  color: var(--bs-blue-800);
 
   &:hover {
-    color: #9c6b14;
-    background: rgba(156, 107, 20, 0.08) !important;
+    color: var(--bs-gold-600);
+    background: rgba(var(--bs-secondary-rgb), 0.08) !important;
   }
 }
 
 .btn-user {
-  background: #1e3461;
-  color: #f0e7d5;
+  background: var(--bs-blue-800);
+  color: var(--bs-gold-200);
   border: none;
 }
 
@@ -183,7 +183,7 @@ export default {
   font-family: 'Amiri', serif;
   font-size: 1.6rem;
   font-weight: 700;
-  color: #b78730;
+  color: var(--bs-gold-500);
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
