@@ -17,7 +17,7 @@ import HelpMessage from '@/components/HelpMessage.vue'
 import App from './App.vue'
 import router from '@/services/router'
 import db from '@/services/db-plugin'
-import { writeSessionNavigation } from '@/services/session-nav-storage'
+import { writeLastSessionRoute } from '@/services/session-nav-storage'
 import supabase from '@/services/supabase'
 import { utils } from '@/services/utils'
 import { debounceDirective } from './services/debounce'
@@ -80,8 +80,7 @@ router.beforeEach(async (to) => {
 })
 
 router.afterEach((to) => {
-  if (!to.params?.id) return
-  writeSessionNavigation(to.params.id, to.name)
+  writeLastSessionRoute(to.name)
 })
 
 app.config.unwrapInjectedRef = true

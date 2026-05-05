@@ -74,8 +74,8 @@ export default {
     goSessionsShortcut() {
       let id = readLastSessionId()
       const { sessions } = this.$root
-      if (!id || !sessions[id]) id = resolveDefaultSessionId(sessions)
-      if (id && sessions[id]) {
+      if (!id || !sessions[id] || sessions[id].is_template) id = resolveDefaultSessionId(sessions)
+      if (id && sessions[id] && !sessions[id].is_template) {
         this.$router.push({ name: readLastSessionRouteName(), params: { id } })
       }
       else this.$router.push({ name: 'sessions' })

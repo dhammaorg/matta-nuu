@@ -208,6 +208,7 @@ export default {
       }
     },
     persistLastSessionId(sessionId) {
+      if (this.sessions[sessionId]?.is_template) return
       writeLastSessionId(sessionId)
     },
     async fetchSessionAssociatedObjects(objectName, sessionId = parseInt(this.$route.params.id, 10)) {
