@@ -186,7 +186,7 @@ export default {
   },
   methods: {
     navigateToTab(routeName, id = this.$route.params.id) {
-      if (this.activeTabRouteName === routeName) return
+      if (this.$route.name === routeName && String(this.$route.params.id) === String(id)) return
       this.pendingTabRouteName = routeName
       this.$router.push({ name: routeName, params: { id } }).finally(() => {
         if (normalizeSessionTabRouteName(this.$route.name) !== routeName) {
