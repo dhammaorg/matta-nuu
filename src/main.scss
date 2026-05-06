@@ -1,3 +1,79 @@
+:root {
+  // ── Palette scales — Vipassana ──────────────────────────────────────────────
+  --bs-blue-100: #f8f9fa;
+  --bs-blue-150: #f0f2f4;
+  --bs-blue-200: #d2d6df;
+  --bs-blue-300: #8586a2;
+  --bs-blue-400: #707595;
+  --bs-blue-500: #5b6588;
+  --bs-blue-600: #47547b;
+  --bs-blue-700: #32446e;
+  --bs-blue-800: #1e3461;
+  --bs-blue-900: #121f3a;
+
+  --bs-gold-100: #fcfaf7;
+  --bs-gold-200: #f0e7d5;
+  --bs-gold-300: #deccad;
+  --bs-gold-400: #c6a364;
+  --bs-gold-500: #b78730;
+  --bs-gold-600: #9c6b14;
+  --bs-gold-700: #7d550c;
+  --bs-gold-800: #493613;
+  --bs-gold-900: #241a09;
+
+  --bs-green-100: #d8e1cc;
+  --bs-green-200: #d5e4c3;
+  --bs-green-300: #8ba666;
+  --bs-green-400: #648933;
+  --bs-green-500: #3d6b00;
+  --bs-green-600: #315600;
+  --bs-green-700: #203800;
+  --bs-green-800: #182b00;
+  --bs-green-900: #0c1500;
+
+  --bs-red-100: #e8d6d6;
+  --bs-red-200: #eccccc;
+  --bs-red-300: #bb8585;
+  --bs-red-400: #a55c5c;
+  --bs-red-500: #8e3333;
+  --bs-red-600: #722929;
+  --bs-red-700: #720000;
+  --bs-red-800: #391414;
+  --bs-red-900: #1c0a0a;
+
+  // ── Bootstrap semantic aliases ───────────────────────────────────────────────
+  --bs-blue: var(--bs-blue-800);
+  --bs-red: var(--bs-red-500);
+  --bs-green: var(--bs-green-500);
+  --bs-primary: var(--bs-blue-800);
+  --bs-secondary: var(--bs-gold-500);
+  --bs-success: var(--bs-green-500);
+  --bs-danger: var(--bs-red-500);
+  --bs-light: #f0f2f4;
+  --bs-dark: #4f4d47;
+  --bs-gray-900: #212529;
+
+  // RGB variants — allow rgba(var(--bs-primary-rgb), opacity) without hardcoding
+  --bs-primary-rgb: 30, 52, 97;
+  --bs-secondary-rgb: 183, 135, 48;
+  --bs-success-rgb: 61, 107, 0;
+  --bs-danger-rgb: 142, 51, 51;
+  --bs-body-bg-rgb: 252, 250, 247;
+
+  // ── Body defaults ────────────────────────────────────────────────────────────
+  --bs-body-font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bs-body-color: #212529;
+  --bs-body-bg: var(--bs-gold-100);
+  --bs-link-color: var(--bs-blue-800);
+  --bs-link-hover-color: var(--bs-blue-900);
+  --bs-border-color: #d2d6df;
+}
+
+body,
+.p-component {
+  font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
 a {
   text-decoration: none;
 }
@@ -6,9 +82,13 @@ a {
   color: var(--primary-color) !important;
 }
 
-h1,
+h1 {
+  font-family: 'Amiri', serif;
+  color: var(--bs-gold-600);
+}
+
 h2 {
-  color: var(--surface-900);
+  color: var(--bs-blue-800);
 }
 
 .sm {

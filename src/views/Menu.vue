@@ -2,7 +2,7 @@
   <!-- Simplified menu for public mode -->
   <div v-if="$root.isPublicMode" class="p-menubar d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
-      <img src="../assets/logo.png" height="50" style="margin-top: -5px" />
+      <span class="app-logo">Matta Nuu</span>
     </div>
     <span v-if="$route.name === 'inventories_public'">{{ this.$root.userData.account_name }}</span>
     <Button v-else label="Inventories" icon="pi pi-home" class="p-button-text"
@@ -14,7 +14,7 @@
   <Menubar v-else :model="navItems" class="d-print-none">
     <template #start>
       <div class="d-flex align-items-center">
-        <img src="../assets/logo.png" class="me-4" height="50" style="margin-top: -5px" />
+        <span class="app-logo me-4">Matta Nuu</span>
       </div>
     </template>
     <template #end>
@@ -141,5 +141,14 @@ export default {
   background: var(--indigo-200);
   color: var(--bluegray-900);
   border: none;
+}
+
+.app-logo {
+  font-family: 'Amiri', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--bs-gold-400);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 </style>

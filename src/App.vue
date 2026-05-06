@@ -386,7 +386,7 @@ export default {
 @media (max-width: 800px) {
   .matta-nuu .p-dialog {
     border-radius: 0;
-    background: white;
+    background: var(--surface-card);
     margin: 0;
     max-height: 100%;
     height: 100%;
@@ -440,7 +440,7 @@ html {
 }
 
 .card {
-  background: white;
+  background: var(--surface-card);
   padding: 3rem;
   border-radius: 10px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, .02), 0 0 2px rgba(0, 0, 0, .05), 0 1px 4px rgba(0, 0, 0, .08);
