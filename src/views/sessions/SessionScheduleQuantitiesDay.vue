@@ -20,14 +20,13 @@
               </th>
             </tr>
           </thead>
-          <tbody class="p-datatable-tbody" v-for="recipie in recipies" :key="`recipie-${recipie.id}`">
+          <template v-for="recipie in recipies" :key="`recipie-${recipie.id}`">
+          <tbody v-if="shouldShowRecipie(recipie)" class="p-datatable-tbody">
             <tr class="p-rowgroup-header">
               <td :colspan="numbers.length + 2">
                 <h3 class="recipie-name">
                   {{ recipie.name }}
-                  <span class="fw-normal" v-if="recipie.prepare_day_before"> ({{ event.days[dayIndex
-                    +
-                    1] }})</span>
+                  <span class="fw-normal" v-if="recipie.forDayAfter"> ({{ event.days[dayIndex + 1] }})</span>
                   <span class="p-chip fw-normal ms-2" v-if="recipie.row.label">{{
                     recipie.row.label }}</span>
                 </h3>
@@ -43,6 +42,7 @@
               </td>
             </tr>
           </tbody>
+          </template>
         </table>
       </div>
     </div>
@@ -56,6 +56,9 @@ import { unitChild, unitParent } from '@/services/units'
 export default {
   props: ['event', 'day', 'dayIndex', 'numbers'],
   methods: {
+    shouldShowRecipie(recipie) {
+      return !(recipie.prepare_day_before && !recipie.forDayAfter && !recipie.instructions)
+    },
     getProductsToPrint(recipie) {
       const selectedProductIds = recipie.products_to_list_on_day_before || []
       if (!recipie.forDayAfter || selectedProductIds.length === 0) {
@@ -73,7 +76,7 @@ export default {
           if (row.printable === false) return
           const dayValue = row.values[`Event${this.event.id}_${this.dayIndex}`] || {}
           const dayRecipie = this.$root.getRecipie(row.recipie_id || dayValue.recipie_id)
-          if (dayRecipie.id && dayValue.amount && !dayRecipie.prepare_day_before) {
+          if (dayRecipie.id && dayValue.amount) {
             result.push({ ...dayRecipie, ...{ row } })
           }
         })
