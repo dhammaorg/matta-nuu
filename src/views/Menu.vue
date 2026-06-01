@@ -42,24 +42,28 @@ import supabase from '@/services/supabase'
 
 export default {
   components: { Menubar, ToggleButton, TieredMenu },
+  data() {
+    return { navItems: [] }
+  },
+  created() {
+    // Stable object references — computed navItems broke PrimeVue submenu (activeItem === item)
+    this.navItems = [
+      { label: 'Sessions', icon: 'pi pi-folder-open', command: () => this.goSessionsShortcut() },
+      { label: 'Products', to: { name: 'products' }, icon: 'pi pi-apple' },
+      { label: 'Suppliers', to: { name: 'suppliers' }, icon: 'pi pi-shopping-cart' },
+      { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
+      { label: 'Event Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
+      {
+        label: 'More',
+        items: [
+          { label: 'Product Categories', to: { name: 'categories', params: { type: 'Product' } } },
+          { label: 'Recipie Categories', to: { name: 'categories', params: { type: 'Recipie' } } },
+          { label: 'Storage Areas', to: { name: 'categories', params: { type: 'StorageArea' } } },
+        ],
+      },
+    ]
+  },
   computed: {
-    navItems() {
-      return [
-        { label: 'Sessions', icon: 'pi pi-folder-open', command: () => this.goSessionsShortcut() },
-        { label: 'Products', to: { name: 'products' }, icon: 'pi pi-apple' },
-        { label: 'Suppliers', to: { name: 'suppliers' }, icon: 'pi pi-shopping-cart' },
-        { label: 'Recipies', to: { name: 'recipies' }, icon: 'pi pi-palette' },
-        { label: 'Event Templates', to: { name: 'templates' }, icon: 'pi pi-file' },
-        {
-          label: 'More',
-          items: [
-            { label: 'Product Categories', to: { name: 'categories', params: { type: 'Product' } } },
-            { label: 'Recipie Categories', to: { name: 'categories', params: { type: 'Recipie' } } },
-            { label: 'Storage Areas', to: { name: 'categories', params: { type: 'StorageArea' } } },
-          ],
-        },
-      ]
-    },
     userItems() {
       return [
         { label: this.$root.userData.account_name || 'Account', disabled: true },
