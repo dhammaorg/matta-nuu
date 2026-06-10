@@ -59,6 +59,7 @@ export default {
       prepared: {},
       imported: {},
       existing: {},
+      idMap: { products: {}, recipies: {} },
 
       importing: false,
     }
@@ -90,6 +91,7 @@ export default {
       ['imported', 'existing', 'prepared'].forEach((prop) => {
         this.objects.forEach((o) => { this[prop][o] = [] })
       })
+      this.idMap = { products: {}, recipies: {} }
       this.importing = true
       const productsToImport = new Set()
       const recipiesToImport = new Set(this.selected.recipies)
@@ -121,6 +123,7 @@ export default {
         const existingRecipie = this.$root.recipiesArray.find((r) => r.name == recipie.name)
         if (existingRecipie) {
           this.existing.recipies.push(recipie.name)
+          this.idMap.recipies[recipie.id] = existingRecipie.id
         } else {
           recipie.products.forEach((product) => {
             productsToImport.add(this.target.products.find((p) => p.id === product.id))
@@ -133,6 +136,7 @@ export default {
         const existingProduct = this.$root.productsArray.find((p) => p.name == product.name && p.unit == product.unit)
         if (existingProduct) {
           this.existing.products.push(product.name)
+          this.idMap.products[product.id] = existingProduct.id
         } else {
           this.prepareToImport('products', product)
         }
@@ -142,25 +146,35 @@ export default {
       // Import Recipies
       this.prepared.recipies.forEach((recipie) => {
         recipie.products = recipie.products.map((productValue) => this.mapId(productValue, 'products', 'id'))
+        if (recipie.products_to_list_on_day_before?.length) {
+          recipie.products_to_list_on_day_before = recipie.products_to_list_on_day_before
+            .map((productId) => this.idMap.products[productId] || productId)
+        }
       })
       await this.batchCreate('recipies')
 
       // Import Templates
       this.prepared.templates.forEach((template) => {
         template.rows = template.rows.map((row) => {
-          let newRow = { ...row }
           if (row.type === 'product') {
-            newRow = this.mapId(row, 'products', 'product_id')
-          } else if (row.type === 'products') {
-            Object.entries(row.values).forEach(([key, value]) => {
-              newRow.values[key] = this.mapId(value, 'products', 'product_id')
+            return this.mapId(row, 'products', 'product_id')
+          }
+          if (row.type === 'recipie') {
+            return this.mapId(row, 'recipies', 'recipie_id')
+          }
+          if (row.type === 'products') {
+            const values = { ...row.values }
+            Object.entries(values).forEach(([key, value]) => {
+              values[key] = this.mapId(value, 'products', 'product_id')
             })
-          } else if (row.type === 'recipie') {
-            newRow = this.mapId(row, 'recipies', 'recipie_id')
-          } else if (row.type === 'recipies') {
-            Object.entries(row.values).forEach(([key, value]) => {
-              newRow.values[key] = this.mapId(value, 'recipies', 'recipie_id')
+            return { ...row, values }
+          }
+          if (row.type === 'recipies') {
+            const values = { ...row.values }
+            Object.entries(values).forEach(([key, value]) => {
+              values[key] = this.mapId(value, 'recipies', 'recipie_id')
             })
+            return { ...row, values }
           }
           return row
         })
@@ -170,29 +184,42 @@ export default {
       this.importing = false
     },
     prepareToImport(type, object) {
-      const data = { ...object, ...{ user_id: this.$root.user.id } }
+      const oldId = object.id
+      const data = { ...object, user_id: this.$root.user.id }
       delete data.id
+      data._importOldId = oldId
       this.prepared[type].push(data)
     },
     async batchCreate(type, dbname = type) {
-      const { data, error } = await this.$db.from(dbname).insert(this.prepared[type])
+      const payload = this.prepared[type].map(({ _importOldId, ...rest }) => rest)
+      const { data, error } = await this.$db.from(dbname).insert(payload)
       if (error) this.toastError(error)
       else {
-        (data || []).forEach((objectCreated) => {
+        (data || []).forEach((objectCreated, index) => {
+          const oldId = this.prepared[type][index]._importOldId
+          if (oldId) this.idMap[type][oldId] = objectCreated.id
           this.imported[type].push(objectCreated.name)
           this.$root[dbname][objectCreated.id] = objectCreated
         })
       }
     },
     mapId(data, type, propId) {
-      if (!data) return
+      if (!data) return data
       const oldId = data[propId]
-      const oldObject = this.target[type].find((p) => p.id === oldId)
-      if (!oldObject) return data
-      const newObject = this.$root[`${type}Array`].find((p) => p.name === oldObject.name && (p.unit === oldObject.unit || type !== 'products'))
-      if (!oldObject) return data
-      data[propId] = newObject.id
-      return data
+      if (!oldId) return data
+
+      let newId = this.idMap[type][oldId]
+      if (!newId) {
+        const oldObject = this.target[type]?.find((p) => p.id === oldId)
+        if (!oldObject) return data
+        const newObject = this.$root[`${type}Array`].find((p) => p.name === oldObject.name
+          && (p.unit === oldObject.unit || type !== 'products'))
+        if (!newObject) return data
+        newId = newObject.id
+        this.idMap[type][oldId] = newId
+      }
+
+      return { ...data, [propId]: newId }
     },
   },
   watch: {
