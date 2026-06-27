@@ -51,7 +51,7 @@
       </Column>
 
       <!-- Actions -->
-      <Column class="text-end">
+      <Column class="text-end actions-column">
         <template #body="{ data }">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary" @click="$refs.form.show(data)"
             v-tooltip="'Edit'" />
@@ -158,6 +158,10 @@ export default {
 
 <style lang="scss">
 .recipies-table {
+  td.actions-column {
+    white-space: nowrap;
+  }
+
   td {
     &.recipie-name-column input {
       color: inherit;
