@@ -55,6 +55,8 @@
         <template #body="{ data }">
           <Button icon="pi pi-pencil" class="p-button-text p-button-primary" @click="$refs.form.show(data)"
             v-tooltip="'Edit'" />
+          <Button icon="pi pi-copy" class="p-button-text p-button-secondary" @click="duplicateRecipie(data)"
+            v-tooltip="'Duplicate'" />
           <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="deleteRecipie(data)" />
         </template>
       </Column>
@@ -106,6 +108,11 @@ export default {
     },
   },
   methods: {
+    duplicateRecipie(recipie) {
+      const { id, created_at, _pricePerPersonSort, ...copy } = serializeRecipieForUpsert(recipie)
+      copy.name = `${recipie.name || 'Recipie'} (copy)`
+      this.$refs.form.show(copy)
+    },
     deleteRecipie(recipie) {
       this.$confirm.require({
         message: `Are you sure you want to delete ${recipie.name} ?`,
